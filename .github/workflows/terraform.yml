@@ -40,7 +40,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_TF_ROLE_ARN }}
           role-session-name: terraform-med0002-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3fbe5ec8470474a7ce6f8f4d38e # v3.1.2
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: ${{ env.TF_VERSION }}
       - run: terraform fmt -check -recursive

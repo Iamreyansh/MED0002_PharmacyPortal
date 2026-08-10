@@ -12,3 +12,5 @@ coverage
 tfplan
 test-results
 playwright-report
+
+*.tsbuildinfo
