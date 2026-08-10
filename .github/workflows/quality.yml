@@ -96,6 +96,11 @@ jobs:
           cache-dependency-path: portal/pnpm-lock.yaml
       - working-directory: portal
         run: pnpm install --frozen-lockfile
+      - name: Build Medmate package dists
+        working-directory: portal
+        run: |
+          chmod +x scripts/build-mfe-deps.sh
+          ./scripts/build-mfe-deps.sh
       - working-directory: portal
         run: pnpm run typecheck
       - working-directory: portal

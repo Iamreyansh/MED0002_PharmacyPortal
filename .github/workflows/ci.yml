@@ -51,6 +51,11 @@ jobs:
           cache-dependency-path: portal/pnpm-lock.yaml
       - working-directory: portal
         run: pnpm install --frozen-lockfile
+      - name: Build Medmate package dists
+        working-directory: portal
+        run: |
+          chmod +x scripts/build-mfe-deps.sh
+          ./scripts/build-mfe-deps.sh
       - working-directory: portal
         run: pnpm run build
       - working-directory: portal
@@ -89,6 +94,12 @@ jobs:
       - name: Install portal
         working-directory: portal
         run: pnpm install --frozen-lockfile
+
+      - name: Build Medmate package dists
+        working-directory: portal
+        run: |
+          chmod +x scripts/build-mfe-deps.sh
+          ./scripts/build-mfe-deps.sh
 
       - name: Install Playwright Chromium
         working-directory: portal
