@@ -1,7 +1,9 @@
 node_modules
 dist
 coverage
+.turbo
 .DS_Store
+*.local
 .env
 .env.*
 !.env.example
@@ -10,6 +12,12 @@ coverage
 *.tfstate.*
 *.tfplan
 tfplan
+infra/tfplan
+crash.log
+.idea
+.vscode/*
+!.vscode/extensions.json
+.mf
 test-results
 playwright-report
 

@@ -2,6 +2,38 @@
 
 Module Federation **host** for NammaMedMate pharmacy UX.
 
+## Layout
+
+```
+bootstrap.tsx
+index.tsx
+config/federation.ts
+src/{app,pages,host,styles,test}
+docs/{architecture,development,deploy,infra}
+```
+
+## Sibling packages
+
+This host depends on MED0003 shared packages via `file:` paths (no publish / no
+`sync:contracts`):
+
+```json
+"@medmate/contracts": "file:../MED0003_MFE/packages/shared/contracts",
+"@medmate/federation-config": "file:../MED0003_MFE/packages/shared/federation-config",
+"@medmate/host-kit": "file:../MED0003_MFE/packages/shared/host-kit",
+"@medmate/vite-config": "file:../MED0003_MFE/packages/tooling/vite-config"
+```
+
+Clone both repos as siblings:
+
+```text
+medmate/
+  MED0002_PharmacyPortal/
+  MED0003_MFE/
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Quick start
 
 ```bash
@@ -19,14 +51,9 @@ Set `VITE_REMOTE_TODO_URL` to the Todo manifest:
 
 `https://pharmacy.nammamedmate.com`
 
-## Mounting remotes
+## Docs
 
-```tsx
-<RemoteLoader
-  remote="todo"
-  module="./Mfe"
-  componentProps={{ data: envelope }}
-/>
-```
-
-All remote props must be nested under `data`.
+- [Architecture](docs/architecture/overview.md)
+- [Local development](docs/development/local-development.md)
+- [Deploy](docs/deploy/deploy.md)
+- [AWS bootstrap](docs/infra/aws-bootstrap.md)

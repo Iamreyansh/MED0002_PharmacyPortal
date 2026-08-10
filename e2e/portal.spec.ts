@@ -8,15 +8,13 @@ test('home page renders host shell', async ({ page }) => {
   await expect(page.getByTestId('configured-remotes')).toContainText('todo');
 });
 
-test('todos route mounts remote loader', async ({ page }) => {
+test('todos route mounts todo remote', async ({ page }) => {
   await page.goto('/todos');
   await expect(page.getByRole('heading', { name: 'Todos' })).toBeVisible();
-  // Either the remote loads, or graceful degradation keeps the host alive.
-  await expect(
-    page
-      .getByTestId('todo-mfe')
-      .or(page.getByTestId('remote-error'))
-      .or(page.getByTestId('remote-missing'))
-      .or(page.getByText('Loading micro-frontend')),
-  ).toBeVisible({ timeout: 15000 });
+
+  // Fail fast on graceful-degradation markers — e2e requires a live remote.
+  await expect(page.getByTestId('remote-error')).toHaveCount(0);
+  await expect(page.getByTestId('remote-missing')).toHaveCount(0);
+
+  await expect(page.getByTestId('todo-mfe')).toBeVisible({ timeout: 30000 });
 });
