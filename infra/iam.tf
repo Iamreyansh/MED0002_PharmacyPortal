@@ -15,10 +15,13 @@ data "aws_iam_policy_document" "github_assume_deploy" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
         "repo:${var.github_org}@${var.github_org_id}/${var.github_repo}@${var.github_repo_id}:environment:production",
+        "repo:${var.github_org}/${var.github_repo}:environment:production",
+        "repo:${var.github_org}@${var.github_org_id}/${var.github_repo}@${var.github_repo_id}:ref:refs/heads/main",
+        "repo:${var.github_org}/${var.github_repo}:ref:refs/heads/main",
       ]
     }
   }
@@ -41,10 +44,15 @@ data "aws_iam_policy_document" "github_assume_terraform" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       values = [
         "repo:${var.github_org}@${var.github_org_id}/${var.github_repo}@${var.github_repo_id}:environment:terraform",
+        "repo:${var.github_org}/${var.github_repo}:environment:terraform",
+        "repo:${var.github_org}@${var.github_org_id}/${var.github_repo}@${var.github_repo_id}:ref:refs/heads/main",
+        "repo:${var.github_org}/${var.github_repo}:ref:refs/heads/main",
+        "repo:${var.github_org}@${var.github_org_id}/${var.github_repo}@${var.github_repo_id}:pull_request",
+        "repo:${var.github_org}/${var.github_repo}:pull_request",
       ]
     }
   }

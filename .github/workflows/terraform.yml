@@ -30,7 +30,6 @@ env:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    environment: terraform
     defaults:
       run:
         working-directory: infra
