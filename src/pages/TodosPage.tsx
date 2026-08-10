@@ -1,12 +1,10 @@
-import { useMemo, useState } from 'react';
+import { RemoteLoader, type RemoteImporter } from '@medmate/host-kit';
+import { getRemoteUrl } from '@medmate/federation-config';
+import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  MFE_CONTRACT_VERSION,
-  RemoteLoader,
-  type MfeProps,
-  type RemoteImporter,
-  type TodoFeatureData,
-} from '@/mfe';
+import { REMOTE_REGISTRY } from '../../config/remotes.registry';
+import type { TodoFeatureData } from '@/features/todo/types';
+import { buildHostContext, useMfeEnvelope } from '@/host';
 
 export type TodosPageProps = {
   loadRemote?: RemoteImporter;
@@ -14,40 +12,36 @@ export type TodosPageProps = {
 
 export function TodosPage({ loadRemote }: TodosPageProps = {}) {
   const [lastCount, setLastCount] = useState(1);
+  const remote = REMOTE_REGISTRY.todo;
+  const remoteUrl = getRemoteUrl(
+    remote.name,
+    import.meta.env as Record<string, string | undefined>,
+  );
 
-  const data = useMemo<MfeProps<TodoFeatureData>['data']>(
+  const onChange = useCallback((next: readonly { id: string }[]) => {
+    setLastCount(next.length);
+  }, []);
+
+  const feature = useMemo<TodoFeatureData>(
     () => ({
-      contractVersion: MFE_CONTRACT_VERSION,
-      context: {
-        hostId: 'pharmacy-portal',
-        locale: 'en-IN',
-        pharmacyId: 'demo-pharmacy',
-        userId: 'demo-user',
-        permissions: ['todo:read', 'todo:write'],
-      },
-      feature: {
-        title: 'Pharmacy Todos',
-        initialItems: [
-          {
-            id: 'seed-1',
-            title: 'Review pharmacy dashboard',
-            completed: false,
-          },
-        ],
-        onChange: (next) => {
-          setLastCount(next.length);
+      title: 'Pharmacy Todos',
+      initialItems: [
+        {
+          id: 'seed-1',
+          title: 'Review pharmacy dashboard',
+          completed: false,
         },
-      },
-      capabilities: {
-        navigate: (path) => {
-          window.history.pushState({}, '', path);
-        },
-        telemetry: {
-          track: () => undefined,
-        },
-      },
+      ],
+      onChange,
     }),
-    [],
+    [onChange],
+  );
+
+  const data = useMfeEnvelope(
+    feature,
+    buildHostContext({
+      permissions: ['todo:read', 'todo:write'],
+    }),
   );
 
   return (
@@ -65,8 +59,9 @@ export function TodosPage({ loadRemote }: TodosPageProps = {}) {
       </header>
 
       <RemoteLoader
-        remote="todo"
-        module="./Mfe"
+        remote={remote.name}
+        module={remote.module}
+        remoteUrl={remoteUrl}
         componentProps={{ data }}
         loadRemote={loadRemote}
       />

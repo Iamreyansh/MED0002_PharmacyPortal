@@ -77,9 +77,13 @@ data "aws_iam_policy_document" "github_deploy" {
   }
 
   statement {
-    sid       = "WriteObjects"
-    effect    = "Allow"
-    actions   = ["s3:PutObject", "s3:DeleteObject"]
+    sid    = "ObjectAccess"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
     resources = ["${aws_s3_bucket.site.arn}/*"]
   }
 
@@ -128,10 +132,15 @@ data "aws_iam_policy_document" "github_terraform" {
     resources = ["arn:aws:s3:::${var.tf_state_bucket}/*"]
   }
 
+  # Scope S3 admin to state + host site buckets (avoid account-wide s3:*).
   statement {
-    effect    = "Allow"
-    actions   = ["s3:*"]
-    resources = ["*"]
+    sid    = "SiteBucketAdmin"
+    effect = "Allow"
+    actions = ["s3:*"]
+    resources = [
+      aws_s3_bucket.site.arn,
+      "${aws_s3_bucket.site.arn}/*",
+    ]
   }
 
   statement {

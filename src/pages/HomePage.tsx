@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
-import { listConfiguredRemotes } from '@/mfe';
+import { listConfiguredRemotes } from '@medmate/federation-config';
+import { listRemoteRegistry } from '../../config/remotes.registry';
 
 export function HomePage() {
-  const remotes = listConfiguredRemotes();
+  const configured = listConfiguredRemotes(
+    import.meta.env as Record<string, string | undefined>,
+  );
+  const remotes = listRemoteRegistry();
 
   return (
     <section className="page">
@@ -12,12 +16,15 @@ export function HomePage() {
         Host shell that composes independently deployed React micro-frontends.
       </p>
       <ul>
-        <li>
-          <Link to="/todos">Open Todo MFE</Link>
-        </li>
+        {remotes.map((remote) => (
+          <li key={remote.name}>
+            <Link to={remote.route}>Open {remote.navLabel} MFE</Link>
+          </li>
+        ))}
       </ul>
       <p data-testid="configured-remotes">
-        Configured remotes: {remotes.length > 0 ? remotes.join(', ') : 'none'}
+        Configured remotes:{' '}
+        {configured.length > 0 ? configured.join(', ') : 'none'}
       </p>
     </section>
   );

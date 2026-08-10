@@ -39,12 +39,13 @@ export default tseslint.config(
       ...jsxA11y.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'import/order': [
+      '@typescript-eslint/consistent-type-imports': [
         'error',
-        {
-          alphabetize: { order: 'asc', caseInsensitive: true },
-          'newlines-between': 'never',
-        },
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
     },
   },

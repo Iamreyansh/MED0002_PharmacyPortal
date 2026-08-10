@@ -27,10 +27,12 @@ export default defineConfig({
       },
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
-        'src/main.tsx',
         'src/test/**',
         'src/**/*.d.ts',
         'src/**/*.test.{ts,tsx}',
+        'src/features/**/types.ts',
+        'src/mfe/index.ts',
+        'src/host/index.ts',
       ],
     },
   },

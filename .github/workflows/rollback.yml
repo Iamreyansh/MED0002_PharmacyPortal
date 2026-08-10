@@ -1,0 +1,61 @@
+name: Rollback Portal
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_sha:
+        description: 'Previous release git SHA (must exist under s3://…/releases/<sha>/)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  rollback:
+    name: rollback
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: portal-rollback-${{ github.run_id }}
+          aws-region: ${{ vars.AWS_REGION || 'ap-south-1' }}
+          role-duration-seconds: 1800
+
+      - name: Promote previous release
+        env:
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+          SHA: ${{ inputs.git_sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${S3_BUCKET_NAME:-}" ] || [ -z "${CLOUDFRONT_DISTRIBUTION_ID:-}" ]; then
+            echo "::error::S3_BUCKET_NAME and CLOUDFRONT_DISTRIBUTION_ID secrets are required"
+            exit 1
+          fi
+          if ! aws s3 ls "s3://${S3_BUCKET_NAME}/releases/${SHA}/index.html" >/dev/null 2>&1; then
+            echo "::error::Release ${SHA} not found at s3://${S3_BUCKET_NAME}/releases/${SHA}/"
+            exit 1
+          fi
+          # Promote release to live root while preserving other release folders.
+          aws s3 sync "s3://${S3_BUCKET_NAME}/releases/${SHA}/" "s3://${S3_BUCKET_NAME}/" \
+            --delete \
+            --exclude "releases/*" \
+            --only-show-errors
+          aws cloudfront create-invalidation \
+            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
+            --paths "/*" \
+            --no-cli-pager
+          echo "Rolled back portal to ${SHA}"
+
+      - name: Post-rollback smoke
+        run: |
+          chmod +x scripts/post-deploy-smoke.sh
+          ./scripts/post-deploy-smoke.sh
