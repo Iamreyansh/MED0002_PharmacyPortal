@@ -134,8 +134,8 @@ data "aws_iam_policy_document" "github_terraform" {
 
   # Scope S3 admin to state + host site buckets (avoid account-wide s3:*).
   statement {
-    sid    = "SiteBucketAdmin"
-    effect = "Allow"
+    sid     = "SiteBucketAdmin"
+    effect  = "Allow"
     actions = ["s3:*"]
     resources = [
       aws_s3_bucket.site.arn,
