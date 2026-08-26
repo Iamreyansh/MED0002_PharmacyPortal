@@ -117,6 +117,14 @@ export function applyTokenPair(
     return false;
   }
   const current = getTokens();
+  const tokenScope: TokenScope =
+    data.token_scope === 'pos'
+      ? 'pos'
+      : data.token_scope === 'full'
+        ? 'full'
+        : typeof data.refresh_token === 'string'
+          ? 'full'
+          : current.tokenScope;
   setTokens({
     accessToken: data.access_token,
     refreshToken:
@@ -124,7 +132,7 @@ export function applyTokenPair(
         ? data.refresh_token
         : current.refreshToken,
     tokenType: typeof data.token_type === 'string' ? data.token_type : 'Bearer',
-    tokenScope: current.tokenScope,
+    tokenScope,
     accessTokenExpiresAt:
       typeof data.access_token_expires_in === 'number'
         ? now + data.access_token_expires_in * 1000

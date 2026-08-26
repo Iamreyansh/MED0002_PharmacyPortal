@@ -13,8 +13,6 @@ import { track } from '@/api/telemetry';
 export const DEFAULT_HOST_CONTEXT: HostContext = {
   hostId: 'pharmacy-portal',
   locale: 'en-IN',
-  pharmacyId: 'demo-pharmacy',
-  userId: 'demo-user',
   permissions: [],
 };
 

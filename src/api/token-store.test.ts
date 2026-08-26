@@ -101,6 +101,16 @@ describe('token store', () => {
     expect(getTokens().refreshToken).toBe('next-refresh');
     expect(getTokens().tokenType).toBe('Bearer');
     expect(getTokens().accessTokenExpiresAt).toBeNull();
+    expect(
+      applyTokenPair({
+        access_token: 'pos',
+        token_type: 'Bearer',
+        token_scope: 'pos',
+        access_token_expires_in: 14400,
+      }),
+    ).toBe(true);
+    expect(getTokens().tokenScope).toBe('pos');
+    expect(getTokens().refreshToken).toBe('next-refresh');
     clearTokens();
     expect(hasStoredSession()).toBe(false);
     setTokens({

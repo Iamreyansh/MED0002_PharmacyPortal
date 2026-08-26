@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { HostApiLifecycle } from '@/api/HostApiLifecycle';
 import { setTokens } from '@/api/token-store';
+import { SessionProvider } from '@/session/SessionProvider';
 
 afterEach(() => {
   cleanup();
@@ -15,7 +16,30 @@ describe('HostApiLifecycle', () => {
     vi.stubGlobal('fetch', fetch);
     const { unmount } = render(
       <MemoryRouter>
-        <HostApiLifecycle />
+        <SessionProvider>
+          <HostApiLifecycle />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    expect(fetch).not.toHaveBeenCalled();
+    unmount();
+  });
+
+  it('does not ping me for POS-scoped tokens', () => {
+    setTokens({
+      accessToken: 'pos-access',
+      refreshToken: null,
+      tokenType: 'Bearer',
+      tokenScope: 'pos',
+      accessTokenExpiresAt: null,
+    });
+    const fetch = vi.fn();
+    vi.stubGlobal('fetch', fetch);
+    const { unmount } = render(
+      <MemoryRouter>
+        <SessionProvider>
+          <HostApiLifecycle />
+        </SessionProvider>
       </MemoryRouter>,
     );
     expect(fetch).not.toHaveBeenCalled();
@@ -31,15 +55,32 @@ describe('HostApiLifecycle', () => {
       accessTokenExpiresAt: null,
     });
     const fetch = vi.fn(
-      async (_url: RequestInfo | URL, _init?: RequestInit) =>
-        new Response(JSON.stringify({ success: true, data: { id: 'u1' } }), {
-          status: 200,
-        }),
+      async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/auth/me')) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              data: { id: 'u1', name: 'Priya', role: 'pharmacy_owner' },
+            }),
+            { status: 200 },
+          );
+        }
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: { status: 'ACTIVE', plan: 'FREE' },
+          }),
+          { status: 200 },
+        );
+      },
     );
     vi.stubGlobal('fetch', fetch);
     render(
       <MemoryRouter>
-        <HostApiLifecycle />
+        <SessionProvider>
+          <HostApiLifecycle />
+        </SessionProvider>
       </MemoryRouter>,
     );
     await waitFor(() => {

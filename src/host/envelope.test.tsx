@@ -63,6 +63,8 @@ describe('host envelope helpers', () => {
     expect(ctx.hostId).toBe('custom');
     expect(ctx.permissions).toEqual(['a']);
     expect(ctx.locale).toBe('en-IN');
+    expect(DEFAULT_HOST_CONTEXT.pharmacyId).toBeUndefined();
+    expect(DEFAULT_HOST_CONTEXT.userId).toBeUndefined();
   });
 
   it('exposes router-backed navigate and a live API facade', async () => {

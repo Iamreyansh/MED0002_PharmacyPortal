@@ -21,6 +21,8 @@ export function RemoteModulePage({
     {},
     buildHostContext({
       permissions: [...session.permissions],
+      pharmacyId: session.pharmacyId ?? undefined,
+      userId: session.staffId ?? undefined,
     }),
   );
 
@@ -34,12 +36,15 @@ export function RemoteModulePage({
   );
 
   return (
-    <MfeOutlet
-      remote={remote.name}
-      module={remote.module}
-      remoteUrl={remoteUrl}
-      data={data}
-      loadRemote={loadRemote}
-    />
+    <div data-testid={`remote-page-${remote.name}`}>
+      <MfeOutlet
+        key={session.pharmacyId ?? 'none'}
+        remote={remote.name}
+        module={remote.module}
+        remoteUrl={remoteUrl}
+        data={data}
+        loadRemote={loadRemote}
+      />
+    </div>
   );
 }

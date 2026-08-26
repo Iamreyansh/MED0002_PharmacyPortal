@@ -4,6 +4,9 @@ import {
   hasPermission,
   isPlanBelowMinimum,
   isSessionFixtureName,
+  mapPharmacyRole,
+  mapPharmacyStatus,
+  mapPlanCode,
   planDisplayLabel,
   readSessionFixture,
   SESSION_FIXTURES,
@@ -70,5 +73,17 @@ describe('session fixtures', () => {
     );
     expect(readSessionFixture('unknown')).toEqual(UNAUTHENTICATED_SESSION);
     expect(readSessionFixture(undefined)).toEqual(UNAUTHENTICATED_SESSION);
+  });
+});
+
+describe('Core mappers', () => {
+  it('maps Core roles and plans', () => {
+    expect(mapPharmacyRole('owner')).toBe('pharmacy_owner');
+    expect(mapPharmacyRole('pharmacist')).toBe('pharmacy_staff');
+    expect(mapPlanCode('GROWTH')).toBe('RETAIL_PRO');
+    expect(mapPlanCode('PRO')).toBe('ENTERPRISE');
+    expect(mapPlanCode('FREE')).toBe('FREE');
+    expect(mapPharmacyStatus('PENDING_KYC')).toBe('PENDING_KYC');
+    expect(mapPharmacyStatus('nope')).toBeNull();
   });
 });

@@ -84,6 +84,9 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
-    ]
+    ],
+    "overrides": {
+      "@medmate/federation-config": "file:../MED0003_MFE/packages/shared/federation-config"
+    }
   }
 }

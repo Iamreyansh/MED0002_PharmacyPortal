@@ -21,7 +21,9 @@ pnpm dev
 
 The pharmacy shell does not require a Todo remote. Todo is **demo-only**.
 
-Set `VITE_API_BASE_URL` to the Core origin (for example `http://localhost:8080`) when calling live `/api/v1` APIs. Leave it unset to use same-origin paths.
+`pnpm dev` proxies `/api` to Core (`VITE_API_PROXY_TARGET`, default `http://localhost:8080`). Leave `VITE_API_BASE_URL` unset locally so the browser stays same-origin and avoids CORS. Set `VITE_API_BASE_URL` only for builds against an API that allows the SPA origin.
+
+Anonymous visits land on `/login`. Sign in with Core `POST /api/v1/auth/pharmacy/login` (email or +91 mobile + password). POS counters use `/pos-login` with `pharmacy_id`, `staff_id`, and a 4-digit PIN.
 
 ## Optional demo Todo remote
 
@@ -50,6 +52,4 @@ pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Default specs assert pharmacy chrome (`portal-home`, `portal-nav`) and that
-product navigation has no `/todos` link. They do not require a live Todo MFE.
-An expired stored session is routed to the login destination.
+Default specs seed a mocked Core session for chrome, then cover login, me bootstrap, sessions revoke confirm, switch-pharmacy 403, POS PIN, and KYC quotes redirect. They do not require a live Todo MFE.

@@ -1,4 +1,6 @@
 import { MenuGlyph } from '@/layout/icons';
+import { PharmacySwitcher } from '@/layout/PharmacySwitcher';
+import { SessionMenu } from '@/layout/SessionMenu';
 import type { ViewportMode } from '@/layout/use-viewport';
 import { useSession } from '@/session/SessionProvider';
 
@@ -27,9 +29,11 @@ export function AppHeader({ viewport, navOpen, onToggleNav }: AppHeaderProps) {
         </button>
       ) : null}
       <p className="app-header__brand">NammaMedMate</p>
+      <PharmacySwitcher />
       <p className="app-header__pharmacy" data-testid="pharmacy-name">
         {session.pharmacyName}
       </p>
+      <SessionMenu />
     </header>
   );
 }

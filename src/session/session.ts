@@ -1,8 +1,19 @@
 export type PlanCode = 'FREE' | 'STARTER' | 'RETAIL_PRO' | 'ENTERPRISE';
 export type PharmacyRole = 'pharmacy_owner' | 'pharmacy_staff';
 export type PharmacyStatus =
-  'PENDING_KYC' | 'KYC_SUBMITTED' | 'ACTIVE' | 'REJECTED' | 'SUSPENDED';
+  | 'PENDING_KYC'
+  | 'KYC_SUBMITTED'
+  | 'ACTIVE'
+  | 'REJECTED'
+  | 'SUSPENDED';
 export type TokenScope = 'full' | 'pos';
+
+export type PharmacyOption = {
+  id: string;
+  name: string;
+  role: string;
+  isActive: boolean;
+};
 
 export type PortalSession = {
   authenticated: boolean;
@@ -12,6 +23,9 @@ export type PortalSession = {
   tokenScope: TokenScope;
   permissions: readonly string[];
   pharmacyName: string;
+  staffName: string;
+  staffId: string | null;
+  pharmacyId: string | null;
 };
 
 export const PLAN_RANK: Record<PlanCode, number> = {
@@ -21,6 +35,14 @@ export const PLAN_RANK: Record<PlanCode, number> = {
   ENTERPRISE: 3,
 };
 
+const PHARMACY_STATUSES: readonly PharmacyStatus[] = [
+  'PENDING_KYC',
+  'KYC_SUBMITTED',
+  'ACTIVE',
+  'REJECTED',
+  'SUSPENDED',
+];
+
 export const UNAUTHENTICATED_SESSION: PortalSession = {
   authenticated: false,
   role: null,
@@ -29,7 +51,24 @@ export const UNAUTHENTICATED_SESSION: PortalSession = {
   tokenScope: 'full',
   permissions: [],
   pharmacyName: 'Your pharmacy',
+  staffName: '',
+  staffId: null,
+  pharmacyId: null,
 };
+
+function fixture(
+  session: Omit<PortalSession, 'staffName' | 'staffId' | 'pharmacyId'> & {
+    staffName?: string;
+  },
+): PortalSession {
+  const authenticated = session.authenticated;
+  return {
+    ...session,
+    staffName: session.staffName ?? (authenticated ? 'Staff' : ''),
+    staffId: authenticated ? 'fixture-staff' : null,
+    pharmacyId: authenticated ? 'fixture-pharmacy' : null,
+  };
+}
 
 export function planDisplayLabel(plan: PlanCode): string {
   switch (plan) {
@@ -83,9 +122,43 @@ export function hasPermission(
   return session.permissions.includes(permission);
 }
 
+export function mapPharmacyRole(role: unknown): PharmacyRole {
+  if (role === 'pharmacy_owner' || role === 'owner') {
+    return 'pharmacy_owner';
+  }
+  return 'pharmacy_staff';
+}
+
+export function mapPlanCode(plan: unknown): PlanCode | null {
+  if (
+    plan === 'FREE' ||
+    plan === 'STARTER' ||
+    plan === 'RETAIL_PRO' ||
+    plan === 'ENTERPRISE'
+  ) {
+    return plan;
+  }
+  if (plan === 'GROWTH') {
+    return 'RETAIL_PRO';
+  }
+  if (plan === 'PRO') {
+    return 'ENTERPRISE';
+  }
+  return null;
+}
+
+export function mapPharmacyStatus(status: unknown): PharmacyStatus | null {
+  if (typeof status !== 'string') {
+    return null;
+  }
+  return PHARMACY_STATUSES.includes(status as PharmacyStatus)
+    ? (status as PharmacyStatus)
+    : null;
+}
+
 export const SESSION_FIXTURES = {
   unauthenticated: UNAUTHENTICATED_SESSION,
-  'owner-free': {
+  'owner-free': fixture({
     authenticated: true,
     role: 'pharmacy_owner',
     plan: 'FREE',
@@ -93,8 +166,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['*'],
     pharmacyName: 'Your pharmacy',
-  },
-  'owner-retail-pro': {
+    staffName: 'Owner',
+  }),
+  'owner-retail-pro': fixture({
     authenticated: true,
     role: 'pharmacy_owner',
     plan: 'RETAIL_PRO',
@@ -102,8 +176,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['*'],
     pharmacyName: 'Your pharmacy',
-  },
-  'owner-enterprise': {
+    staffName: 'Owner',
+  }),
+  'owner-enterprise': fixture({
     authenticated: true,
     role: 'pharmacy_owner',
     plan: 'ENTERPRISE',
@@ -111,8 +186,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['*'],
     pharmacyName: 'Your pharmacy',
-  },
-  cashier: {
+    staffName: 'Owner',
+  }),
+  cashier: fixture({
     authenticated: true,
     role: 'pharmacy_staff',
     plan: 'FREE',
@@ -120,8 +196,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['pos:sell'],
     pharmacyName: 'Your pharmacy',
-  },
-  'staff-star': {
+    staffName: 'Cashier',
+  }),
+  'staff-star': fixture({
     authenticated: true,
     role: 'pharmacy_staff',
     plan: 'FREE',
@@ -129,8 +206,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['*'],
     pharmacyName: 'Your pharmacy',
-  },
-  'staff-active': {
+    staffName: 'Staff',
+  }),
+  'staff-active': fixture({
     authenticated: true,
     role: 'pharmacy_staff',
     plan: 'STARTER',
@@ -138,8 +216,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['staff:manage'],
     pharmacyName: 'Your pharmacy',
-  },
-  'owner-pending-kyc': {
+    staffName: 'Staff',
+  }),
+  'owner-pending-kyc': fixture({
     authenticated: true,
     role: 'pharmacy_owner',
     plan: 'FREE',
@@ -147,8 +226,9 @@ export const SESSION_FIXTURES = {
     tokenScope: 'full',
     permissions: ['*'],
     pharmacyName: 'Your pharmacy',
-  },
-  'pos-scope': {
+    staffName: 'Owner',
+  }),
+  'pos-scope': fixture({
     authenticated: true,
     role: 'pharmacy_staff',
     plan: 'FREE',
@@ -156,7 +236,18 @@ export const SESSION_FIXTURES = {
     tokenScope: 'pos',
     permissions: ['pos:sell'],
     pharmacyName: 'Your pharmacy',
-  },
+    staffName: 'Cashier',
+  }),
+  'owner-suspended': fixture({
+    authenticated: true,
+    role: 'pharmacy_owner',
+    plan: 'FREE',
+    pharmacyStatus: 'SUSPENDED',
+    tokenScope: 'full',
+    permissions: ['*'],
+    pharmacyName: 'Your pharmacy',
+    staffName: 'Owner',
+  }),
 } as const satisfies Record<string, PortalSession>;
 
 export type SessionFixtureName = keyof typeof SESSION_FIXTURES;

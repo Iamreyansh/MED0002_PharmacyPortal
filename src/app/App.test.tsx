@@ -124,7 +124,9 @@ describe('permission and plan nav', () => {
       0,
     );
     expect(screen.queryByRole('link', { name: 'Roles' })).toBeNull();
-    expect(screen.getByRole('link', { name: 'Sign out' })).toBeTruthy();
+    expect(
+      screen.getAllByRole('button', { name: 'Sign out' }).length,
+    ).toBeGreaterThan(0);
   });
 
   it('stays on POS for a POS-scoped token', () => {
@@ -136,7 +138,9 @@ describe('permission and plan nav', () => {
   it('allows nested POS paths for a POS-scoped token', () => {
     renderApp('/pos/cart', SESSION_FIXTURES['pos-scope']);
     expect(screen.queryByTestId('not-found')).toBeNull();
-    expect(screen.getByRole('link', { name: 'Sign out' })).toBeTruthy();
+    expect(
+      screen.getAllByRole('button', { name: 'Sign out' }).length,
+    ).toBeGreaterThan(0);
   });
 
   it('shows upgrade on owner locks and ask-owner copy for staff', () => {
@@ -178,21 +182,26 @@ describe('degraded remotes and Todo retirement', () => {
 });
 
 describe('App default session', () => {
-  it('renders with the env fixture when session is omitted', () => {
+  it('renders login when session is omitted', () => {
     render(
       <MemoryRouter>
         <App />
       </MemoryRouter>,
     );
-    expect(screen.getByTestId('portal-home')).toBeTruthy();
+    expect(screen.getByTestId('login-page')).toBeTruthy();
   });
 
-  it('renders login destinations and keeps POS scope off those routes', () => {
-    renderApp('/login', SESSION_FIXTURES['owner-free']);
+  it('renders login destinations for anonymous staff', () => {
+    renderApp('/login', SESSION_FIXTURES.unauthenticated);
     expect(screen.getByTestId('login-page')).toBeTruthy();
     cleanup();
-    renderApp('/pos-login', SESSION_FIXTURES['pos-scope']);
+    renderApp('/pos-login', SESSION_FIXTURES.unauthenticated);
     expect(screen.getByTestId('pos-login-page')).toBeTruthy();
+  });
+
+  it('redirects an authenticated user away from login', () => {
+    renderApp('/login', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
   });
 
   it('routes an expired stored session to login', async () => {
@@ -216,7 +225,7 @@ describe('App default session', () => {
           ),
       ),
     );
-    renderApp('/', SESSION_FIXTURES['owner-free']);
+    renderApp('/');
     await waitFor(() => {
       expect(screen.getByTestId('login-page')).toBeTruthy();
     });

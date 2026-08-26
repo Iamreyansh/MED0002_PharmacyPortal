@@ -8,29 +8,29 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
-| Phase 1 | 27    | 7                | 0                |
+| Phase 1 | 27    | 13               | 0                |
 | Phase 2 | 21    | 0                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 7                | 0                |
+| Total   | 70    | 13               | 0                |
 
 ## Phase 1
 
 | Epic      | Story                                                                                                    | Title                                               | Repo    | Status           | Completed  | Notes                      |
 | --------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------- | ---------------- | ---------- | -------------------------- |
 | EPIC-P001 | [STORY-P001-001](./EPIC-P001-portal-shell/STORY-P001-001-app-chrome-home.md)                             | App chrome and home shortcuts                       | MED0002 | staging-deployed | 2026-08-26 | Host chrome; remotes later |
-| EPIC-P001 | [STORY-P001-002](./EPIC-P001-portal-shell/STORY-P001-002-permission-plan-nav.md)                         | Permission- and plan-aware navigation               | MED0002 | staging-deployed | 2026-08-26 | Session stub until P003    |
+| EPIC-P001 | [STORY-P001-002](./EPIC-P001-portal-shell/STORY-P001-002-permission-plan-nav.md)                         | Permission- and plan-aware navigation               | MED0002 | staging-deployed | 2026-08-26 | Session from P003      |
 | EPIC-P001 | [STORY-P001-003](./EPIC-P001-portal-shell/STORY-P001-003-remote-loader-degraded.md)                      | Remote loading and degraded MFE behaviour           | MED0002 | staging-deployed | 2026-08-26 | MfeOutlet wrapper          |
 | EPIC-P001 | [STORY-P001-004](./EPIC-P001-portal-shell/STORY-P001-004-retire-todo-product-nav.md)                     | Retire Todo from product navigation                 | MED0002 | staging-deployed | 2026-08-26 | Demo flag default false    |
 | EPIC-P002 | [STORY-P002-001](./EPIC-P002-host-api-capabilities/STORY-P002-001-api-request-facade.md)                 | Host API request facade                             | MED0002 | staging-deployed | 2026-08-26 | Fetch client; envelopes |
 | EPIC-P002 | [STORY-P002-002](./EPIC-P002-host-api-capabilities/STORY-P002-002-auth-refresh-intercept.md)             | JWT attach, refresh single-flight, and 401 recovery | MED0002 | staging-deployed | 2026-08-26 | Login UI remains P003   |
 | EPIC-P002 | [STORY-P002-003](./EPIC-P002-host-api-capabilities/STORY-P002-003-errors-idempotency-telemetry.md)       | Error mapping, idempotency keys, retries, telemetry | MED0002 | staging-deployed | 2026-08-26 | PII-safe api_error      |
-| EPIC-P003 | [STORY-P003-001](./EPIC-P003-auth-session/STORY-P003-001-pharmacy-login.md)                              | Pharmacy staff login                                | MED0002 | pending          |            |                            |
-| EPIC-P003 | [STORY-P003-002](./EPIC-P003-auth-session/STORY-P003-002-logout-refresh-me.md)                           | Logout, logout-all, and session bootstrap           | MED0002 | pending          |            |                            |
-| EPIC-P003 | [STORY-P003-003](./EPIC-P003-auth-session/STORY-P003-003-sessions-revoke.md)                             | Active sessions list and revoke                     | MED0002 | pending          |            |                            |
-| EPIC-P003 | [STORY-P003-004](./EPIC-P003-auth-session/STORY-P003-004-switch-pharmacy.md)                             | Multi-pharmacy context switch                       | MED0002 | pending          |            |                            |
-| EPIC-P003 | [STORY-P003-005](./EPIC-P003-auth-session/STORY-P003-005-pos-pin-shell.md)                               | POS PIN login and POS-scoped shell                  | MED0002 | pending          |            |                            |
-| EPIC-P003 | [STORY-P003-006](./EPIC-P003-auth-session/STORY-P003-006-route-guards.md)                                | Route guards and onboarding gate                    | MED0002 | pending          |            |                            |
+| EPIC-P003 | [STORY-P003-001](./EPIC-P003-auth-session/STORY-P003-001-pharmacy-login.md)                              | Pharmacy staff login                                | MED0002 | staging-deployed | 2026-08-26 | Host login until mfe-auth |
+| EPIC-P003 | [STORY-P003-002](./EPIC-P003-auth-session/STORY-P003-002-logout-refresh-me.md)                           | Logout, logout-all, and session bootstrap           | MED0002 | staging-deployed | 2026-08-26 | Me + header session menu |
+| EPIC-P003 | [STORY-P003-003](./EPIC-P003-auth-session/STORY-P003-003-sessions-revoke.md)                             | Active sessions list and revoke                     | MED0002 | staging-deployed | 2026-08-26 | Host /sessions           |
+| EPIC-P003 | [STORY-P003-004](./EPIC-P003-auth-session/STORY-P003-004-switch-pharmacy.md)                             | Multi-pharmacy context switch                       | MED0002 | staging-deployed | 2026-08-26 | Header switcher          |
+| EPIC-P003 | [STORY-P003-005](./EPIC-P003-auth-session/STORY-P003-005-pos-pin-shell.md)                               | POS PIN login and POS-scoped shell                  | MED0002 | staging-deployed | 2026-08-26 | PIN keypad + POS allowlist |
+| EPIC-P003 | [STORY-P003-006](./EPIC-P003-auth-session/STORY-P003-006-route-guards.md)                                | Route guards and onboarding gate                    | MED0002 | staging-deployed | 2026-08-26 | Auth/status/scope guards |
 | EPIC-P004 | [STORY-P004-001](./EPIC-P004-onboarding-kyc/STORY-P004-001-register.md)                                  | Pharmacy self-registration                          | MED0003 | pending          |            |                            |
 | EPIC-P004 | [STORY-P004-002](./EPIC-P004-onboarding-kyc/STORY-P004-002-verify-email-otp.md)                          | Registration email OTP verify and resend            | MED0003 | pending          |            |                            |
 | EPIC-P004 | [STORY-P004-003](./EPIC-P004-onboarding-kyc/STORY-P004-003-registration-status.md)                       | Registration status gate                            | MED0003 | pending          |            |                            |

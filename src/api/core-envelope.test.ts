@@ -5,11 +5,12 @@ import { PORTAL_ERROR } from '@/api/codes';
 describe('parseCoreEnvelope', () => {
   it('maps a success envelope to ok data', () => {
     const result = parseCoreEnvelope<{ x: number }>(
-      JSON.stringify({ success: true, data: { x: 1 } }),
+      JSON.stringify({ success: true, data: { x: 1 }, meta: { has_next: true } }),
       200,
     );
     expect(result.ok).toBe(true);
     expect(result.data.x).toBe(1);
+    expect(result.details).toEqual({ has_next: true });
   });
 
   it('maps PLAN_FEATURE_LOCKED without rewriting the code', () => {

@@ -2,7 +2,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { render, type RenderOptions } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { App } from '@/app/App';
-import type { PortalSession } from '@/session/session';
+import type { PharmacyOption, PortalSession } from '@/session/session';
 
 export function setViewportWidth(width: number): void {
   Object.defineProperty(window, 'innerWidth', {
@@ -16,13 +16,14 @@ export function setViewportWidth(width: number): void {
 export function renderApp(
   path = '/',
   session?: PortalSession,
-  options?: Omit<RenderOptions, 'wrapper'>,
+  options?: Omit<RenderOptions, 'wrapper'> & { pharmacies?: PharmacyOption[] },
 ) {
+  const { pharmacies, ...renderOptions } = options ?? {};
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <App session={session} />
+      <App session={session} pharmacies={pharmacies} />
     </MemoryRouter>,
-    options,
+    renderOptions,
   );
 }
 

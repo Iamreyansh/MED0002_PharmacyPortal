@@ -1,9 +1,11 @@
 import { useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { flushSync } from 'react-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { LockGlyph } from '@/layout/icons';
 import { NAV_GROUP_LABEL } from '@/navigation/nav-catalog';
 import { groupNavItems, type ResolvedNavItem } from '@/navigation/resolve-nav';
-import { useSession } from '@/session/SessionProvider';
+import { performLogout } from '@/session/logout';
+import { useSession, useSessionStore } from '@/session/SessionProvider';
 
 export type NavItemControlProps = {
   item: ResolvedNavItem;
@@ -80,6 +82,8 @@ export function NavItemControl({ item, variant }: NavItemControlProps) {
 export function SidebarNav({ items }: { items: readonly ResolvedNavItem[] }) {
   const groups = groupNavItems(items);
   const session = useSession();
+  const { clearSession } = useSessionStore();
+  const navigate = useNavigate();
 
   return (
     <nav
@@ -101,9 +105,20 @@ export function SidebarNav({ items }: { items: readonly ResolvedNavItem[] }) {
         </section>
       ))}
       {session.tokenScope === 'pos' ? (
-        <Link className="pos-logout" to="/login">
+        <button
+          type="button"
+          className="pos-logout"
+          onClick={() => {
+            void performLogout().then((dest) => {
+              flushSync(() => {
+                clearSession();
+              });
+              navigate(dest, { replace: true });
+            });
+          }}
+        >
           Sign out
-        </Link>
+        </button>
       ) : null}
     </nav>
   );

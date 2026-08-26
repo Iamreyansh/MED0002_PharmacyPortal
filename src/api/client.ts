@@ -15,6 +15,7 @@ import {
   getTokens,
   type TokenSnapshot,
 } from '@/api/token-store';
+import { clearSessionSnapshot } from '@/session/snapshot';
 
 export const REQUEST_TIMEOUT_MS = 30_000;
 export const ACCESS_REFRESH_SKEW_MS = 30_000;
@@ -148,6 +149,7 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
   const die = () => {
     const scope = getTokens().tokenScope;
     clearTokens();
+    clearSessionSnapshot();
     notifyDeath(scope === 'pos' ? '/pos-login' : '/login');
   };
 

@@ -36,11 +36,16 @@ export function parseCoreEnvelope<T = unknown>(
   const envelope = parsed as {
     success: unknown;
     data?: unknown;
+    meta?: unknown;
     error?: CoreErrorBody | null;
   };
 
   if (envelope.success === true) {
-    return { ok: true, status, data: envelope.data as T };
+    const meta =
+      envelope.meta && typeof envelope.meta === 'object'
+        ? (envelope.meta as Record<string, unknown>)
+        : undefined;
+    return { ok: true, status, data: envelope.data as T, details: meta };
   }
 
   if (envelope.success !== false) {

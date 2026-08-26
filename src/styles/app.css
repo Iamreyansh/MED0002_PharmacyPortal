@@ -368,6 +368,238 @@ a,
   padding: 0.5rem 0.65rem;
   color: var(--color-text);
   font-weight: 600;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+}
+
+.app-shell--auth {
+  grid-template-columns: 1fr;
+  grid-template-rows: var(--header-height) 1fr;
+  grid-template-areas:
+    'header'
+    'main';
+}
+
+.app-header__pharmacy {
+  margin: 0 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.session-menu,
+.switcher {
+  position: relative;
+}
+
+.session-menu__trigger,
+.switcher__trigger {
+  min-height: var(--touch);
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 600;
+}
+
+.session-menu__list,
+.switcher__list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 20;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-width: 12rem;
+}
+
+.switcher__list {
+  right: auto;
+  left: 0;
+}
+
+.session-menu__list button,
+.switcher__list button {
+  display: block;
+  width: 100%;
+  min-height: var(--touch);
+  text-align: left;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  padding: 0 0.65rem;
+  border-radius: var(--radius);
+}
+
+.session-menu__list button:hover,
+.switcher__list button:hover {
+  background: #f0fdf4;
+}
+
+.auth-page {
+  max-width: 28rem;
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.field input {
+  min-height: var(--touch);
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font: inherit;
+}
+
+.field-error,
+.form-error {
+  color: var(--color-error);
+  font-weight: 500;
+  margin: 0;
+}
+
+.auth-form > button[type='submit'] {
+  min-height: var(--touch);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.auth-form > button[type='submit']:disabled {
+  opacity: 0.7;
+}
+
+.pin-field {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+
+.pin-display {
+  letter-spacing: 0.4em;
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 0 0.75rem;
+}
+
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.pin-keypad button {
+  min-height: var(--touch);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 700;
+}
+
+.toast-region {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.toast {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--color-text);
+  color: #fff;
+  border-radius: var(--radius);
+}
+
+.banner {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  margin: 0 0 1rem;
+}
+
+.banner--warn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+.pager {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.pager button,
+.data-table button,
+.dialog__actions button {
+  min-height: var(--touch);
+  padding: 0 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 600;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(15 23 42 / 40%);
+  display: grid;
+  place-items: center;
+  z-index: 40;
+}
+
+.dialog {
+  background: var(--color-surface);
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  max-width: 24rem;
+  width: calc(100% - 2rem);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

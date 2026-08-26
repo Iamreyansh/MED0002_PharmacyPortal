@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P003` |
 | Phase | 1 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0002` |
 | Primary owner | `mfe-auth` |
 | Story count | 6 |
@@ -40,12 +40,12 @@ Pharmacy login, POS PIN, switch-pharmacy, sessions, logout, and route guards. Ho
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P003-001](./STORY-P003-001-pharmacy-login.md) | Pharmacy staff login | MED0002 | mfe-auth | FREE+ | P0 | M | pending |
-| [STORY-P003-002](./STORY-P003-002-logout-refresh-me.md) | Logout, logout-all, and session bootstrap | MED0002 | mfe-auth | FREE+ | P0 | M | pending |
-| [STORY-P003-003](./STORY-P003-003-sessions-revoke.md) | Active sessions list and revoke | MED0002 | mfe-auth | FREE+ | P0 | M | pending |
-| [STORY-P003-004](./STORY-P003-004-switch-pharmacy.md) | Multi-pharmacy context switch | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P003-005](./STORY-P003-005-pos-pin-shell.md) | POS PIN login and POS-scoped shell | MED0002 | mfe-auth | FREE+ | P0 | M | pending |
-| [STORY-P003-006](./STORY-P003-006-route-guards.md) | Route guards and onboarding gate | MED0002 | host | FREE+ | P0 | M | pending |
+| [STORY-P003-001](./STORY-P003-001-pharmacy-login.md) | Pharmacy staff login | MED0002 | mfe-auth | FREE+ | P0 | M | staging-deployed |
+| [STORY-P003-002](./STORY-P003-002-logout-refresh-me.md) | Logout, logout-all, and session bootstrap | MED0002 | mfe-auth | FREE+ | P0 | M | staging-deployed |
+| [STORY-P003-003](./STORY-P003-003-sessions-revoke.md) | Active sessions list and revoke | MED0002 | mfe-auth | FREE+ | P0 | M | staging-deployed |
+| [STORY-P003-004](./STORY-P003-004-switch-pharmacy.md) | Multi-pharmacy context switch | MED0002 | host | FREE+ | P0 | M | staging-deployed |
+| [STORY-P003-005](./STORY-P003-005-pos-pin-shell.md) | POS PIN login and POS-scoped shell | MED0002 | mfe-auth | FREE+ | P0 | M | staging-deployed |
+| [STORY-P003-006](./STORY-P003-006-route-guards.md) | Route guards and onboarding gate | MED0002 | host | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 
