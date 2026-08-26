@@ -1,14 +1,16 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from '@/app/App';
 import { renderApp, setViewportWidth } from '@/test/render';
 import { SESSION_FIXTURES } from '@/session/session';
 import { MemoryRouter } from 'react-router-dom';
+import { setTokens } from '@/api/token-store';
 
 afterEach(() => {
   cleanup();
   vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
   setViewportWidth(1280);
 });
 
@@ -183,5 +185,40 @@ describe('App default session', () => {
       </MemoryRouter>,
     );
     expect(screen.getByTestId('portal-home')).toBeTruthy();
+  });
+
+  it('renders login destinations and keeps POS scope off those routes', () => {
+    renderApp('/login', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('login-page')).toBeTruthy();
+    cleanup();
+    renderApp('/pos-login', SESSION_FIXTURES['pos-scope']);
+    expect(screen.getByTestId('pos-login-page')).toBeTruthy();
+  });
+
+  it('routes an expired stored session to login', async () => {
+    setTokens({
+      accessToken: 'expired',
+      refreshToken: 'expired-rt',
+      tokenType: 'Bearer',
+      tokenScope: 'full',
+      accessTokenExpiresAt: 0,
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              success: false,
+              error: { code: 'UNAUTHORIZED' },
+            }),
+            { status: 401 },
+          ),
+      ),
+    );
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    await waitFor(() => {
+      expect(screen.getByTestId('login-page')).toBeTruthy();
+    });
   });
 });

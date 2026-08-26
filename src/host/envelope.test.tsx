@@ -1,15 +1,17 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_HOST_CONTEXT,
   buildHostContext,
   useHostCapabilities,
   useMfeEnvelope,
 } from '@/host';
+import { setTokens } from '@/api/token-store';
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
 });
 
 function CapProbe() {
@@ -20,10 +22,11 @@ function CapProbe() {
         type="button"
         onClick={() => {
           caps.navigate?.('/probed');
-          void caps.api?.request({ path: '/noop' }).then((res) => {
+          void caps.api?.request({ path: '/api/v1/auth/me' }).then((res) => {
             const el = document.querySelector('[data-testid="api-status"]');
             if (el) el.textContent = String(res.status);
           });
+          caps.api?.createIdempotencyKey?.();
           caps.telemetry?.track('probe');
           caps.events?.emit('probe');
           caps.events?.on('probe', () => undefined)();
@@ -62,7 +65,16 @@ describe('host envelope helpers', () => {
     expect(ctx.locale).toBe('en-IN');
   });
 
-  it('exposes router-backed navigate and stub capabilities', async () => {
+  it('exposes router-backed navigate and a live API facade', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ success: true, data: { x: 1 } }), {
+            status: 200,
+          }),
+      ),
+    );
     const { default: userEvent } = await import('@testing-library/user-event');
     const user = userEvent.setup();
     render(
@@ -72,7 +84,7 @@ describe('host envelope helpers', () => {
     );
     await user.click(screen.getByTestId('nav-probe'));
     await waitFor(() => {
-      expect(screen.getByTestId('api-status').textContent).toBe('501');
+      expect(screen.getByTestId('api-status').textContent).toBe('200');
     });
   });
 
@@ -92,5 +104,27 @@ describe('host envelope helpers', () => {
       </MemoryRouter>,
     );
     expect(screen.getByTestId('envelope').textContent).toContain('todo:read');
+  });
+
+  it('does not put refresh_token on the MFE envelope', () => {
+    setTokens({
+      accessToken: 'access',
+      refreshToken: 'secret-refresh-token',
+      tokenType: 'Bearer',
+      tokenScope: 'full',
+      accessTokenExpiresAt: null,
+    });
+    function Probe() {
+      const data = useMfeEnvelope({ title: 'x' });
+      return <pre data-testid="raw">{JSON.stringify(data)}</pre>;
+    }
+    render(
+      <MemoryRouter>
+        <Probe />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('raw').textContent).not.toContain(
+      'secret-refresh-token',
+    );
   });
 });

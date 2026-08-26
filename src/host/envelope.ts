@@ -6,6 +6,9 @@ import {
 } from '@medmate/contracts';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { hostApi } from '@/api/client';
+import { createIdempotencyKey } from '@/api/idempotency';
+import { track } from '@/api/telemetry';
 
 export const DEFAULT_HOST_CONTEXT: HostContext = {
   hostId: 'pharmacy-portal',
@@ -34,18 +37,15 @@ export function useHostCapabilities(): HostCapabilities {
         navigate(path);
       },
       telemetry: {
-        track: () => undefined,
+        track,
       },
       events: {
         emit: () => undefined,
         on: () => () => undefined,
       },
       api: {
-        request: async () => ({
-          ok: false,
-          status: 501,
-          data: null as never,
-        }),
+        request: hostApi.request,
+        createIdempotencyKey,
       },
     }),
     [navigate],

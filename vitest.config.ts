@@ -33,6 +33,7 @@ export default defineConfig({
         'src/features/**/types.ts',
         'src/mfe/index.ts',
         'src/host/index.ts',
+        'src/api/index.ts',
       ],
     },
   },

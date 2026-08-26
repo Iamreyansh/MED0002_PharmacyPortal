@@ -12,3 +12,4 @@ config/federation.ts   # shared React singleton versions
 
 Remotes are loaded by stable manifest URL (`VITE_REMOTE_<NAME>_URL`) via `RemoteLoader`.
 All remote props flow through a single `data` envelope mirrored from `@medmate/contracts`.
+The host owns the Core fetch client (`VITE_API_BASE_URL` + `/api/v1`); remotes call `data.capabilities.api.request` and never store tokens.

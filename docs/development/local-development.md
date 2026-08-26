@@ -21,6 +21,8 @@ pnpm dev
 
 The pharmacy shell does not require a Todo remote. Todo is **demo-only**.
 
+Set `VITE_API_BASE_URL` to the Core origin (for example `http://localhost:8080`) when calling live `/api/v1` APIs. Leave it unset to use same-origin paths.
+
 ## Optional demo Todo remote
 
 Terminal A — MED0003:
@@ -50,3 +52,4 @@ pnpm test:e2e
 
 Default specs assert pharmacy chrome (`portal-home`, `portal-nav`) and that
 product navigation has no `/todos` link. They do not require a live Todo MFE.
+An expired stored session is routed to the login destination.

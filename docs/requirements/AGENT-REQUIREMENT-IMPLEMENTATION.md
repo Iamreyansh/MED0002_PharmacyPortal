@@ -8,11 +8,11 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
-| Phase 1 | 27    | 4                | 0                |
+| Phase 1 | 27    | 7                | 0                |
 | Phase 2 | 21    | 0                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 4                | 0                |
+| Total   | 70    | 7                | 0                |
 
 ## Phase 1
 
@@ -22,9 +22,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P001 | [STORY-P001-002](./EPIC-P001-portal-shell/STORY-P001-002-permission-plan-nav.md)                         | Permission- and plan-aware navigation               | MED0002 | staging-deployed | 2026-08-26 | Session stub until P003    |
 | EPIC-P001 | [STORY-P001-003](./EPIC-P001-portal-shell/STORY-P001-003-remote-loader-degraded.md)                      | Remote loading and degraded MFE behaviour           | MED0002 | staging-deployed | 2026-08-26 | MfeOutlet wrapper          |
 | EPIC-P001 | [STORY-P001-004](./EPIC-P001-portal-shell/STORY-P001-004-retire-todo-product-nav.md)                     | Retire Todo from product navigation                 | MED0002 | staging-deployed | 2026-08-26 | Demo flag default false    |
-| EPIC-P002 | [STORY-P002-001](./EPIC-P002-host-api-capabilities/STORY-P002-001-api-request-facade.md)                 | Host API request facade                             | MED0002 | pending          |            |                            |
-| EPIC-P002 | [STORY-P002-002](./EPIC-P002-host-api-capabilities/STORY-P002-002-auth-refresh-intercept.md)             | JWT attach, refresh single-flight, and 401 recovery | MED0002 | pending          |            |                            |
-| EPIC-P002 | [STORY-P002-003](./EPIC-P002-host-api-capabilities/STORY-P002-003-errors-idempotency-telemetry.md)       | Error mapping, idempotency keys, retries, telemetry | MED0002 | pending          |            |                            |
+| EPIC-P002 | [STORY-P002-001](./EPIC-P002-host-api-capabilities/STORY-P002-001-api-request-facade.md)                 | Host API request facade                             | MED0002 | staging-deployed | 2026-08-26 | Fetch client; envelopes |
+| EPIC-P002 | [STORY-P002-002](./EPIC-P002-host-api-capabilities/STORY-P002-002-auth-refresh-intercept.md)             | JWT attach, refresh single-flight, and 401 recovery | MED0002 | staging-deployed | 2026-08-26 | Login UI remains P003   |
+| EPIC-P002 | [STORY-P002-003](./EPIC-P002-host-api-capabilities/STORY-P002-003-errors-idempotency-telemetry.md)       | Error mapping, idempotency keys, retries, telemetry | MED0002 | staging-deployed | 2026-08-26 | PII-safe api_error      |
 | EPIC-P003 | [STORY-P003-001](./EPIC-P003-auth-session/STORY-P003-001-pharmacy-login.md)                              | Pharmacy staff login                                | MED0002 | pending          |            |                            |
 | EPIC-P003 | [STORY-P003-002](./EPIC-P003-auth-session/STORY-P003-002-logout-refresh-me.md)                           | Logout, logout-all, and session bootstrap           | MED0002 | pending          |            |                            |
 | EPIC-P003 | [STORY-P003-003](./EPIC-P003-auth-session/STORY-P003-003-sessions-revoke.md)                             | Active sessions list and revoke                     | MED0002 | pending          |            |                            |

@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P002` |
 | Phase | 1 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0002` |
 | Primary owner | `host` |
 | Story count | 3 |
@@ -39,9 +39,9 @@ Replace the 501 stub `capabilities.api.request` with a Core-compliant client: en
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P002-001](./STORY-P002-001-api-request-facade.md) | Host API request facade | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P002-002](./STORY-P002-002-auth-refresh-intercept.md) | JWT attach, refresh single-flight, and 401 recovery | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P002-003](./STORY-P002-003-errors-idempotency-telemetry.md) | Error mapping, idempotency keys, retries, telemetry | MED0002 | host | FREE+ | P0 | M | pending |
+| [STORY-P002-001](./STORY-P002-001-api-request-facade.md) | Host API request facade | MED0002 | host | FREE+ | P0 | M | staging-deployed |
+| [STORY-P002-002](./STORY-P002-002-auth-refresh-intercept.md) | JWT attach, refresh single-flight, and 401 recovery | MED0002 | host | FREE+ | P0 | M | staging-deployed |
+| [STORY-P002-003](./STORY-P002-003-errors-idempotency-telemetry.md) | Error mapping, idempotency keys, retries, telemetry | MED0002 | host | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 
