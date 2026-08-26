@@ -14,9 +14,12 @@ export default defineConfig({
     url: 'http://127.0.0.1:5173',
     reuseExistingServer: !process.env.CI,
     env: {
-      VITE_REMOTE_TODO_URL:
-        process.env.VITE_REMOTE_TODO_URL ??
-        'https://todo.mfe.nammamedmate.com/mf-manifest.json',
+      VITE_SESSION_FIXTURE: 'owner-free',
+      // Do not register remotes: federation auto-init of a failing
+      // manifest blocks host bootstrap.
+      VITE_REMOTE_TODO_URL: '',
+      VITE_REMOTE_POS_URL: '',
+      VITE_ENABLE_DEMO_REMOTES: '',
     },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],

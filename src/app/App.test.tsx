@@ -1,80 +1,187 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useEffect } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from '@/app/App';
-import { listRemoteRoutes } from '@/app/routes';
-import { MFE_CONTRACT_VERSION } from '@medmate/contracts';
+import { renderApp, setViewportWidth } from '@/test/render';
+import { SESSION_FIXTURES } from '@/session/session';
+import { MemoryRouter } from 'react-router-dom';
 
 afterEach(() => {
   cleanup();
   vi.unstubAllEnvs();
+  setViewportWidth(1280);
 });
 
-describe('App shell', () => {
-  it('renders home and lists registry remotes', async () => {
+describe('App chrome', () => {
+  it('renders landmarks, home shortcuts, and no Todo nav', async () => {
     const user = userEvent.setup();
-    vi.stubEnv('VITE_REMOTE_TODO_URL', 'https://example.test/mf-manifest.json');
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <App />
-      </MemoryRouter>,
-    );
+    setViewportWidth(1280);
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
+    expect(screen.getByTestId('portal-nav')).toBeTruthy();
+    expect(screen.getByRole('banner')).toBeTruthy();
+    expect(screen.getByRole('main')).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeTruthy();
+    expect(screen.queryByRole('link', { name: 'Todos' })).toBeNull();
+    expect(screen.queryByRole('link', { name: /todos/i })).toBeNull();
     expect(
-      screen.getByRole('heading', { name: 'Pharmacy Portal' }),
-    ).toBeTruthy();
-    expect(screen.getByTestId('configured-remotes')).toHaveTextContent('todo');
-    expect(MFE_CONTRACT_VERSION).toBe('1.0.0');
-    expect(listRemoteRoutes().map((r) => r.name)).toEqual(['todo']);
-    await user.click(screen.getByRole('link', { name: 'Open Todos MFE' }));
+      screen
+        .getByRole('navigation', { name: 'Primary' })
+        .querySelector('a[href="/todos"]'),
+    ).toBeNull();
+    expect(
+      screen.getAllByRole('heading', { name: 'Counter' }).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: 'POS' })[0]).toHaveAttribute(
+      'href',
+      '/pos',
+    );
+    await user.tab();
+    await user.tab();
+    expect(document.activeElement).toBeTruthy();
+    expect(
+      document.activeElement === document.body ||
+        (document.activeElement instanceof HTMLElement &&
+          document.activeElement.matches(':focus')),
+    ).toBe(true);
   });
 
-  it('renders todos page route from the registry', () => {
-    vi.stubEnv('VITE_REMOTE_TODO_URL', 'https://example.test/mf-manifest.json');
-    render(
-      <MemoryRouter initialEntries={['/todos']}>
-        <App />
-      </MemoryRouter>,
-    );
-    expect(screen.getByRole('heading', { name: 'Todos' })).toBeTruthy();
-    expect(screen.getByTestId('host-todo-count')).toHaveTextContent('1');
+  it('uses a bottom nav under 768px and a menu under 1024px', async () => {
+    const user = userEvent.setup();
+    setViewportWidth(375);
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('portal-bottom-nav')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Open navigation' }));
+    expect(
+      screen.getByRole('button', { name: 'Close navigation' }),
+    ).toBeTruthy();
+  });
+
+  it('collapses the sidebar on tablet widths', async () => {
+    const user = userEvent.setup();
+    setViewportWidth(800);
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    const open = screen.getByRole('button', { name: 'Open navigation' });
+    await user.click(open);
+    expect(
+      screen.getByRole('button', { name: 'Close navigation' }),
+    ).toBeTruthy();
   });
 });
 
-describe('TodosPage host envelope', () => {
-  it('invokes host callbacks from a fake remote', async () => {
+describe('permission and plan nav', () => {
+  it('omits Roles for cashier and Settlements for staff', () => {
+    renderApp('/', SESSION_FIXTURES.cashier);
+    expect(screen.queryByRole('link', { name: 'Roles' })).toBeNull();
+
+    cleanup();
+    renderApp('/', SESSION_FIXTURES['staff-star']);
+    expect(screen.queryByRole('link', { name: 'Settlements' })).toBeNull();
+  });
+
+  it('locks Khata on Free and enables Analytics on Growth', () => {
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    const locks = screen.getAllByTestId('plan-lock');
+    expect(locks.some((node) => node.textContent?.includes('Khata'))).toBe(
+      true,
+    );
+
+    cleanup();
+    renderApp('/', SESSION_FIXTURES['owner-retail-pro']);
+    expect(
+      screen.getAllByRole('link', { name: 'Analytics' }).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('moves focus to the lock explanation when a locked item is activated', async () => {
+    const user = userEvent.setup();
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    const khata = screen
+      .getAllByTestId('plan-lock')
+      .find((node) => node.textContent?.includes('Khata'));
+    expect(khata).toBeTruthy();
+    await user.click(khata!);
+    expect(
+      document.activeElement?.id.startsWith('nav-lock-khata') ||
+        document.activeElement?.textContent?.includes('Starter'),
+    ).toBe(true);
+  });
+
+  it('omits rx-quotes and shows KYC when pending KYC', () => {
+    renderApp('/', SESSION_FIXTURES['owner-pending-kyc']);
+    expect(screen.queryByRole('link', { name: 'Rx quotes' })).toBeNull();
+    expect(screen.getByRole('link', { name: 'KYC' })).toHaveAttribute(
+      'href',
+      '/onboarding/kyc',
+    );
+  });
+
+  it('keeps POS scope on /pos when settings is requested', () => {
+    renderApp('/settings/roles', SESSION_FIXTURES['pos-scope']);
+    expect(screen.getAllByRole('link', { name: 'POS' }).length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.queryByRole('link', { name: 'Roles' })).toBeNull();
+    expect(screen.getByRole('link', { name: 'Sign out' })).toBeTruthy();
+  });
+
+  it('stays on POS for a POS-scoped token', () => {
+    renderApp('/pos', SESSION_FIXTURES['pos-scope']);
+    expect(screen.getByTestId('remote-missing')).toBeTruthy();
+    expect(screen.queryByTestId('not-found')).toBeNull();
+  });
+
+  it('allows nested POS paths for a POS-scoped token', () => {
+    renderApp('/pos/cart', SESSION_FIXTURES['pos-scope']);
+    expect(screen.queryByTestId('not-found')).toBeNull();
+    expect(screen.getByRole('link', { name: 'Sign out' })).toBeTruthy();
+  });
+
+  it('shows upgrade on owner locks and ask-owner copy for staff', () => {
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(
+      screen.getAllByRole('link', { name: 'Upgrade' }).length,
+    ).toBeGreaterThan(0);
+    cleanup();
+    renderApp('/', SESSION_FIXTURES.cashier);
+    expect(screen.queryByRole('link', { name: 'Upgrade' })).toBeNull();
+  });
+});
+
+describe('degraded remotes and Todo retirement', () => {
+  it('keeps chrome when a module remote is missing', () => {
+    renderApp('/pos', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('portal-nav')).toBeTruthy();
+    expect(screen.getByTestId('remote-missing')).toBeTruthy();
+  });
+
+  it('returns not-found for /todos without the demo flag', () => {
+    vi.stubEnv('VITE_ENABLE_DEMO_REMOTES', '');
+    renderApp('/todos', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('not-found')).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Todos' })).toBeNull();
+  });
+
+  it('may mount the Todo remote when the demo flag is on', () => {
+    vi.stubEnv('VITE_ENABLE_DEMO_REMOTES', 'true');
     vi.stubEnv('VITE_REMOTE_TODO_URL', 'https://example.test/mf-manifest.json');
-    const { TodosPage } = await import('@/pages/TodosPage');
+    renderApp('/todos', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByRole('heading', { name: 'Todos' })).toBeTruthy();
+  });
+
+  it('shows not-found for unknown paths', () => {
+    renderApp('/does-not-exist', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('not-found')).toBeTruthy();
+  });
+});
+
+describe('App default session', () => {
+  it('renders with the env fixture when session is omitted', () => {
     render(
       <MemoryRouter>
-        <TodosPage
-          loadRemote={async () => ({
-            default: function Fake(props: Record<string, unknown>) {
-              const data = props.data as {
-                feature: { onChange?: (items: unknown[]) => void };
-                capabilities?: {
-                  navigate?: (path: string) => void;
-                  telemetry?: { track: (event: string) => void };
-                };
-              };
-              useEffect(() => {
-                data.feature.onChange?.([
-                  { id: '1', title: 'a', completed: false },
-                  { id: '2', title: 'b', completed: true },
-                ]);
-                data.capabilities?.navigate?.('/demo');
-                data.capabilities?.telemetry?.track('loaded');
-              }, [data]);
-              return <div data-testid="fake-todo">fake</div>;
-            },
-          })}
-        />
+        <App />
       </MemoryRouter>,
     );
-    expect(await screen.findByTestId('fake-todo')).toBeTruthy();
-    await waitFor(() => {
-      expect(screen.getByTestId('host-todo-count')).toHaveTextContent('2');
-    });
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
   });
 });

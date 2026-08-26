@@ -105,30 +105,9 @@ jobs:
         working-directory: portal
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Start local todo remote
-        id: todo
-        working-directory: MED0003_MFE
-        continue-on-error: true
-        run: |
-          set -euo pipefail
-          pnpm install --frozen-lockfile
-          pnpm --filter @medmate/todo dev &
-          echo $! > /tmp/todo-dev.pid
-          for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:5101/mf-manifest.json >/dev/null 2>&1; then
-              echo "Todo remote ready"
-              echo "url=http://127.0.0.1:5101/mf-manifest.json" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "::warning::Local todo remote did not become ready; falling back to production manifest"
-          exit 1
-
       - name: Run e2e
         working-directory: portal
         env:
-          VITE_REMOTE_TODO_URL: ${{ steps.todo.outputs.url != '' && steps.todo.outputs.url || 'https://todo.mfe.nammamedmate.com/mf-manifest.json' }}
-        run: |
-          echo "E2E remote: ${VITE_REMOTE_TODO_URL}"
-          pnpm run test:e2e
+          VITE_SESSION_FIXTURE: owner-free
+          VITE_REMOTE_POS_URL: http://127.0.0.1:9/mf-manifest.json
+        run: pnpm run test:e2e

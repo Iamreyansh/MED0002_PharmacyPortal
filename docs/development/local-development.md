@@ -5,13 +5,13 @@
 ```text
 medmate/
   MED0002_PharmacyPortal/   ← this repo
-  MED0003_MFE/              ← shared packages + Todo remote
+  MED0003_MFE/              ← shared packages + optional demo remotes
 ```
 
 `package.json` pulls `@medmate/*` via `file:../MED0003_MFE/packages/...` (and
 `@medmate/vite-config` from tooling). There is no `sync:contracts` step.
 
-## Host only (production Todo remote)
+## Host only
 
 ```bash
 cp .env.example .env
@@ -19,10 +19,9 @@ pnpm install
 pnpm dev
 ```
 
-Default `VITE_REMOTE_TODO_URL` points at
-`https://todo.mfe.nammamedmate.com/mf-manifest.json`.
+The pharmacy shell does not require a Todo remote. Todo is **demo-only**.
 
-## Multi-repo (local Todo remote)
+## Optional demo Todo remote
 
 Terminal A — MED0003:
 
@@ -30,14 +29,14 @@ Terminal A — MED0003:
 cd ../MED0003_MFE
 pnpm install
 pnpm run dev:with-host
-# prints: VITE_REMOTE_TODO_URL=http://localhost:5101/mf-manifest.json
 ```
 
 Terminal B — this repo:
 
 ```bash
 cp .env.example .env
-# set VITE_REMOTE_TODO_URL=http://localhost:5101/mf-manifest.json
+# VITE_ENABLE_DEMO_REMOTES=true
+# VITE_REMOTE_TODO_URL=http://localhost:5101/mf-manifest.json
 pnpm install
 pnpm dev
 ```
@@ -45,9 +44,9 @@ pnpm dev
 ## E2E
 
 ```bash
-# Todo remote must be reachable (local or prod URL in env)
 pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Specs require `data-testid="todo-mfe"` and fail on `remote-error` / `remote-missing`.
+Default specs assert pharmacy chrome (`portal-home`, `portal-nav`) and that
+product navigation has no `/todos` link. They do not require a live Todo MFE.

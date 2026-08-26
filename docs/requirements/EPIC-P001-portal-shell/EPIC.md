@@ -1,14 +1,14 @@
 # EPIC-P001: Portal Shell and Navigation
 
-| Attribute | Value |
-| --- | --- |
-| Epic ID | `EPIC-P001` |
-| Phase | 1 |
-| Priority | P0 |
-| Status | Draft |
-| Primary repository | `MED0002` |
-| Primary owner | `host` |
-| Story count | 4 |
+| Attribute          | Value            |
+| ------------------ | ---------------- |
+| Epic ID            | `EPIC-P001`      |
+| Phase              | 1                |
+| Priority           | P0               |
+| Status             | staging-deployed |
+| Primary repository | `MED0002`        |
+| Primary owner      | `host`           |
+| Story count        | 4                |
 
 ## Overview
 
@@ -39,12 +39,12 @@ Replace the Todo-demo host with a production pharmacy shell: chrome, remote regi
 
 ## Stories
 
-| Story | Title | Repo | Owner | Plan | Priority | Size | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P001-001](./STORY-P001-001-app-chrome-home.md) | App chrome and home shortcuts | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P001-002](./STORY-P001-002-permission-plan-nav.md) | Permission- and plan-aware navigation | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P001-003](./STORY-P001-003-remote-loader-degraded.md) | Remote loading and degraded MFE behaviour | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P001-004](./STORY-P001-004-retire-todo-product-nav.md) | Retire Todo from product navigation | MED0002 | host | FREE+ | P0 | M | pending |
+| Story                                                         | Title                                     | Repo    | Owner | Plan  | Priority | Size | Status           |
+| ------------------------------------------------------------- | ----------------------------------------- | ------- | ----- | ----- | -------- | ---- | ---------------- |
+| [STORY-P001-001](./STORY-P001-001-app-chrome-home.md)         | App chrome and home shortcuts             | MED0002 | host  | FREE+ | P0       | M    | staging-deployed |
+| [STORY-P001-002](./STORY-P001-002-permission-plan-nav.md)     | Permission- and plan-aware navigation     | MED0002 | host  | FREE+ | P0       | M    | staging-deployed |
+| [STORY-P001-003](./STORY-P001-003-remote-loader-degraded.md)  | Remote loading and degraded MFE behaviour | MED0002 | host  | FREE+ | P0       | M    | staging-deployed |
+| [STORY-P001-004](./STORY-P001-004-retire-todo-product-nav.md) | Retire Todo from product navigation       | MED0002 | host  | FREE+ | P0       | M    | staging-deployed |
 
 ## Dependencies
 

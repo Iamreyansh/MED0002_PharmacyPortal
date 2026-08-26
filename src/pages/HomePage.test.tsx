@@ -7,6 +7,8 @@ import {
   listConfiguredRemotes,
 } from '@medmate/federation-config';
 import { HomePage } from '@/pages/HomePage';
+import { SessionProvider } from '@/session/SessionProvider';
+import { SESSION_FIXTURES } from '@/session/session';
 
 afterEach(() => {
   cleanup();
@@ -41,13 +43,19 @@ describe('federation remotes helpers', () => {
 });
 
 describe('HomePage', () => {
-  it('shows none when remotes are not configured', () => {
-    vi.stubEnv('VITE_REMOTE_TODO_URL', '');
+  it('renders grouped IA shortcuts without Todo', () => {
     render(
       <MemoryRouter>
-        <HomePage />
+        <SessionProvider session={SESSION_FIXTURES['owner-free']}>
+          <HomePage />
+        </SessionProvider>
       </MemoryRouter>,
     );
-    expect(screen.getByTestId('configured-remotes')).toHaveTextContent('none');
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'POS' })).toHaveAttribute(
+      'href',
+      '/pos',
+    );
+    expect(screen.queryByRole('link', { name: /todos/i })).toBeNull();
   });
 });

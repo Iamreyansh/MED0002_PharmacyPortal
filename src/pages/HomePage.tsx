@@ -1,31 +1,38 @@
-import { Link } from 'react-router-dom';
-import { listConfiguredRemotes } from '@medmate/federation-config';
-import { listRemoteRegistry } from '../../config/remotes.registry';
+import { NAV_GROUP_LABEL } from '@/navigation/nav-catalog';
+import { NavItemControl } from '@/layout/NavItems';
+import {
+  groupNavItems,
+  homeShortcuts,
+  resolveNavItems,
+} from '@/navigation/resolve-nav';
+import { useSession } from '@/session/SessionProvider';
 
 export function HomePage() {
-  const configured = listConfiguredRemotes(
-    import.meta.env as Record<string, string | undefined>,
-  );
-  const remotes = listRemoteRegistry();
+  const session = useSession();
+  const items = homeShortcuts(resolveNavItems(session));
+  const groups = groupNavItems(items);
 
   return (
-    <section className="page">
+    <section className="page" data-testid="portal-home">
       <p className="eyebrow">NammaMedMate</p>
-      <h1>Pharmacy Portal</h1>
-      <p>
-        Host shell that composes independently deployed React micro-frontends.
-      </p>
-      <ul>
-        {remotes.map((remote) => (
-          <li key={remote.name}>
-            <Link to={remote.route}>Open {remote.navLabel} MFE</Link>
-          </li>
+      <h1>Pharmacy console</h1>
+      <p>Open a module from the shortcuts below. Amounts use ₹ when shown.</p>
+      <div className="home-grid">
+        {groups.map((group) => (
+          <section key={group.group}>
+            <h2 className="home-group__title">
+              {NAV_GROUP_LABEL[group.group]}
+            </h2>
+            <ul className="home-cards">
+              {group.items.map((item) => (
+                <li key={item.id}>
+                  <NavItemControl item={item} variant="home" />
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </ul>
-      <p data-testid="configured-remotes">
-        Configured remotes:{' '}
-        {configured.length > 0 ? configured.join(', ') : 'none'}
-      </p>
+      </div>
     </section>
   );
 }

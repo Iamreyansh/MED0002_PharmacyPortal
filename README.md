@@ -2,14 +2,18 @@
 
 Module Federation **host** for NammaMedMate pharmacy UX.
 
+The host paints pharmacy chrome (header, IA navigation, home shortcuts) and
+loads domain remotes. The Todo MFE is a **demo-only** federation smoke target,
+not a pharmacy workflow. It is omitted from product navigation unless
+`VITE_ENABLE_DEMO_REMOTES=true`.
+
 ## Layout
 
 ```
 bootstrap.tsx
-index.tsx
-config/federation.ts
-src/{app,pages,host,styles,test}
-docs/{architecture,development,deploy,infra}
+config/remotes.registry.ts
+src/{app,host,layout,mfe,navigation,pages,session,styles,test}
+docs/{architecture,development,deploy,infra,requirements}
 ```
 
 ## Sibling packages
@@ -42,10 +46,10 @@ pnpm install
 pnpm dev
 ```
 
-Set `VITE_REMOTE_TODO_URL` to the Todo manifest:
+Optional demo remote (not product nav):
 
-- Local: `http://localhost:5101/mf-manifest.json`
-- Prod: `https://todo.mfe.nammamedmate.com/mf-manifest.json`
+- `VITE_ENABLE_DEMO_REMOTES=true`
+- `VITE_REMOTE_TODO_URL=http://localhost:5101/mf-manifest.json`
 
 ## Production domain
 

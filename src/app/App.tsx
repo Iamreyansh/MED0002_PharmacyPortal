@@ -1,31 +1,35 @@
-import { NavLink, Route, Routes } from 'react-router-dom';
-import { listRemoteRoutes } from '@/app/routes';
-import { HomePage } from '@/pages/HomePage';
+import { Navigate, useLocation } from 'react-router-dom';
+import { AppLayout } from '@/layout/AppLayout';
+import { AppRoutes } from '@/app/routes';
+import { SessionProvider, useSession } from '@/session/SessionProvider';
+import type { PortalSession } from '@/session/session';
+import type { ReactNode } from 'react';
 
-export function App() {
-  const remotes = listRemoteRoutes();
+function isPosPath(pathname: string): boolean {
+  return pathname === '/pos' || pathname.startsWith('/pos/');
+}
 
+export function PosScopeGuard({ children }: { children: ReactNode }) {
+  const session = useSession();
+  const location = useLocation();
+  if (session.tokenScope === 'pos' && !isPosPath(location.pathname)) {
+    return <Navigate to="/pos" replace />;
+  }
+  return children;
+}
+
+export type AppProps = {
+  session?: PortalSession;
+};
+
+export function App({ session }: AppProps = {}) {
   return (
-    <div className="app-shell">
-      <nav className="app-nav" aria-label="Primary">
-        <NavLink to="/" end>
-          Home
-        </NavLink>
-        {remotes.map((remote) => (
-          <NavLink key={remote.name} to={remote.route}>
-            {remote.navLabel}
-          </NavLink>
-        ))}
-      </nav>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        {remotes.map((remote) => {
-          const Page = remote.Page;
-          return (
-            <Route key={remote.name} path={remote.route} element={<Page />} />
-          );
-        })}
-      </Routes>
-    </div>
+    <SessionProvider session={session}>
+      <PosScopeGuard>
+        <AppLayout>
+          <AppRoutes />
+        </AppLayout>
+      </PosScopeGuard>
+    </SessionProvider>
   );
 }
