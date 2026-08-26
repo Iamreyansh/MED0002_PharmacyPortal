@@ -1,0 +1,11 @@
+---
+description: Host owns chrome and tokens; remotes expose ./Mfe only
+alwaysApply: true
+---
+
+# MFE boundaries
+
+- Host owns chrome, session, and tokens. Remotes expose only `./Mfe`.
+- Envelope must not contain `accessToken` / `refreshToken`. Remotes use `capabilities.api.request`.
+- Local remotes load from MED0003 `dist` via `/__mfe/<name>/mf-manifest.json`.
+- Do not create `apps/shell` in MED0003. Do not accept remote URLs from query params.

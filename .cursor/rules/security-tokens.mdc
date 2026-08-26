@@ -1,0 +1,11 @@
+---
+description: Token-store is the only reader/writer; sessionStorage only
+globs: src/modules/api/**,src/modules/session/**
+alwaysApply: false
+---
+
+# Tokens
+
+- `modules/api/store/token-store` is the only reader/writer.
+- Use `sessionStorage` only. Never `localStorage`. Never put tokens on React state remotes can read.
+- Never log tokens, refresh tokens, or Authorization headers.

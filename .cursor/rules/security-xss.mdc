@@ -1,0 +1,10 @@
+---
+description: No dangerouslySetInnerHTML, eval, or unallowlisted href/src
+globs: **/*.{tsx,ts}
+alwaysApply: false
+---
+
+# XSS
+
+- No `dangerouslySetInnerHTML`. No `eval`.
+- Allowlist `href`/`src`. User text is text content, not HTML.

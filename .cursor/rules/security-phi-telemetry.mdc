@@ -1,0 +1,10 @@
+---
+description: No PHI in URLs, track(), console, or toasts
+globs: src/modules/api/**,src/modules/mfe/**
+alwaysApply: false
+---
+
+# PHI telemetry
+
+- No PHI/PII in URLs, `track()`, console, or toasts (names, phone, Rx, GSTIN, Aadhaar).
+- Use the telemetry deny-list in `src/config/telemetry.ts`.

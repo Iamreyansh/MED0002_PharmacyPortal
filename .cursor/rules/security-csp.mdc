@@ -1,0 +1,10 @@
+---
+description: No inline script; document intended CSP
+globs: index.html,src/**/*.tsx
+alwaysApply: false
+---
+
+# CSP
+
+- No inline script or inline event handlers.
+- Intended CSP (not yet a CloudFront header): default-src 'self'; script-src 'self'; connect-src 'self' plus API origin; no `unsafe-eval` except federation runtime if required.

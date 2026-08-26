@@ -24,6 +24,6 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src", "bootstrap.tsx", "config/**/*.ts"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "e2e"]
+  "include": ["src"],
+  "exclude": ["src/**/__tests__/**", "e2e"]
 }

@@ -1,0 +1,11 @@
+---
+description: Playwright remotes off in CI; no tokens in traces
+globs: e2e/**
+alwaysApply: false
+---
+
+# Playwright
+
+- Keep remotes disabled in the CI webServer (`VITE_DISABLE_LOCAL_MFE_DIST=true`, empty remote URLs).
+- Do not print tokens or storageState secrets in traces, logs, or screenshots.
+- Federation contract tests are the only exception for enabling remotes.

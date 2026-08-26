@@ -1,0 +1,12 @@
+---
+description: Unit tests live in __tests__/ with a 100% coverage gate
+globs: src/**
+alwaysApply: false
+---
+
+# Tests
+
+- Put unit tests in that module’s `__tests__/` folder, not beside source.
+- Include: `src/**/__tests__/**/*.{test,spec}.{ts,tsx}`.
+- Keep the 100% coverage gate. Exclude barrels, bootstrap, and `src/shared/test`.
+- Use `src/shared/test/render.tsx` for app chrome. Reset token/session stores in `afterEach`.

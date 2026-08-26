@@ -1,0 +1,15 @@
+---
+description: Which design and security skills to read before coding
+alwaysApply: true
+---
+
+# Skills routing
+
+Read the listed skills before writing code.
+
+- **UI / layout / CSS** → `design-taste-frontend`, `frontend-design`, `ponytail`, `security-xss`
+- **Auth / session / API / envelope parsing** → `secure-auth-session`, `secrets-hygiene`, `secure-logging`
+- **MFE / remotes / federation / remote URLs** → `secure-mfe-federation`, `pharmacy-data-protection`, `threat-model-host`
+- **Env / CI / e2e** → `secrets-hygiene`, `secure-playwright`, `supply-chain-integrity`
+
+Also load `host-folder-structure` and `module-integration` when adding files under `src/`.

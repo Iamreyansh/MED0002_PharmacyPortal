@@ -1,0 +1,10 @@
+---
+description: isSafeReturnPath is the only return-URL gate
+globs: src/app/router/**
+alwaysApply: false
+---
+
+# Open redirect
+
+- Keep `isSafeReturnPath` as the only return-URL gate.
+- Reject protocol-relative, backslash, and `://` paths. Reject public auth paths as returns.

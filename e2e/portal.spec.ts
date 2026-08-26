@@ -139,7 +139,9 @@ test('me bootstrap hydrates the header', async ({ page }) => {
   await seedSession(page);
   await page.goto('/');
   await expect(page.getByTestId('session-menu')).toHaveText('Priya Sharma');
-  await expect(page.getByTestId('pharmacy-name')).toHaveText('Sri Rama Medicals');
+  await expect(page.getByTestId('pharmacy-name')).toHaveText(
+    'Sri Rama Medicals',
+  );
 });
 
 test('revoke confirm dialog', async ({ page }) => {
@@ -196,9 +198,13 @@ test('switch forbidden keeps pharmacy context', async ({ page }) => {
   });
   await page.goto('/');
   await page.getByTestId('pharmacy-switcher').click();
-  await page.getByRole('option', { name: 'Rama Pharmacy - Koramangala' }).click();
+  await page
+    .getByRole('option', { name: 'Rama Pharmacy - Koramangala' })
+    .click();
   await expect(page.getByTestId('toast')).toContainText('FORBIDDEN');
-  await expect(page.getByTestId('pharmacy-name')).toHaveText('Sri Rama Medicals');
+  await expect(page.getByTestId('pharmacy-name')).toHaveText(
+    'Sri Rama Medicals',
+  );
 });
 
 test('PIN login mock', async ({ page }) => {

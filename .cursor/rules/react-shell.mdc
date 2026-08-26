@@ -1,0 +1,12 @@
+---
+description: Shell vs page split and a11y for host chrome
+globs: src/modules/shell/**/*.tsx,src/modules/**/pages/**/*.tsx
+alwaysApply: false
+---
+
+# React shell
+
+- Chrome (header, nav, toast, session menu) stays in `modules/shell`. Page modules own route screens.
+- Preserve landmarks: banner, main, labelled nav, skip link.
+- Do not use `dangerouslySetInnerHTML`. Buttons need names; dialogs need titles.
+- POS chrome cannot navigate to the full portal.

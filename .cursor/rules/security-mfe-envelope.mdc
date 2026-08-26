@@ -1,0 +1,12 @@
+---
+description: Envelope must not contain tokens; remotes use capabilities.api
+globs: src/modules/mfe/**
+alwaysApply: false
+---
+
+# MFE envelope
+
+- Envelope must not contain `accessToken` / `refreshToken`.
+- Remotes must not read storage (STORY-P021-002 AC-003).
+- `capabilities.api.request` is the only network path.
+- Check contract version before mounting. Degraded UI must not leak fetch errors that include tokens.

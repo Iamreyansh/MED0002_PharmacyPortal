@@ -1,5 +1,7 @@
 dist
 coverage
+coverage-summary.json
+docs/requirements
 node_modules
 pnpm-lock.yaml
 *.tfstate

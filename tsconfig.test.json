@@ -3,12 +3,6 @@
   "compilerOptions": {
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": [
-    "src",
-    "bootstrap.tsx",
-    "config/**/*.ts",
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx"
-  ],
+  "include": ["src"],
   "exclude": ["e2e"]
 }

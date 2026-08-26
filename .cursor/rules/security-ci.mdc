@@ -1,0 +1,10 @@
+---
+description: Workflows never echo secrets; Playwright remotes off
+globs: .github/**,e2e/**
+alwaysApply: false
+---
+
+# CI
+
+- Workflows never echo secrets.
+- Playwright remotes stay off unless the test is a federation contract test.

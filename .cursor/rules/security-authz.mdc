@@ -1,0 +1,11 @@
+---
+description: Core JWT is authoritative; hiding nav is not access control
+globs: src/app/**
+alwaysApply: false
+---
+
+# Authz
+
+- Core JWT is authoritative. Hiding a nav item is not access control.
+- Always handle `403`. POS scope cannot leave `/pos`.
+- `isSafeReturnPath` is the only return-URL gate.

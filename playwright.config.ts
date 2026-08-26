@@ -19,6 +19,7 @@ export default defineConfig({
       VITE_REMOTE_TODO_URL: '',
       VITE_REMOTE_POS_URL: '',
       VITE_ENABLE_DEMO_REMOTES: '',
+      VITE_DISABLE_LOCAL_MFE_DIST: 'true',
     },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],

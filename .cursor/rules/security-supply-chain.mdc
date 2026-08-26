@@ -1,0 +1,9 @@
+---
+description: Remotes only from registry plus env or /__mfe
+alwaysApply: true
+---
+
+# Supply chain
+
+- Remotes only from `modules/mfe` registry + env or `/__mfe/<name>/`.
+- Pin `file:` MED0003 paths. Do not add random CDNs. Do not `eval` remote JS except the Module Federation loader.

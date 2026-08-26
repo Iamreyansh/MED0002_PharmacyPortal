@@ -1,0 +1,17 @@
+---
+description: Host folder layout — src/config plus modules with index.ts
+alwaysApply: true
+---
+
+# Folder structure
+
+- Shared constants live in `src/config` (api-client, remotes, env, features). Do not duplicate them in modules.
+- Domain code lives in `src/modules/<name>/` with a required `index.ts`.
+- Do not add files at `src/` or a module root except `index.ts`. New code goes in `config/`, `api/`, `store/`, `ui/`, `pages/`, or `lib/`.
+- Composition stays in `src/app`. Chrome stays in `modules/shell`.
+- Cross-module production imports: `@/modules/<name>` or `@/config`.
+
+```ts
+import { REQUEST_TIMEOUT_MS } from '@/config/api-client';
+import { useSession } from '@/modules/session';
+```

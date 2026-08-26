@@ -1,0 +1,12 @@
+---
+description: src/config is values and pure functions only
+globs: src/config/**
+alwaysApply: false
+---
+
+# Root config
+
+- Values and pure functions only. No React, no `fetch`, no clients.
+- `VITE_*` is public. Never put payment or private keys here.
+- Timeouts/paths: `api-client.ts`. Registry: `remotes.ts`. Flags: `features.ts`. Dist: `mfe-local-dist.ts`.
+- `createApiClient` stays in `modules/api`. Modules read constants from `@/config`.

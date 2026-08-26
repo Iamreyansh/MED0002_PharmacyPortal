@@ -15,9 +15,9 @@
   },
   "include": [
     "vite.config.ts",
+    "vite.local-mfe-dist.ts",
     "vitest.config.ts",
     "playwright.config.ts",
-    "eslint.config.js",
-    "config/**/*.ts"
+    "eslint.config.js"
   ]
 }

@@ -1,0 +1,12 @@
+---
+description: Cross-module code uses barrels; @/config is the extra import
+globs: src/modules/**
+alwaysApply: false
+---
+
+# Module public API
+
+- Other modules import `@/modules/<name>`, not `@/modules/<name>/<slot>/...`.
+- `@/config` and `@/config/*` are always allowed.
+- `index.ts` exports integration surface only (components, hooks, types, store accessors, api). Do not re-export all of root config. Do not export test-only helpers.
+- Same-module deep imports are fine. `api` ↔ `session` may deep-import to avoid circular barrels.

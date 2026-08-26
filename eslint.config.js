@@ -50,7 +50,31 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.{test,spec}.{ts,tsx}'],
+    files: [
+      'src/app/**/*.{ts,tsx}',
+      'src/modules/home/**/*.{ts,tsx}',
+      'src/modules/remote/**/*.{ts,tsx}',
+      'src/modules/todos/**/*.{ts,tsx}',
+      'src/modules/not-found/**/*.{ts,tsx}',
+    ],
+    ignores: ['**/__tests__/**', '**/index.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/modules/*/*', '@/modules/*/*/*'],
+              message:
+                'Import from the module barrel (@/modules/<name>) or @/config.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/*.{test,spec}.{ts,tsx}', '**/__tests__/**'],
     languageOptions: { globals: { ...globals.vitest } },
   },
   eslintConfigPrettier,
