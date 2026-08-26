@@ -1,8 +1,14 @@
-import { cleanup, screen, waitFor, fireEvent } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useEffect, useState } from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { AuthFeatureData, AuthSessionRow } from '@medmate/auth-contract';
+import type { RemoteImporter } from '@medmate/host-kit';
+import { render } from '@testing-library/react';
 import { renderApp } from '@/shared/test/render';
-import { SESSION_FIXTURES } from '@/modules/session';
+import { AuthRemotePage } from '@/modules/auth';
+import { SESSION_FIXTURES, SessionProvider } from '@/modules/session';
 import { resetTokenStore } from '@/modules/api';
 
 afterEach(() => {
@@ -12,91 +18,82 @@ afterEach(() => {
   resetTokenStore();
 });
 
-const rows = [
-  {
-    session_id: 's1',
-    ip_address: '1.1.1.1',
-    user_agent: 'Chrome',
-    last_active_at: '2026-08-26T12:00:00.000Z',
-    is_current: false,
-  },
-];
+function sessionsStub(
+  onReady?: (feature: AuthFeatureData) => void,
+): RemoteImporter {
+  return async () => ({
+    default: function SessionsStub(props: Record<string, unknown>) {
+      const data = props.data as { feature: AuthFeatureData };
+      const [rows, setRows] = useState<AuthSessionRow[]>([]);
+      const [error, setError] = useState<string | null>(null);
+      const [empty, setEmpty] = useState(false);
+      useEffect(() => {
+        onReady?.(data.feature);
+        void data.feature
+          .onSubmit({
+            portalType: 'sessions',
+            action: 'list',
+            values: { page: 1 },
+          })
+          .then((result) => {
+            if (!result.ok) {
+              setError(result.formError ?? result.code ?? 'UNKNOWN');
+              return;
+            }
+            const next = result.sessions ?? [];
+            setRows(next);
+            setEmpty(next.length === 0);
+          });
+      }, [data.feature]);
+      return (
+        <div>
+          {error ? <p role="alert">{error}</p> : null}
+          {empty ? (
+            <p data-testid="sessions-empty">No active sessions.</p>
+          ) : null}
+          {rows.map((row) => (
+            <div key={row.sessionId}>
+              <span>{row.device ?? 'Unknown device'}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  void data.feature
+                    .onSubmit({
+                      portalType: 'sessions',
+                      action: 'revoke',
+                      values: { sessionId: row.sessionId },
+                    })
+                    .then((result) => {
+                      if (!result.ok) {
+                        setError(result.formError ?? result.code ?? 'UNKNOWN');
+                      }
+                    });
+                }}
+              >
+                Revoke
+              </button>
+            </div>
+          ))}
+        </div>
+      );
+    },
+  });
+}
 
-describe('SessionsPage', () => {
-  it('renders rows from GET /auth/sessions', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(
-        async () =>
-          new Response(
-            JSON.stringify({
-              success: true,
-              data: rows,
-              meta: { page: 1, limit: 20, total: 1, has_next: false },
-            }),
-            { status: 200 },
-          ),
-      ),
-    );
+describe('sessions adapter', () => {
+  it('keeps sessions-page when the remote is missing', async () => {
     renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    expect(await screen.findByText('Chrome')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+    expect(screen.getByTestId('sessions-page')).toBeTruthy();
+    expect(await screen.findByTestId('remote-missing')).toBeTruthy();
   });
 
-  it('shows an empty state', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(
-        async () =>
-          new Response(
-            JSON.stringify({
-              success: true,
-              data: [],
-              meta: { page: 1, limit: 20, total: 0, has_next: false },
-            }),
-            { status: 200 },
-          ),
-      ),
-    );
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    expect(await screen.findByTestId('sessions-empty')).toBeTruthy();
-  });
-
-  it('confirms revoke and cancels on Escape', async () => {
+  it('lists and revokes through onSubmit', async () => {
     const user = userEvent.setup();
     vi.stubGlobal(
       'fetch',
-      vi.fn(
-        async () =>
-          new Response(
-            JSON.stringify({
-              success: true,
-              data: rows,
-              meta: { page: 1, limit: 20, has_next: false },
-            }),
-            { status: 200 },
-          ),
-      ),
-    );
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    await user.click(await screen.findByRole('button', { name: 'Revoke' }));
-    expect(screen.getByRole('dialog')).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(screen.queryByRole('dialog')).toBeNull();
-    await user.click(screen.getByRole('button', { name: 'Revoke' }));
-    expect(screen.getByRole('dialog')).toBeTruthy();
-    await user.keyboard('{Escape}');
-    expect(screen.queryByRole('dialog')).toBeNull();
-  });
-
-  it('revokes the current session, 401s to login, and surfaces other errors', async () => {
-    const user = userEvent.setup();
-    resetTokenStore();
-    const fetch = vi.fn(
-      async (input: RequestInfo | URL, init?: RequestInit) => {
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
-        const method = init?.method ?? 'GET';
-        if (method === 'DELETE' && url.includes('/auth/sessions/s1')) {
+        if ((init?.method ?? 'GET') === 'DELETE') {
           return new Response(JSON.stringify({ success: true, data: {} }), {
             status: 200,
           });
@@ -112,46 +109,45 @@ describe('SessionsPage', () => {
             data: [
               {
                 session_id: 's1',
-                ip_address: '1.1.1.1',
+                user_agent: 'Chrome',
                 is_current: true,
-                device: { platform: 'iOS' },
-                city: 'Bengaluru',
-                country: 'IN',
               },
             ],
-            meta: { page: 1, limit: 20, has_next: true },
+            meta: { page: 1, has_next: false },
           }),
           { status: 200 },
         );
-      },
+      }),
     );
-    vi.stubGlobal('fetch', fetch);
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    expect(await screen.findByText(/iOS/)).toBeTruthy();
+    render(
+      <MemoryRouter initialEntries={['/sessions']}>
+        <SessionProvider session={SESSION_FIXTURES['owner-free']}>
+          <Routes>
+            <Route
+              path="/sessions"
+              element={
+                <AuthRemotePage
+                  portalType="sessions"
+                  loadRemote={sessionsStub()}
+                />
+              }
+            />
+            <Route
+              path="/login"
+              element={<AuthRemotePage portalType="pharmacy" />}
+            />
+          </Routes>
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    expect(await screen.findByText('Chrome')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Revoke' }));
-    await user.click(screen.getAllByRole('button', { name: 'Revoke' }).at(-1)!);
     await waitFor(() => {
       expect(screen.getByTestId('login-page')).toBeTruthy();
     });
-    cleanup();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(
-        async () =>
-          new Response(
-            JSON.stringify({
-              success: false,
-              error: { code: 'UNAUTHORIZED' },
-            }),
-            { status: 401 },
-          ),
-      ),
-    );
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    await waitFor(() => {
-      expect(screen.getByTestId('portal-home')).toBeTruthy();
-    });
-    cleanup();
+  });
+
+  it('shows list errors from Core', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(
@@ -165,148 +161,13 @@ describe('SessionsPage', () => {
           ),
       ),
     );
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
+    render(
+      <MemoryRouter initialEntries={['/sessions']}>
+        <SessionProvider session={SESSION_FIXTURES['owner-free']}>
+          <AuthRemotePage portalType="sessions" loadRemote={sessionsStub()} />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
     expect(await screen.findByRole('alert')).toHaveTextContent('DOWNSTREAM');
-    cleanup();
-    const paged = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-      const page = url.includes('page=2') ? 2 : 1;
-      return new Response(
-        JSON.stringify({
-          success: true,
-          data:
-            page === 1
-              ? [
-                  {
-                    session_id: 's2',
-                    user_agent: 'Firefox',
-                    is_current: false,
-                  },
-                  { session_id: 's-unknown' },
-                  { nope: true },
-                  'skip',
-                ]
-              : [{ session_id: 's3', user_agent: 'Safari' }],
-          meta: { page, has_next: page === 1 },
-        }),
-        { status: 200 },
-      );
-    });
-    vi.stubGlobal('fetch', paged);
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    expect(await screen.findByText('Firefox')).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Next' }));
-    expect(await screen.findByText('Safari')).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Previous' }));
-    expect(await screen.findByText('Firefox')).toBeTruthy();
-    cleanup();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
-        if ((init?.method ?? 'GET') === 'DELETE') {
-          return new Response(
-            JSON.stringify({
-              success: false,
-              error: { code: 'FORBIDDEN' },
-            }),
-            { status: 403 },
-          );
-        }
-        return new Response(
-          JSON.stringify({
-            success: true,
-            data: [{ session_id: 's9', user_agent: 'Edge' }],
-            meta: { page: 1, has_next: false },
-          }),
-          { status: 200 },
-        );
-      }),
-    );
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    await user.click(await screen.findByRole('button', { name: 'Revoke' }));
-    await user.click(screen.getAllByRole('button', { name: 'Revoke' }).at(-1)!);
-    expect(await screen.findByTestId('toast')).toHaveTextContent('FORBIDDEN');
-    cleanup();
-    const { hostApi } = await import('@/modules/api');
-    vi.spyOn(hostApi, 'request').mockResolvedValue({
-      ok: false,
-      status: 500,
-      data: [],
-    });
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    expect(await screen.findByRole('alert')).toHaveTextContent('UNKNOWN');
-    cleanup();
-    vi.restoreAllMocks();
-    const api = await import('@/modules/api');
-    vi.spyOn(api.hostApi, 'request').mockImplementation(async (input) => {
-      if (input.method === 'DELETE') {
-        return { ok: false, status: 500, data: null };
-      }
-      return {
-        ok: true,
-        status: 200,
-        data: [{ session_id: 's9', user_agent: 'Edge' }],
-        details: { page: 1, has_next: false },
-      };
-    });
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    await user.click(await screen.findByRole('button', { name: 'Revoke' }));
-    await user.click(screen.getAllByRole('button', { name: 'Revoke' }).at(-1)!);
-    expect(await screen.findByTestId('toast')).toHaveTextContent('UNKNOWN');
-    cleanup();
-    vi.restoreAllMocks();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(
-        async () =>
-          new Response(
-            JSON.stringify({
-              success: true,
-              data: { not: 'rows' },
-            }),
-            { status: 200 },
-          ),
-      ),
-    );
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    expect(await screen.findByTestId('sessions-empty')).toBeTruthy();
-    cleanup();
-    let finishDelete: ((value: Response) => void) | undefined;
-    let deleted = false;
-    const hanging = vi.fn(
-      async (_input: RequestInfo | URL, init?: RequestInit) => {
-        if ((init?.method ?? 'GET') === 'DELETE') {
-          return new Promise<Response>((resolve) => {
-            finishDelete = resolve;
-          });
-        }
-        return new Response(
-          JSON.stringify({
-            success: true,
-            data: deleted
-              ? []
-              : [{ session_id: 's8', user_agent: 'Brave', is_current: false }],
-            meta: { page: 1, has_next: false },
-          }),
-          { status: 200 },
-        );
-      },
-    );
-    vi.stubGlobal('fetch', hanging);
-    renderApp('/sessions', SESSION_FIXTURES['owner-free']);
-    await user.click(await screen.findByRole('button', { name: 'Revoke' }));
-    const confirm = screen.getAllByRole('button', { name: 'Revoke' }).at(-1)!;
-    fireEvent.click(confirm);
-    await waitFor(() => {
-      expect(confirm).toBeDisabled();
-    });
-    fireEvent.click(confirm);
-    deleted = true;
-    finishDelete?.(
-      new Response(JSON.stringify({ success: true, data: {} }), {
-        status: 200,
-      }),
-    );
-    expect(await screen.findByTestId('sessions-empty')).toBeTruthy();
   });
 });

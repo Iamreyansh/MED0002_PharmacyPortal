@@ -79,6 +79,7 @@ a,
 
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: var(--header-height) 1fr;
@@ -377,10 +378,43 @@ a,
 
 .app-shell--auth {
   grid-template-columns: 1fr;
-  grid-template-rows: var(--header-height) 1fr;
+  grid-template-rows: var(--header-height) minmax(0, 1fr);
   grid-template-areas:
     'header'
     'main';
+  overflow-x: clip;
+}
+
+.app-shell--auth .app-header {
+  background: var(--color-bg);
+}
+
+.app-shell--auth .app-main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 0;
+  padding: 1rem;
+  overflow: auto;
+}
+
+@media (min-width: 48rem) {
+  .app-shell--auth .app-main {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .app-shell--auth .app-main {
+    align-items: safe center;
+    padding: 2rem;
+  }
+}
+
+@media (min-height: 44rem) {
+  .app-shell--auth .app-main {
+    align-items: safe center;
+  }
 }
 
 .app-header__pharmacy {
@@ -445,7 +479,30 @@ a,
 }
 
 .auth-page {
+  width: 100%;
   max-width: 28rem;
+  margin-inline: auto;
+  min-height: 20rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-page > * {
+  width: 100%;
+  min-width: 0;
+}
+
+.auth-page [data-testid='login-page'],
+.auth-page [data-testid='pos-login-page'] {
+  width: 100%;
+}
+
+@media (min-width: 64rem) {
+  .auth-page--wide {
+    max-width: 56rem;
+    min-height: min(32rem, calc(100dvh - var(--header-height) - 4rem));
+  }
 }
 
 .auth-form {

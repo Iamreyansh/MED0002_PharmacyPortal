@@ -2,25 +2,21 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
+  testMatch: '**/auth-federation.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  testIgnore: ['**/auth-federation.spec.ts'],
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: 'http://127.0.0.1:5174',
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'pnpm exec vite --host 127.0.0.1 --port 5173',
-    url: 'http://127.0.0.1:5173',
+    command: 'pnpm exec vite --host 127.0.0.1 --port 5174',
+    url: 'http://127.0.0.1:5174',
     reuseExistingServer: !process.env.CI,
     env: {
-      // Do not register remotes: federation auto-init of a failing
-      // manifest blocks host bootstrap.
       VITE_REMOTE_TODO_URL: '',
-      VITE_REMOTE_POS_URL: '',
       VITE_ENABLE_DEMO_REMOTES: '',
-      VITE_DISABLE_LOCAL_MFE_DIST: 'true',
     },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],

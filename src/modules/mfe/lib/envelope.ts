@@ -1,5 +1,6 @@
 import {
   MFE_CONTRACT_VERSION,
+  type HostApiResponse,
   type HostCapabilities,
   type HostContext,
   type MfeDataEnvelope,
@@ -15,6 +16,43 @@ export const DEFAULT_HOST_CONTEXT: HostContext = {
   locale: 'en-IN',
   permissions: [],
 };
+
+const REMOTE_SECRET_KEYS = new Set([
+  'access_token',
+  'refresh_token',
+  'mfa_challenge_token',
+  'accessToken',
+  'refreshToken',
+]);
+
+export function stripRemoteSecrets<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => stripRemoteSecrets(item)) as T;
+  }
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  const next: Record<string, unknown> = {};
+  for (const [key, nested] of Object.entries(
+    value as Record<string, unknown>,
+  )) {
+    if (REMOTE_SECRET_KEYS.has(key)) {
+      continue;
+    }
+    next[key] = stripRemoteSecrets(nested);
+  }
+  return next as T;
+}
+
+export function sanitizeRemoteApiResponse<T>(
+  result: HostApiResponse<T>,
+): HostApiResponse<T> {
+  return {
+    ...result,
+    data: stripRemoteSecrets(result.data),
+    details: stripRemoteSecrets(result.details),
+  };
+}
 
 export function buildHostContext(
   overrides: Partial<HostContext> = {},
@@ -42,7 +80,8 @@ export function useHostCapabilities(): HostCapabilities {
         on: () => () => undefined,
       },
       api: {
-        request: hostApi.request,
+        request: async (input) =>
+          sanitizeRemoteApiResponse(await hostApi.request(input)),
         createIdempotencyKey,
       },
     }),

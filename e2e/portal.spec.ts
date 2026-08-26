@@ -117,23 +117,6 @@ test('locked Khata on Free fixture', async ({ page }) => {
   await expect(khataLock.first()).not.toHaveAttribute('href', '/khata');
 });
 
-test('login happy path against mock', async ({ page }) => {
-  await page.route('**/api/v1/auth/pharmacy/login', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ success: true, data: loginData }),
-    });
-  });
-  await mockCore(page);
-  await page.goto('/login');
-  await page.getByLabel('Email or mobile').fill('priya@srirama.in');
-  await page.getByLabel('Password').fill('Secret123!');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByTestId('portal-home')).toBeVisible();
-  await expect(page.getByTestId('session-menu')).toHaveText('Priya Sharma');
-});
-
 test('me bootstrap hydrates the header', async ({ page }) => {
   await mockCore(page);
   await seedSession(page);
@@ -142,45 +125,6 @@ test('me bootstrap hydrates the header', async ({ page }) => {
   await expect(page.getByTestId('pharmacy-name')).toHaveText(
     'Sri Rama Medicals',
   );
-});
-
-test('revoke confirm dialog', async ({ page }) => {
-  await mockCore(page);
-  await seedSession(page);
-  await page.route('**/api/v1/auth/sessions**', async (route) => {
-    if (route.request().method() === 'DELETE') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          success: true,
-          data: { session_id: 's1', message: 'Session revoked.' },
-        }),
-      });
-      return;
-    }
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        data: [
-          {
-            session_id: 's1',
-            ip_address: '1.1.1.1',
-            user_agent: 'Chrome',
-            last_active_at: '2026-08-26T12:00:00.000Z',
-          },
-        ],
-        meta: { page: 1, limit: 20, total: 1, has_next: false },
-      }),
-    });
-  });
-  await page.goto('/sessions');
-  await page.getByRole('button', { name: 'Revoke' }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 
 test('switch forbidden keeps pharmacy context', async ({ page }) => {
@@ -205,36 +149,6 @@ test('switch forbidden keeps pharmacy context', async ({ page }) => {
   await expect(page.getByTestId('pharmacy-name')).toHaveText(
     'Sri Rama Medicals',
   );
-});
-
-test('PIN login mock', async ({ page }) => {
-  await page.route('**/api/v1/auth/pharmacy/pos-pin', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        data: {
-          access_token: 'pos-access',
-          token_type: 'Bearer',
-          token_scope: 'pos',
-          access_token_expires_in: 14400,
-          staff: { id: STAFF_ID, name: 'Kavya Nair', role: 'cashier' },
-          pharmacy: { id: PHARMACY_ID, name: 'Sri Rama Medicals' },
-        },
-      }),
-    });
-  });
-  await page.goto('/pos-login');
-  await page.getByLabel('Pharmacy ID').fill(PHARMACY_ID);
-  await page.getByLabel('Staff ID').fill(STAFF_ID);
-  await page.getByRole('button', { name: '1' }).click();
-  await page.getByRole('button', { name: '2' }).click();
-  await page.getByRole('button', { name: '3' }).click();
-  await page.getByRole('button', { name: '4' }).click();
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(/\/pos$/);
-  await expect(page.getByTestId('remote-page-pos')).toBeVisible();
 });
 
 test('KYC pharmacy cannot open quotes', async ({ page }) => {

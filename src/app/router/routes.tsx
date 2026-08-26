@@ -1,11 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
+import { AuthRemotePage } from '@/modules/auth';
 import { isDemoRemotesEnabled, listProductMounts } from '@/modules/mfe';
 import { HomePage } from '@/modules/home';
-import { LoginPage } from '@/modules/auth';
 import { NotFoundPage } from '@/modules/not-found';
-import { PosLoginPage } from '@/modules/auth';
 import { RemoteModulePage } from '@/modules/remote';
-import { SessionsPage } from '@/modules/auth';
 import { TodosPage } from '@/modules/todos';
 
 export function AppRoutes() {
@@ -20,9 +18,18 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/pos-login" element={<PosLoginPage />} />
-      <Route path="/sessions" element={<SessionsPage />} />
+      <Route
+        path="/login"
+        element={<AuthRemotePage key="pharmacy" portalType="pharmacy" />}
+      />
+      <Route
+        path="/pos-login"
+        element={<AuthRemotePage key="pos" portalType="pos" />}
+      />
+      <Route
+        path="/sessions"
+        element={<AuthRemotePage key="sessions" portalType="sessions" />}
+      />
       {mounts.map((mount) => (
         <Route
           key={`${mount.remoteName}:${mount.route}`}

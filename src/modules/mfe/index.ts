@@ -10,6 +10,8 @@ export type { RemoteMount } from '@/modules/mfe/lib/registry';
 export {
   DEFAULT_HOST_CONTEXT,
   buildHostContext,
+  sanitizeRemoteApiResponse,
+  stripRemoteSecrets,
   useHostCapabilities,
   useMfeEnvelope,
 } from '@/modules/mfe/lib/envelope';

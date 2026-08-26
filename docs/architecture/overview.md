@@ -22,14 +22,14 @@ Cross-module production code imports `@/modules/<name>` barrels. Same-module dee
 
 ## Local remotes from MED0003 dist
 
-`vite.local-mfe-dist.ts` serves `VITE_MFE_DIST_ROOT` (default `/Volumes/SSD/codebase/medmate/MED0003_MFE/dist`) at `/__mfe/<name>/**` and injects empty `VITE_REMOTE_<NAME>_URL` via Vite `define` from `dist/<name>/mf-manifest.json`. Those URLs are **not** written to `process.env`, so `@module-federation/vite` does not auto-init remotes at bootstrap. `MfeOutlet` registers the remote at load time. Playwright sets `VITE_DISABLE_LOCAL_MFE_DIST=true` so e2e never waits on federation.
+`vite.local-mfe-dist.ts` serves `VITE_MFE_DIST_ROOT` (default `/Volumes/SSD/codebase/medmate/MED0003_MFE/dist`) at `/__mfe/<name>/**` and, when a remote URL is unset, injects `/__mfe/<name>/mf-manifest.json` into `import.meta.env.VITE_REMOTE_*_URL` via Vite `define`. Those keys are **not** written to `process.env`, so `@module-federation/vite` does not auto-init remotes at bootstrap. `MfeOutlet` registers the remote at load time. Default Playwright (`e2e/portal.spec.ts`) sets `VITE_DISABLE_LOCAL_MFE_DIST=true`; federation contract tests leave local dist enabled.
 
 ## Session and API
 
 The host owns the Core fetch client (same-origin `/api/v1` locally, or `VITE_API_BASE_URL` + `/api/v1` in deployed builds). Remotes call `data.capabilities.api.request` and never store tokens. Tokens live in `sessionStorage` via `modules/api/store/token-store`. Envelope `pharmacyId` / `userId` come from session, not demo constants.
 
-Auth screens (`/login`, `/pos-login`, `/sessions`) stay in the host until `mfe-auth` exists.
+Auth screens (`/login`, `/pos-login`, `/sessions`) load the `auth` remote. The host adapter (`AuthRemotePage` + `useAuthFeature`) owns `onSubmit`, tokens, hydrate, and navigation. Remotes never receive `access_token` / `refresh_token` / MFA challenge tokens. Default Playwright (`e2e/portal.spec.ts`) keeps remotes off; `e2e/auth-federation.spec.ts` is the federation contract (requires `MED0003_MFE/dist/auth`).
 
 ## Tests
 
-Unit tests live in that module’s `__tests__/` folder. Coverage gate is 100%. E2E stays `e2e/portal.spec.ts`.
+Unit tests live in that module’s `__tests__/` folder. Coverage gate is 100%. E2E stays `e2e/portal.spec.ts` (remotes off) plus `e2e/auth-federation.spec.ts` when `dist/auth` is present.

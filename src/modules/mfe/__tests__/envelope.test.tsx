@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_HOST_CONTEXT,
   buildHostContext,
+  sanitizeRemoteApiResponse,
+  stripRemoteSecrets,
   useHostCapabilities,
   useMfeEnvelope,
 } from '@/modules/mfe';
@@ -128,5 +130,97 @@ describe('host envelope helpers', () => {
     expect(screen.getByTestId('raw').textContent).not.toContain(
       'secret-refresh-token',
     );
+  });
+
+  it('does not put token field names on an auth feature envelope', () => {
+    function Probe() {
+      const data = useMfeEnvelope({
+        portalType: 'pharmacy',
+        onSubmit: async () => ({ ok: true }),
+      });
+      return <pre data-testid="auth-env">{JSON.stringify(data)}</pre>;
+    }
+    render(
+      <MemoryRouter>
+        <Probe />
+      </MemoryRouter>,
+    );
+    const raw = screen.getByTestId('auth-env').textContent ?? '';
+    expect(raw).not.toMatch(
+      /access_token|refresh_token|mfa_challenge_token|accessToken|refreshToken/,
+    );
+  });
+
+  it('strips token fields from remote API responses', async () => {
+    expect(stripRemoteSecrets('ok')).toBe('ok');
+    expect(stripRemoteSecrets(null)).toBeNull();
+    expect(stripRemoteSecrets([{ access_token: 'a', name: 'Priya' }])).toEqual([
+      { name: 'Priya' },
+    ]);
+    expect(
+      sanitizeRemoteApiResponse({
+        ok: true,
+        status: 200,
+        data: {
+          access_token: 'secret',
+          accessToken: 'also',
+          staff: { refresh_token: 'r', refreshToken: 'r2', id: 's1' },
+        },
+        details: { mfa_challenge_token: 'mfa', attempts: 1 },
+      }),
+    ).toEqual({
+      ok: true,
+      status: 200,
+      data: { staff: { id: 's1' } },
+      details: { attempts: 1 },
+    });
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              success: true,
+              data: { access_token: 'leaked', id: 'ok' },
+            }),
+            { status: 200 },
+          ),
+      ),
+    );
+    function TokenProbe() {
+      const caps = useHostCapabilities();
+      return (
+        <button
+          type="button"
+          data-testid="strip-probe"
+          onClick={() => {
+            void caps.api?.request({ path: '/api/v1/auth/me' }).then((res) => {
+              const el = document.querySelector('[data-testid="stripped"]');
+              if (el) el.textContent = JSON.stringify(res.data);
+            });
+          }}
+        >
+          go
+        </button>
+      );
+    }
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <TokenProbe />
+        <span data-testid="stripped" />
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByTestId('strip-probe'));
+    await waitFor(() => {
+      expect(screen.getByTestId('stripped').textContent).toBe(
+        JSON.stringify({ id: 'ok' }),
+      );
+      expect(screen.getByTestId('stripped').textContent).not.toContain(
+        'leaked',
+      );
+    });
   });
 });
