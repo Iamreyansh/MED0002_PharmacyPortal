@@ -3,14 +3,12 @@
 Every merge to `main`:
 
 1. Deterministic quality and host e2e
-2. Build the host, write `/runtime-config.json` (`apiBaseUrl` + MFE suffix), sync staging, smoke staging against Core
-3. Apply staging Terraform from a saved plan (drops leftover CloudFront `/api/*`, publishes SSM, updates CSP)
-4. Re-smoke staging
-5. Build, sync production, smoke production
-6. On production smoke failure, restore the previous known-good `releases/<sha>/` when one exists
-7. After production smoke is green, dispatch Terraform `production` / `apply` to drop production `/api/*` and update CSP. Do not apply that origin-removal before the SPA with `apiBaseUrl` is live.
+2. Apply staging Terraform from a saved plan (creates the stack on first run)
+3. Build the host, write `/runtime-config.json` (`apiBaseUrl` + MFE suffix), sync staging, smoke staging against Core
+4. Build, sync production, smoke production
+5. On production smoke failure, restore the previous known-good `releases/<sha>/` when one exists
 
-Deploy jobs read SSM (`/med0002-pharmacy-portal/<env>/...`) after Terraform publish. Staging deploy uses GitHub environment `staging` `AWS_ROLE_ARN` (same pattern as production). Production still falls back to `S3_BUCKET_NAME` / `CLOUDFRONT_DISTRIBUTION_ID` until those parameters exist. PR CI still runs Terraform fmt/validate.
+Staging deploy assumes the deploy role Terraform just created. Do not use the production `AWS_ROLE_ARN` from GitHub environment `staging`. After the first apply, copy that role ARN into `staging` as `AWS_ROLE_ARN` for **Rollback Portal**. Production still falls back to `S3_BUCKET_NAME` / `CLOUDFRONT_DISTRIBUTION_ID` until SSM parameters exist.
 
 Staging: `https://pharmacy.staging.nammamedmate.com`  
 Production: `https://pharmacy.nammamedmate.com`
