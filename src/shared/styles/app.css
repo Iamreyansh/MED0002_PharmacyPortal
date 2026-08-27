@@ -661,6 +661,31 @@ a,
   margin-top: 1rem;
 }
 
+.mm-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.mm-spinner--block {
+  display: flex;
+  min-height: 12rem;
+  width: 100%;
+}
+
+.mm-spinner__icon {
+  width: 2rem;
+  height: 2rem;
+  animation: mm-spin 0.7s linear infinite;
+}
+
+@keyframes mm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
