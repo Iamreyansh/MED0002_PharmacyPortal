@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@medmate/auth-contract": "file:../MED0003_MFE/packages/auth-contract",
+    "@medmate/onboarding-contract": "file:../MED0003_MFE/packages/onboarding-contract",
     "@medmate/contracts": "file:../MED0003_MFE/packages/contracts",
     "@medmate/federation-config": "file:../MED0003_MFE/packages/federation-config",
     "@medmate/host-kit": "file:../MED0003_MFE/packages/host-kit",

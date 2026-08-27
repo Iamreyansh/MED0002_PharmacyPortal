@@ -65,7 +65,10 @@ export function useAuthFeature(portalType: AuthPortalType): AuthFeatureData {
   }, [portalType]);
 
   const links = useMemo(
-    () => (portalType === 'pharmacy' ? { posLogin: '/pos-login' } : undefined),
+    () =>
+      portalType === 'pharmacy'
+        ? { posLogin: '/pos-login', register: '/register' }
+        : undefined,
     [portalType],
   );
 

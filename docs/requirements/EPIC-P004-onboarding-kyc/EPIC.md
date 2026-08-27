@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P004` |
 | Phase | 1 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-onboarding` |
 | Story count | 4 |
@@ -40,10 +40,10 @@ Self-register pharmacy, verify email OTP, track registration status, upload KYC 
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P004-001](./STORY-P004-001-register.md) | Pharmacy self-registration | MED0003 | mfe-onboarding | FREE+ | P0 | M | pending |
-| [STORY-P004-002](./STORY-P004-002-verify-email-otp.md) | Registration email OTP verify and resend | MED0003 | mfe-onboarding | FREE+ | P0 | M | pending |
-| [STORY-P004-003](./STORY-P004-003-registration-status.md) | Registration status gate | MED0003 | mfe-onboarding | FREE+ | P0 | M | pending |
-| [STORY-P004-004](./STORY-P004-004-kyc-documents-submit.md) | KYC document upload, list, delete, submit | MED0003 | mfe-onboarding | FREE+ | P0 | M | pending |
+| [STORY-P004-001](./STORY-P004-001-register.md) | Pharmacy self-registration | MED0003 | mfe-onboarding | FREE+ | P0 | M | staging-deployed |
+| [STORY-P004-002](./STORY-P004-002-verify-email-otp.md) | Registration email OTP verify and resend | MED0003 | mfe-onboarding | FREE+ | P0 | M | staging-deployed |
+| [STORY-P004-003](./STORY-P004-003-registration-status.md) | Registration status gate | MED0003 | mfe-onboarding | FREE+ | P0 | M | staging-deployed |
+| [STORY-P004-004](./STORY-P004-004-kyc-documents-submit.md) | KYC document upload, list, delete, submit | MED0003 | mfe-onboarding | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

@@ -15,11 +15,12 @@ describe('route policy', () => {
   it('allows public auth routes and safe return paths', () => {
     expect(isPublicAuthPathname('/login')).toBe(true);
     expect(isPublicAuthPathname('/register')).toBe(true);
+    expect(isPublicAuthPathname('/register/verify')).toBe(true);
     expect(isPublicAuthPathname('/pos-login')).toBe(true);
     expect(isPublicAuthPathname('/inventory')).toBe(false);
     expect(isSafeReturnPath('/invoices')).toBe(true);
     expect(isSafeReturnPath('https://evil.test')).toBe(false);
-    expect(isSafeReturnPath('/login')).toBe(false);
+    expect(isSafeReturnPath('/register/verify')).toBe(false);
     expect(isSafeReturnPath('/login?next=/')).toBe(false);
     expect(isSafeReturnPath('//evil.test')).toBe(false);
     expect(isSafeReturnPath('/ok://x')).toBe(false);

@@ -39,6 +39,26 @@ describe('federation remotes helpers', () => {
 
   it('returns undefined for missing remote urls', () => {
     expect(getRemoteUrl('todo', { VITE_REMOTE_TODO_URL: '' })).toBeUndefined();
+    expect(getRemoteUrl('auth', {})).toBeUndefined();
+  });
+
+  it('builds convention URLs from VITE_MFE_DOMAIN_SUFFIX', () => {
+    const env = { VITE_MFE_DOMAIN_SUFFIX: 'mfe.nammamedmate.com' };
+    expect(getRemoteUrl('auth', env)).toBe(
+      'https://auth.mfe.nammamedmate.com/mf-manifest.json',
+    );
+    expect(getRemoteUrl('todo', env)).toBe(
+      'https://todo.mfe.nammamedmate.com/mf-manifest.json',
+    );
+    expect(getRemoteUrl('onboarding', env)).toBe(
+      'https://onboarding.mfe.nammamedmate.com/mf-manifest.json',
+    );
+    expect(
+      getRemoteUrl('auth', {
+        VITE_MFE_DOMAIN_SUFFIX: 'mfe.nammamedmate.com',
+        VITE_REMOTE_AUTH_URL: 'https://example.test/mf-manifest.json',
+      }),
+    ).toBe('https://example.test/mf-manifest.json');
   });
 });
 

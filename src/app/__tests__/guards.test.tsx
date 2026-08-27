@@ -41,7 +41,7 @@ describe('route guards', () => {
 
   it('redirects PENDING_KYC away from rx-quotes', () => {
     renderApp('/rx-quotes', SESSION_FIXTURES['owner-pending-kyc']);
-    expect(screen.getByTestId('remote-page-onboarding')).toBeTruthy();
+    expect(screen.getByTestId('onboarding-status-page')).toBeTruthy();
   });
 
   it('blocks suspended pharmacies from marketplace', () => {
@@ -57,7 +57,12 @@ describe('route guards', () => {
 
   it('allows anonymous register', () => {
     renderApp('/register', SESSION_FIXTURES.unauthenticated);
-    expect(screen.getByTestId('remote-page-onboarding')).toBeTruthy();
+    expect(screen.getByTestId('register-page')).toBeTruthy();
+  });
+
+  it('allows anonymous email verify', () => {
+    renderApp('/register/verify', SESSION_FIXTURES.unauthenticated);
+    expect(screen.getByTestId('register-verify-page')).toBeTruthy();
   });
 
   it('keeps children while a stored session is hydrating and drops unsafe returns', () => {

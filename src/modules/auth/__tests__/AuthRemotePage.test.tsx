@@ -108,6 +108,16 @@ function pharmacyStub(): RemoteImporter {
               Counter PIN sign-in
             </button>
           ) : null}
+          {data.feature.links?.register ? (
+            <button
+              type="button"
+              onClick={() =>
+                data.capabilities?.navigate?.(data.feature.links!.register!)
+              }
+            >
+              Create pharmacy account
+            </button>
+          ) : null}
         </form>
       );
     },
@@ -234,6 +244,10 @@ function renderAuth(
           />
           <Route path="/" element={<div data-testid="portal-home" />} />
           <Route path="/pos" element={<div data-testid="pos-page" />} />
+          <Route
+            path="/register"
+            element={<div data-testid="register-dest">register</div>}
+          />
         </Routes>
       </SessionProvider>
     </MemoryRouter>,
@@ -268,6 +282,15 @@ describe('AuthRemotePage', () => {
       await screen.findByRole('button', { name: 'Counter PIN sign-in' }),
     );
     expect(await screen.findByTestId('pos-login-page')).toBeTruthy();
+  });
+
+  it('navigates from pharmacy login to register', async () => {
+    const user = userEvent.setup();
+    renderAuth('pharmacy', pharmacyStub());
+    await user.click(
+      await screen.findByRole('button', { name: 'Create pharmacy account' }),
+    );
+    expect(await screen.findByTestId('register-dest')).toBeTruthy();
   });
 
   it('uses a configured remote URL when present', async () => {

@@ -1,6 +1,7 @@
 /**
  * Host-owned remote registry — single source for route, nav, and module metadata.
- * Manifest URLs still come from VITE_REMOTE_<NAME>_URL env vars.
+ * Manifest URLs come from VITE_MFE_DOMAIN_SUFFIX
+ * (`https://<name>.<suffix>/mf-manifest.json`) or an explicit VITE_REMOTE_<NAME>_URL.
  * Product iteration must use PRODUCT_REMOTE_REGISTRY (Todo is demo-only).
  */
 export type RemoteRegistryMeta = {
@@ -23,7 +24,13 @@ export const PRODUCT_REMOTE_REGISTRY = {
     name: 'onboarding',
     module: './Mfe',
     route: '/onboarding',
-    routes: ['/onboarding', '/register'],
+    routes: [
+      '/onboarding',
+      '/onboarding/status',
+      '/onboarding/kyc',
+      '/register',
+      '/register/verify',
+    ],
     navLabel: 'Onboarding',
   },
   pos: {

@@ -15,7 +15,7 @@ concurrency:
 env:
   HUSKY: '0'
   CI: 'true'
-  VITE_REMOTE_TODO_URL: https://todo.mfe.nammamedmate.com/mf-manifest.json
+  VITE_MFE_DOMAIN_SUFFIX: mfe.nammamedmate.com
   MFE_REPO: ${{ vars.MFE_REPO || 'Iamreyansh/MED0003_MFE' }}
 
 jobs:

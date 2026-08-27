@@ -14,7 +14,7 @@ concurrency:
 env:
   HUSKY: '0'
   CI: 'true'
-  VITE_REMOTE_TODO_URL: https://todo.mfe.nammamedmate.com/mf-manifest.json
+  VITE_MFE_DOMAIN_SUFFIX: mfe.nammamedmate.com
   # Override with repo var MFE_REPO if the producer lives elsewhere.
   # For private cross-repo checkout, set secret MFE_REPO_TOKEN (contents:read).
   MFE_REPO: ${{ vars.MFE_REPO || 'Iamreyansh/MED0003_MFE' }}

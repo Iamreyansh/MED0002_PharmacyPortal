@@ -8,11 +8,11 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
-| Phase 1 | 27    | 13               | 0                |
+| Phase 1 | 27    | 17               | 0                |
 | Phase 2 | 21    | 0                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 13               | 0                |
+| Total   | 70    | 17               | 0                |
 
 ## Phase 1
 
@@ -31,10 +31,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P003 | [STORY-P003-004](./EPIC-P003-auth-session/STORY-P003-004-switch-pharmacy.md)                             | Multi-pharmacy context switch                       | MED0002 | staging-deployed | 2026-08-26 | Header switcher          |
 | EPIC-P003 | [STORY-P003-005](./EPIC-P003-auth-session/STORY-P003-005-pos-pin-shell.md)                               | POS PIN login and POS-scoped shell                  | MED0002 | staging-deployed | 2026-08-26 | Auth remote PIN; host tokens |
 | EPIC-P003 | [STORY-P003-006](./EPIC-P003-auth-session/STORY-P003-006-route-guards.md)                                | Route guards and onboarding gate                    | MED0002 | staging-deployed | 2026-08-26 | Auth/status/scope guards |
-| EPIC-P004 | [STORY-P004-001](./EPIC-P004-onboarding-kyc/STORY-P004-001-register.md)                                  | Pharmacy self-registration                          | MED0003 | pending          |            |                            |
-| EPIC-P004 | [STORY-P004-002](./EPIC-P004-onboarding-kyc/STORY-P004-002-verify-email-otp.md)                          | Registration email OTP verify and resend            | MED0003 | pending          |            |                            |
-| EPIC-P004 | [STORY-P004-003](./EPIC-P004-onboarding-kyc/STORY-P004-003-registration-status.md)                       | Registration status gate                            | MED0003 | pending          |            |                            |
-| EPIC-P004 | [STORY-P004-004](./EPIC-P004-onboarding-kyc/STORY-P004-004-kyc-documents-submit.md)                      | KYC document upload, list, delete, submit           | MED0003 | pending          |            |                            |
+| EPIC-P004 | [STORY-P004-001](./EPIC-P004-onboarding-kyc/STORY-P004-001-register.md)                                  | Pharmacy self-registration                          | MED0003 | staging-deployed | 2026-08-27 | Onboarding remote; host tokens |
+| EPIC-P004 | [STORY-P004-002](./EPIC-P004-onboarding-kyc/STORY-P004-002-verify-email-otp.md)                          | Registration email OTP verify and resend            | MED0003 | staging-deployed | 2026-08-27 | Host intercepts verify tokens |
+| EPIC-P004 | [STORY-P004-003](./EPIC-P004-onboarding-kyc/STORY-P004-003-registration-status.md)                       | Registration status gate                            | MED0003 | staging-deployed | 2026-08-27 | Host GET registration-status |
+| EPIC-P004 | [STORY-P004-004](./EPIC-P004-onboarding-kyc/STORY-P004-004-kyc-documents-submit.md)                      | KYC document upload, list, delete, submit           | MED0003 | staging-deployed | 2026-08-27 | Host FormData KYC + submit |
 | EPIC-P005 | [STORY-P005-001](./EPIC-P005-profile-storefront/STORY-P005-001-profile-get-patch.md)                     | View and edit pharmacy profile                      | MED0003 | pending          |            |                            |
 | EPIC-P005 | [STORY-P005-002](./EPIC-P005-profile-storefront/STORY-P005-002-profile-completeness-tax-bank-contact.md) | Completeness, tax, bank account, contact verify     | MED0003 | pending          |            |                            |
 | EPIC-P005 | [STORY-P005-003](./EPIC-P005-profile-storefront/STORY-P005-003-storefront-toggle.md)                     | Storefront online/offline                           | MED0003 | pending          |            |                            |

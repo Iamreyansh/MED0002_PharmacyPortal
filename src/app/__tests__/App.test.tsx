@@ -202,6 +202,12 @@ describe('App default session', () => {
   it('redirects an authenticated user away from login', () => {
     renderApp('/login', SESSION_FIXTURES['owner-free']);
     expect(screen.getByTestId('portal-home')).toBeTruthy();
+    cleanup();
+    renderApp('/register', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
+    cleanup();
+    renderApp('/register/verify', SESSION_FIXTURES['owner-pending-kyc']);
+    expect(screen.getByTestId('onboarding-status-page')).toBeTruthy();
   });
 
   it('routes an expired stored session to login', async () => {

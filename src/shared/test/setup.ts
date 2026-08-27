@@ -15,9 +15,14 @@ vi.mock('@medmate/host-kit', async (importOriginal) => {
   };
 });
 
+// CI bakes VITE_MFE_DOMAIN_SUFFIX for production builds. Keep unit tests on
+// explicit VITE_REMOTE_*_URL / missing-remote unless a spec stubs the suffix.
+vi.stubEnv('VITE_MFE_DOMAIN_SUFFIX', '');
+
 afterEach(() => {
   resetApiClientState();
   resetTokenStore();
   resetSessionSnapshot();
   resetTelemetry();
+  vi.stubEnv('VITE_MFE_DOMAIN_SUFFIX', '');
 });

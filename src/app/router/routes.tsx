@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import { AuthRemotePage } from '@/modules/auth';
+import { OnboardingRemotePage } from '@/modules/onboarding';
 import { isDemoRemotesEnabled, listProductMounts } from '@/modules/mfe';
 import { HomePage } from '@/modules/home';
 import { NotFoundPage } from '@/modules/not-found';
@@ -12,7 +13,9 @@ export function AppRoutes() {
     (mount) =>
       mount.route !== '/login' &&
       mount.route !== '/pos-login' &&
-      mount.route !== '/sessions',
+      mount.route !== '/sessions' &&
+      mount.route !== '/onboarding' &&
+      mount.route !== '/register',
   );
 
   return (
@@ -29,6 +32,26 @@ export function AppRoutes() {
       <Route
         path="/sessions"
         element={<AuthRemotePage key="sessions" portalType="sessions" />}
+      />
+      <Route
+        path="/register"
+        element={<OnboardingRemotePage key="register" screen="register" />}
+      />
+      <Route
+        path="/register/verify"
+        element={<OnboardingRemotePage key="verify" screen="verify" />}
+      />
+      <Route
+        path="/onboarding"
+        element={<OnboardingRemotePage key="status-root" screen="status" />}
+      />
+      <Route
+        path="/onboarding/status"
+        element={<OnboardingRemotePage key="status" screen="status" />}
+      />
+      <Route
+        path="/onboarding/kyc"
+        element={<OnboardingRemotePage key="kyc" screen="kyc" />}
       />
       {mounts.map((mount) => (
         <Route

@@ -494,7 +494,9 @@ a,
 }
 
 .auth-page [data-testid='login-page'],
-.auth-page [data-testid='pos-login-page'] {
+.auth-page [data-testid='pos-login-page'],
+.auth-page [data-testid='register-page'],
+.auth-page [data-testid='register-verify-page'] {
   width: 100%;
 }
 

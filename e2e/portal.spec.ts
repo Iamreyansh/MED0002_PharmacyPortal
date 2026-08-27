@@ -181,7 +181,7 @@ test('KYC pharmacy cannot open quotes', async ({ page }) => {
     },
   );
   await page.goto('/rx-quotes');
-  await expect(page.getByTestId('remote-page-onboarding')).toBeVisible();
+  await expect(page.getByTestId('onboarding-status-page')).toBeVisible();
 });
 
 test('expired session lands on login', async ({ page }) => {
@@ -218,7 +218,7 @@ test('expired session lands on login', async ({ page }) => {
     });
   });
   await page.goto('/');
-  await expect(page.getByTestId('login-page')).toBeVisible();
+  await expect(page.locator('section[data-testid="login-page"]')).toBeVisible();
 });
 
 test('missing remote does not hide nav', async ({ page }) => {

@@ -5,7 +5,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  testIgnore: ['**/auth-federation.spec.ts'],
+  testIgnore: [
+    '**/auth-federation.spec.ts',
+    '**/onboarding-federation.spec.ts',
+  ],
   use: {
     baseURL: 'http://127.0.0.1:5173',
     trace: 'on-first-retry',
@@ -17,8 +20,11 @@ export default defineConfig({
     env: {
       // Do not register remotes: federation auto-init of a failing
       // manifest blocks host bootstrap.
+      VITE_MFE_DOMAIN_SUFFIX: '',
       VITE_REMOTE_TODO_URL: '',
       VITE_REMOTE_POS_URL: '',
+      VITE_REMOTE_AUTH_URL: '',
+      VITE_REMOTE_ONBOARDING_URL: '',
       VITE_ENABLE_DEMO_REMOTES: '',
       VITE_DISABLE_LOCAL_MFE_DIST: 'true',
     },

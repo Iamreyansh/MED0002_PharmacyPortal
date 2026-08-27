@@ -1,6 +1,6 @@
 # Architecture
 
-Pharmacy Portal (MED0002) is the Module Federation **host**. Host chrome stays in this repo (`modules/shell`). Remotes expose only `./Mfe` and load from `VITE_REMOTE_<NAME>_URL`, or in local dev from the sibling MED0003 `dist` at `/__mfe/<name>/`.
+Pharmacy Portal (MED0002) is the Module Federation **host**. Host chrome stays in this repo (`modules/shell`). Remotes expose only `./Mfe` and load from `https://<name>.<VITE_MFE_DOMAIN_SUFFIX>/mf-manifest.json`, an explicit `VITE_REMOTE_<NAME>_URL`, or in local dev from the sibling MED0003 `dist` at `/__mfe/<name>/`.
 
 ```
 src/
@@ -28,8 +28,8 @@ Cross-module production code imports `@/modules/<name>` barrels. Same-module dee
 
 The host owns the Core fetch client (same-origin `/api/v1` locally, or `VITE_API_BASE_URL` + `/api/v1` in deployed builds). Remotes call `data.capabilities.api.request` and never store tokens. Tokens live in `sessionStorage` via `modules/api/store/token-store`. Envelope `pharmacyId` / `userId` come from session, not demo constants.
 
-Auth screens (`/login`, `/pos-login`, `/sessions`) load the `auth` remote. The host adapter (`AuthRemotePage` + `useAuthFeature`) owns `onSubmit`, tokens, hydrate, and navigation. Remotes never receive `access_token` / `refresh_token` / MFA challenge tokens. Default Playwright (`e2e/portal.spec.ts`) keeps remotes off; `e2e/auth-federation.spec.ts` is the federation contract (requires `MED0003_MFE/dist/auth`).
+Auth screens (`/login`, `/pos-login`, `/sessions`) load the `auth` remote. Onboarding screens (`/register`, `/register/verify`, `/onboarding/status`, `/onboarding/kyc`) load the `onboarding` remote. Production builds set `VITE_MFE_DOMAIN_SUFFIX=mfe.nammamedmate.com` in CI so every remote resolves without a per-MFE URL. Host adapters (`AuthRemotePage` / `OnboardingRemotePage`) own `onSubmit`, tokens, hydrate, and navigation. Remotes never receive `access_token` / `refresh_token` / MFA challenge tokens. Default Playwright (`e2e/portal.spec.ts`) keeps remotes off; `e2e/auth-federation.spec.ts` and `e2e/onboarding-federation.spec.ts` are the federation contracts (require `MED0003_MFE/dist/auth` and `dist/onboarding`).
 
 ## Tests
 
-Unit tests live in that module’s `__tests__/` folder. Coverage gate is 100%. E2E stays `e2e/portal.spec.ts` (remotes off) plus `e2e/auth-federation.spec.ts` when `dist/auth` is present.
+Unit tests live in that module’s `__tests__/` folder. Coverage gate is 100%. E2E stays `e2e/portal.spec.ts` (remotes off) plus federation specs when `dist/auth` or `dist/onboarding` is present.

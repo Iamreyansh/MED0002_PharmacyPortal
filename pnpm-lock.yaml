@@ -28,6 +28,9 @@ importers:
       '@medmate/host-kit':
         specifier: file:../MED0003_MFE/packages/host-kit
         version: file:../MED0003_MFE/packages/host-kit(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@medmate/onboarding-contract':
+        specifier: file:../MED0003_MFE/packages/onboarding-contract
+        version: file:../MED0003_MFE/packages/onboarding-contract
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -587,6 +590,9 @@ packages:
     peerDependencies:
       react: 18.3.1
       react-dom: 18.3.1
+
+  '@medmate/onboarding-contract@file:../MED0003_MFE/packages/onboarding-contract':
+    resolution: {directory: ../MED0003_MFE/packages/onboarding-contract, type: directory}
 
   '@medmate/vite-config@file:../MED0003_MFE/packages/tooling/vite-config':
     resolution: {directory: ../MED0003_MFE/packages/tooling/vite-config, type: directory}
@@ -3499,6 +3505,8 @@ snapshots:
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  '@medmate/onboarding-contract@file:../MED0003_MFE/packages/onboarding-contract': {}
 
   '@medmate/vite-config@file:../MED0003_MFE/packages/tooling/vite-config(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.32.0)(typescript@5.8.3)(yaml@2.9.0)':
     dependencies:
