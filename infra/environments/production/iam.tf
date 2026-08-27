@@ -232,6 +232,16 @@ module "terraform_apply_role" {
           Resource = ["arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:*"]
         },
         {
+          Sid    = "CloudFrontMonitoring"
+          Effect = "Allow"
+          Action = [
+            "cloudfront:CreateMonitoringSubscription",
+            "cloudfront:GetMonitoringSubscription",
+            "cloudfront:DeleteMonitoringSubscription",
+          ]
+          Resource = ["*"]
+        },
+        {
           Effect   = "Allow"
           Action   = ["acm:*"]
           Resource = ["arn:aws:acm:*:${data.aws_caller_identity.current.account_id}:*"]

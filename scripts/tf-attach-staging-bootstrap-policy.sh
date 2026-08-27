@@ -37,7 +37,7 @@ print(json.dumps({
         {
             "Sid": "EdgeAndConfig",
             "Effect": "Allow",
-            "Action": ["wafv2:*", "ssm:*", "cloudwatch:*"],
+            "Action": ["wafv2:*", "ssm:*", "cloudwatch:*", "cloudfront:*"],
             "Resource": ["*"],
         },
     ],
