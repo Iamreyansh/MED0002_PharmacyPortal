@@ -31,7 +31,7 @@ Never apply without a saved plan from the same job:
 5. `scripts/tf-plan-guard.sh` (blocks unexpected destroy/replace)
 6. `terraform apply tfplan`
 
-GitHub Actions does this in `.github/workflows/terraform.yml` on `workflow_dispatch`. Release deploys the production host with the existing deploy role; it does not apply Terraform until the stacks and OIDC roles from `docs/infra/aws-bootstrap.md` exist.
+GitHub Actions does this in `.github/workflows/terraform.yml`. Release applies staging, deploys and smokes staging, then deploys production. Production Terraform apply stays on `workflow_dispatch` until you are ready to attach WAF and `/api/*` to the live distribution.
 
 ## GitHub environments
 

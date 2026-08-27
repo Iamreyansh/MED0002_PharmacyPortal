@@ -20,6 +20,13 @@ on:
         required: false
       AWS_TF_ROLE_ARN:
         required: false
+    outputs:
+      deploy_role_arn:
+        description: GitHub Actions deploy role created by this stack
+        value: ${{ jobs.terraform.outputs.deploy_role_arn }}
+      site_url:
+        description: HTTPS origin for the stack
+        value: ${{ jobs.terraform.outputs.site_url }}
   workflow_dispatch:
     inputs:
       environment:
@@ -58,10 +65,12 @@ jobs:
     name: ${{ inputs.action }} ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    # Apply uses GitHub environment `terraform` (trusted by the existing
-    # AWS_TF_ROLE_ARN). Do not switch staging apply to `terraform-staging`
-    # until that stack exists and AWS_TF_APPLY_ROLE_ARN is set on it.
+    # Apply uses GitHub environment `terraform` so the existing AWS_TF_ROLE_ARN
+    # trust (environment:terraform) works before per-env terraform roles exist.
     environment: ${{ inputs.action == 'apply' && 'terraform' || format('terraform-plan-{0}', inputs.environment) }}
+    outputs:
+      deploy_role_arn: ${{ steps.outs.outputs.deploy_role_arn }}
+      site_url: ${{ steps.outs.outputs.site_url }}
     defaults:
       run:
         working-directory: infra/environments/${{ inputs.environment }}
@@ -73,6 +82,10 @@ jobs:
           role-session-name: terraform-${{ inputs.environment }}-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
           role-duration-seconds: 3600
+      - name: Allow staging stack creation
+        if: inputs.action == 'apply' && inputs.environment == 'staging'
+        working-directory: .
+        run: bash scripts/tf-attach-staging-bootstrap-policy.sh
       - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
           terraform_version: ${{ env.TF_VERSION }}
@@ -94,3 +107,23 @@ jobs:
       - name: Apply saved plan
         if: inputs.action == 'apply'
         run: terraform apply -input=false -lock-timeout=10m tfplan
+      - name: Publish stack outputs
+        if: inputs.action == 'apply'
+        id: outs
+        run: |
+          set -euo pipefail
+          DEPLOY="$(terraform output -raw github_actions_role_arn)"
+          TF_ROLE="$(terraform output -raw github_actions_terraform_role_arn)"
+          URL="$(terraform output -raw site_url)"
+          {
+            echo "deploy_role_arn=${DEPLOY}"
+            echo "site_url=${URL}"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "### Terraform outputs (${{ inputs.environment }})"
+            echo "- deploy role: \`${DEPLOY}\`"
+            echo "- terraform role: \`${TF_ROLE}\`"
+            echo "- site: ${URL}"
+            echo
+            echo "Copy the deploy role into GitHub environment \`${{ inputs.environment }}\` as \`AWS_ROLE_ARN\` for rollback jobs."
+          } >> "$GITHUB_STEP_SUMMARY"

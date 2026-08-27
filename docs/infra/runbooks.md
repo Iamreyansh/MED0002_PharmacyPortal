@@ -2,7 +2,7 @@
 
 ## Failed staging smoke
 
-Staging is not on the Release path until the staging stack exists. Fix the host or Core staging origin, then re-run by merging a follow-up or re-running **Release**. Terraform is not auto-reverted.
+Release stops before production. Fix the host or Core staging origin (`core.api.staging.nammamedmate.com`), then re-run by merging a follow-up or re-running **Release**. Terraform is not auto-reverted.
 
 ## Failed production smoke
 

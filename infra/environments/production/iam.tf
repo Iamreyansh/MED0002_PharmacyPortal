@@ -68,14 +68,20 @@ locals {
       Resource = ["arn:aws:s3:::${var.tf_state_bucket}"]
       Condition = {
         StringLike = {
-          "s3:prefix" = ["MED0002/terraform.tfstate*"]
+          "s3:prefix" = [
+            "MED0002/terraform.tfstate*",
+            "MED0002/staging/*",
+          ]
         }
       }
     },
     {
-      Effect   = "Allow"
-      Action   = ["s3:GetObject"]
-      Resource = ["arn:aws:s3:::${var.tf_state_bucket}/MED0002/terraform.tfstate*"]
+      Effect = "Allow"
+      Action = ["s3:GetObject"]
+      Resource = [
+        "arn:aws:s3:::${var.tf_state_bucket}/MED0002/terraform.tfstate*",
+        "arn:aws:s3:::${var.tf_state_bucket}/MED0002/staging/*",
+      ]
     },
   ]
 
@@ -198,15 +204,27 @@ module "terraform_apply_role" {
       local.terraform_state,
       [
         {
-          Effect   = "Allow"
-          Action   = ["s3:PutObject", "s3:DeleteObject"]
-          Resource = ["arn:aws:s3:::${var.tf_state_bucket}/MED0002/terraform.tfstate*"]
+          Effect = "Allow"
+          Action = ["s3:PutObject", "s3:DeleteObject"]
+          Resource = [
+            "arn:aws:s3:::${var.tf_state_bucket}/MED0002/terraform.tfstate*",
+            "arn:aws:s3:::${var.tf_state_bucket}/MED0002/staging/*",
+          ]
         },
         {
           Sid      = "SiteBucketAdmin"
           Effect   = "Allow"
           Action   = ["s3:*"]
           Resource = [module.site.s3_bucket_arn, "${module.site.s3_bucket_arn}/*"]
+        },
+        {
+          Sid    = "StagingSiteBucketBootstrap"
+          Effect = "Allow"
+          Action = ["s3:*"]
+          Resource = [
+            "arn:aws:s3:::${var.project_name}-staging-${data.aws_caller_identity.current.account_id}",
+            "arn:aws:s3:::${var.project_name}-staging-${data.aws_caller_identity.current.account_id}/*",
+          ]
         },
         {
           Effect   = "Allow"

@@ -11,15 +11,13 @@ Locking uses native S3 lockfiles (`use_lockfile = true`). Provider locks are com
 
 ## One-time account bootstrap
 
-Already done for this account: GitHub OIDC provider and the state bucket. After that, developers only merge PRs.
+Already done for this account: GitHub OIDC provider and the state bucket. GitHub environments that must exist: `staging`, `production`, `terraform`, `terraform-staging`. Optional for plan jobs: `terraform-plan-staging`, `terraform-plan-production`.
 
-Release on `main` deploys the production host with the existing deploy role (`AWS_ROLE_ARN`) and bucket/distribution secrets until Terraform has published SSM parameters. It does **not** apply Terraform on every push: the existing terraform role trusts GitHub environment `terraform`, and the staging apply role does not exist until the staging stack is created.
+Release on `main` applies staging Terraform (GitHub environment `terraform` + `AWS_TF_ROLE_ARN`), deploys and smokes staging, then deploys production. The first staging apply attaches a temporary `staging-bootstrap` inline policy to the existing terraform role so it can create the new bucket, WAF, and SSM parameters. The staging deploy job assumes the role Terraform just created; do not point `staging` at the production `AWS_ROLE_ARN`.
 
-1. Create GitHub environments listed in `infra/README.md`.
-2. Set `AWS_TF_ROLE_ARN` (existing production terraform role) on `terraform`.
-3. Dispatch **Terraform** `production` / `apply` so `moved` blocks adopt current resources. Re-run if the first apply updates IAM and a later resource (WAF/SSM) is still denied in the same session.
-4. Dispatch **Terraform** `staging` / `apply` to create the staging stack. That job also uses environment `terraform` until the dedicated staging role exists.
-5. Copy new role ARNs into `staging` / `production` / `terraform-staging` environments. After that, deploy jobs read SSM (`/med0002-pharmacy-portal/<env>/...`) instead of bucket ID secrets.
+1. Keep `AWS_TF_ROLE_ARN` (existing production terraform role) available to environment `terraform`.
+2. Dispatch **Terraform** `production` / `apply` when you are ready for WAF, SSM, and `/api/*` on production CloudFront. Re-run if the first apply updates IAM and a later resource is still denied in the same session.
+3. After the first successful staging apply, copy `github_actions_role_arn` into GitHub environment `staging` as `AWS_ROLE_ARN` (needed for **Rollback Portal**). Copy `github_actions_terraform_role_arn` into `terraform-staging` as `AWS_TF_APPLY_ROLE_ARN` when you switch staging apply off the production terraform role.
 
 ## Local commands
 
