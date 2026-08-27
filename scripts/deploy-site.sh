@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sync a built dist to an environment bucket and wait for CloudFront.
+# Sync a built dist to an environment bucket and invalidate CloudFront.
 set -euo pipefail
 
 BUCKET="${1:?bucket}"
@@ -43,6 +43,4 @@ INVALIDATION_ID="$(
     --output text \
     --no-cli-pager
 )"
-aws cloudfront wait invalidation-completed \
-  --distribution-id "${DISTRIBUTION_ID}" \
-  --id "${INVALIDATION_ID}"
+echo "Submitted CloudFront invalidation ${INVALIDATION_ID}"

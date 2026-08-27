@@ -69,17 +69,10 @@ jobs:
             --delete \
             --exclude "releases/*" \
             --only-show-errors
-          INVALIDATION_ID="$(
-            aws cloudfront create-invalidation \
-              --distribution-id "${DISTRIBUTION}" \
-              --paths "/index.html" "/runtime-config.json" "/" \
-              --query 'Invalidation.Id' \
-              --output text \
-              --no-cli-pager
-          )"
-          aws cloudfront wait invalidation-completed \
+          aws cloudfront create-invalidation \
             --distribution-id "${DISTRIBUTION}" \
-            --id "${INVALIDATION_ID}"
+            --paths "/index.html" "/runtime-config.json" "/" \
+            --no-cli-pager
           echo "url=${URL}" >> "$GITHUB_ENV"
           echo "Rolled back ${ENV_NAME} to ${SHA}"
 

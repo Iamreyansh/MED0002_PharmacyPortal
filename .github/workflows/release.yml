@@ -153,17 +153,10 @@ jobs:
             --delete \
             --exclude "releases/*" \
             --only-show-errors
-          INVALIDATION_ID="$(
-            aws cloudfront create-invalidation \
-              --distribution-id "${DISTRIBUTION}" \
-              --paths "/index.html" "/runtime-config.json" "/" \
-              --query 'Invalidation.Id' \
-              --output text \
-              --no-cli-pager
-          )"
-          aws cloudfront wait invalidation-completed \
+          aws cloudfront create-invalidation \
             --distribution-id "${DISTRIBUTION}" \
-            --id "${INVALIDATION_ID}"
+            --paths "/index.html" "/runtime-config.json" "/" \
+            --no-cli-pager
           bash portal/scripts/post-deploy-smoke.sh "${SITE_URL}/"
           echo "::error::Production smoke failed; restored ${PREV}"
           exit 1

@@ -23,9 +23,20 @@ smoke_html "/login"
 smoke_html "/register"
 
 echo "Smoke: ${ORIGIN}/runtime-config.json"
-CONFIG="$(curl -fsSL --retry 8 --retry-delay 3 --retry-all-errors "${ORIGIN}/runtime-config.json")"
-echo "${CONFIG}" | grep -q '"mfeDomainSuffix"'
-echo "OK runtime-config.json"
+CONFIG=""
+for _ in $(seq 1 18); do
+  CONFIG="$(curl -fsSL --retry 2 --retry-delay 2 --retry-all-errors "${ORIGIN}/runtime-config.json" || true)"
+  if printf '%s' "${CONFIG}" | grep -q '"mfeDomainSuffix"'; then
+    echo "OK runtime-config.json"
+    CONFIG="ok"
+    break
+  fi
+  sleep 10
+done
+if [ "${CONFIG}" != "ok" ]; then
+  echo "::error::runtime-config.json did not contain mfeDomainSuffix" >&2
+  exit 1
+fi
 
 echo "Smoke: ${ORIGIN}/api/v1/auth/me"
 API_CODE="$(curl -sS --retry 8 --retry-delay 3 --retry-all-errors -o /tmp/portal-api-me.json -w '%{http_code}' "${ORIGIN}/api/v1/auth/me" || true)"
