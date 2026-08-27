@@ -7,6 +7,8 @@ locals {
     terraform_apply = [
       "repo:${local.repo_node}:environment:terraform-staging",
       "repo:${local.repo_slug}:environment:terraform-staging",
+      "repo:${local.repo_node}:environment:terraform",
+      "repo:${local.repo_slug}:environment:terraform",
     ]
     terraform_plan = [
       "repo:${local.repo_node}:environment:terraform-plan-staging",

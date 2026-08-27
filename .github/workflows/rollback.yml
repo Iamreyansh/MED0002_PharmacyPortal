@@ -45,12 +45,22 @@ jobs:
         env:
           SHA: ${{ inputs.git_sha }}
           ENV_NAME: ${{ inputs.environment }}
+          FALLBACK_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          FALLBACK_DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
           set -euo pipefail
           PREFIX="/${PROJECT}/${ENV_NAME}"
-          BUCKET="$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)"
-          DISTRIBUTION="$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)"
-          URL="$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)"
+          if BUCKET="$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text 2>/dev/null)"; then
+            DISTRIBUTION="$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)"
+            URL="$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)"
+          elif [ "${ENV_NAME}" = "production" ] && [ -n "${FALLBACK_BUCKET}" ] && [ -n "${FALLBACK_DISTRIBUTION}" ]; then
+            BUCKET="${FALLBACK_BUCKET}"
+            DISTRIBUTION="${FALLBACK_DISTRIBUTION}"
+            URL="https://pharmacy.nammamedmate.com"
+          else
+            echo "::error::No SSM outputs for ${ENV_NAME} and no deploy secrets to fall back to"
+            exit 1
+          fi
           if ! aws s3 ls "s3://${BUCKET}/releases/${SHA}/index.html" >/dev/null 2>&1; then
             echo "::error::Release ${SHA} not found"
             exit 1

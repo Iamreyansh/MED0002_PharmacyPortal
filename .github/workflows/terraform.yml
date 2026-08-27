@@ -58,7 +58,10 @@ jobs:
     name: ${{ inputs.action }} ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    environment: ${{ inputs.action == 'apply' && (inputs.environment == 'production' && 'terraform' || format('terraform-{0}', inputs.environment)) || format('terraform-plan-{0}', inputs.environment) }}
+    # Apply uses GitHub environment `terraform` (trusted by the existing
+    # AWS_TF_ROLE_ARN). Do not switch staging apply to `terraform-staging`
+    # until that stack exists and AWS_TF_APPLY_ROLE_ARN is set on it.
+    environment: ${{ inputs.action == 'apply' && 'terraform' || format('terraform-plan-{0}', inputs.environment) }}
     defaults:
       run:
         working-directory: infra/environments/${{ inputs.environment }}

@@ -2,7 +2,7 @@
 
 ## Failed staging smoke
 
-Release stops before production. Fix the host or Core staging origin, then re-run by merging a follow-up or re-running **Release**. Terraform is not auto-reverted.
+Staging is not on the Release path until the staging stack exists. Fix the host or Core staging origin, then re-run by merging a follow-up or re-running **Release**. Terraform is not auto-reverted.
 
 ## Failed production smoke
 
@@ -14,7 +14,7 @@ The plan would destroy or replace a CloudFront distribution, bucket, Route53 rec
 
 ## Drift
 
-Dispatch Terraform `plan` for the environment. Apply only from **Release** or a reviewed `workflow_dispatch` apply so the saved plan is the plan that lands.
+Dispatch Terraform `plan` for the environment. Apply only from a reviewed `workflow_dispatch` apply so the saved plan is the plan that lands.
 
 ## MFE version
 

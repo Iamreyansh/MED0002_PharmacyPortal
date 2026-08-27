@@ -2,12 +2,11 @@
 
 Every merge to `main`:
 
-1. Deterministic quality, host e2e, and Terraform fmt/validate
-2. Apply staging Terraform from a saved plan
-3. Build the host, write `/runtime-config.json`, sync staging, wait for CloudFront, smoke staging
-4. Apply production Terraform from a saved plan
-5. Promote the same git SHA to production and smoke it
-6. On production smoke failure, restore the previous known-good `releases/<sha>/`
+1. Deterministic quality and host e2e
+2. Build the host, write `/runtime-config.json`, sync production, wait for CloudFront, smoke production
+3. On production smoke failure, restore the previous known-good `releases/<sha>/` when one exists
+
+Terraform apply is a separate **Terraform** `workflow_dispatch` until the staging stack and per-environment OIDC roles exist. After that, deploy jobs prefer SSM stack outputs over `S3_BUCKET_NAME` / `CLOUDFRONT_DISTRIBUTION_ID`. PR CI still runs Terraform fmt/validate.
 
 Staging: `https://pharmacy.staging.nammamedmate.com`  
 Production: `https://pharmacy.nammamedmate.com`

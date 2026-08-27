@@ -53,82 +53,9 @@ jobs:
           VITE_SESSION_FIXTURE: owner-free
         run: pnpm run test:e2e
 
-  terraform-staging:
-    name: terraform-staging
-    needs: [quality]
-    uses: ./.github/workflows/terraform.yml
-    with:
-      environment: staging
-      action: apply
-    secrets: inherit
-
-  staging:
-    name: staging
-    needs: [quality, e2e, terraform-staging]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    environment: staging
-    outputs:
-      sha: ${{ github.sha }}
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
-        with:
-          path: portal
-          persist-credentials: false
-      - name: Read MED0003 pin
-        id: mfe
-        working-directory: portal
-        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
-        with:
-          repository: ${{ env.MFE_REPO }}
-          ref: ${{ steps.mfe.outputs.ref }}
-          path: MED0003_MFE
-          token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
-      - uses: ./portal/.github/actions/setup-portal
-      - working-directory: portal
-        run: pnpm run build && test -f dist/index.html
-      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          role-session-name: portal-staging-${{ github.run_id }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-duration-seconds: 1800
-      - name: Read stack outputs
-        id: stack
-        run: |
-          set -euo pipefail
-          PREFIX="/${{ env.PROJECT }}/staging"
-          echo "bucket=$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-      - name: Deploy staging
-        working-directory: portal
-        run: |
-          set -euo pipefail
-          bash scripts/write-runtime-config.sh /tmp/runtime-config.json "${{ steps.stack.outputs.suffix }}"
-          bash scripts/deploy-site.sh \
-            "${{ steps.stack.outputs.bucket }}" \
-            dist \
-            "${GITHUB_SHA}" \
-            "${{ steps.stack.outputs.distribution }}" \
-            /tmp/runtime-config.json
-      - name: Staging smoke
-        run: bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
-
-  terraform-production:
-    name: terraform-production
-    needs: [staging]
-    uses: ./.github/workflows/terraform.yml
-    with:
-      environment: production
-      action: apply
-    secrets: inherit
-
   production:
     name: production
-    needs: [staging, terraform-production]
+    needs: [quality, e2e]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
@@ -158,14 +85,35 @@ jobs:
           role-duration-seconds: 1800
       - name: Read stack outputs
         id: stack
+        env:
+          FALLBACK_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          FALLBACK_DISTRIBUTION: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
         run: |
           set -euo pipefail
           PREFIX="/${{ env.PROJECT }}/production"
-          echo "bucket=$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
-          echo "previous=$(aws ssm get-parameter --name "${PREFIX}/current_release_sha" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          if BUCKET="$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text 2>/dev/null)"; then
+            {
+              echo "bucket=${BUCKET}"
+              echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)"
+              echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)"
+              echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)"
+              echo "previous=$(aws ssm get-parameter --name "${PREFIX}/current_release_sha" --query Parameter.Value --output text)"
+              echo "ssm=true"
+            } >> "$GITHUB_OUTPUT"
+          else
+            if [ -z "${FALLBACK_BUCKET}" ] || [ -z "${FALLBACK_DISTRIBUTION}" ]; then
+              echo "::error::SSM stack outputs are missing and S3_BUCKET_NAME / CLOUDFRONT_DISTRIBUTION_ID are not set"
+              exit 1
+            fi
+            {
+              echo "bucket=${FALLBACK_BUCKET}"
+              echo "distribution=${FALLBACK_DISTRIBUTION}"
+              echo "url=https://pharmacy.nammamedmate.com"
+              echo "suffix=mfe.nammamedmate.com"
+              echo "previous=unset"
+              echo "ssm=false"
+            } >> "$GITHUB_OUTPUT"
+          fi
       - name: Deploy production
         working-directory: portal
         run: |
@@ -182,7 +130,7 @@ jobs:
         continue-on-error: true
         run: bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
       - name: Record known-good SHA
-        if: steps.smoke.outcome == 'success'
+        if: steps.smoke.outcome == 'success' && steps.stack.outputs.ssm == 'true'
         run: |
           set -euo pipefail
           PREFIX="/${{ env.PROJECT }}/production"
@@ -192,27 +140,30 @@ jobs:
         if: steps.smoke.outcome != 'success'
         env:
           PREV: ${{ steps.stack.outputs.previous }}
+          BUCKET: ${{ steps.stack.outputs.bucket }}
+          DISTRIBUTION: ${{ steps.stack.outputs.distribution }}
+          SITE_URL: ${{ steps.stack.outputs.url }}
         run: |
           set -euo pipefail
           if [ -z "${PREV}" ] || [ "${PREV}" = "unset" ]; then
             echo "::error::Production smoke failed and no previous known-good SHA exists"
             exit 1
           fi
-          aws s3 sync "s3://${{ steps.stack.outputs.bucket }}/releases/${PREV}/" "s3://${{ steps.stack.outputs.bucket }}/" \
+          aws s3 sync "s3://${BUCKET}/releases/${PREV}/" "s3://${BUCKET}/" \
             --delete \
             --exclude "releases/*" \
             --only-show-errors
           INVALIDATION_ID="$(
             aws cloudfront create-invalidation \
-              --distribution-id "${{ steps.stack.outputs.distribution }}" \
+              --distribution-id "${DISTRIBUTION}" \
               --paths "/index.html" "/runtime-config.json" "/" \
               --query 'Invalidation.Id' \
               --output text \
               --no-cli-pager
           )"
           aws cloudfront wait invalidation-completed \
-            --distribution-id "${{ steps.stack.outputs.distribution }}" \
+            --distribution-id "${DISTRIBUTION}" \
             --id "${INVALIDATION_ID}"
-          bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
+          bash portal/scripts/post-deploy-smoke.sh "${SITE_URL}/"
           echo "::error::Production smoke failed; restored ${PREV}"
           exit 1
