@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P005` |
 | Phase | 1 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-settings` |
 | Story count | 3 |
@@ -35,9 +35,9 @@ Profile, completeness, tax, bank (Cashfree penny-drop via Core), contact verify,
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P005-001](./STORY-P005-001-profile-get-patch.md) | View and edit pharmacy profile | MED0003 | mfe-settings | FREE+ | P0 | M | pending |
-| [STORY-P005-002](./STORY-P005-002-profile-completeness-tax-bank-contact.md) | Completeness, tax, bank account, contact verify | MED0003 | mfe-settings | FREE+ | P0 | M | pending |
-| [STORY-P005-003](./STORY-P005-003-storefront-toggle.md) | Storefront online/offline | MED0003 | mfe-settings | FREE+ | P0 | M | pending |
+| [STORY-P005-001](./STORY-P005-001-profile-get-patch.md) | View and edit pharmacy profile | MED0003 | mfe-settings | FREE+ | P0 | M | staging-deployed |
+| [STORY-P005-002](./STORY-P005-002-profile-completeness-tax-bank-contact.md) | Completeness, tax, bank account, contact verify | MED0003 | mfe-settings | FREE+ | P0 | M | staging-deployed |
+| [STORY-P005-003](./STORY-P005-003-storefront-toggle.md) | Storefront online/offline | MED0003 | mfe-settings | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

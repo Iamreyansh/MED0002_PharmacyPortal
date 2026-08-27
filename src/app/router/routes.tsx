@@ -5,6 +5,7 @@ import { isDemoRemotesEnabled, listProductMounts } from '@/modules/mfe';
 import { HomePage } from '@/modules/home';
 import { NotFoundPage } from '@/modules/not-found';
 import { RemoteModulePage } from '@/modules/remote';
+import { SettingsRemotePage } from '@/modules/settings';
 import { TodosPage } from '@/modules/todos';
 
 export function AppRoutes() {
@@ -15,7 +16,10 @@ export function AppRoutes() {
       mount.route !== '/pos-login' &&
       mount.route !== '/sessions' &&
       mount.route !== '/onboarding' &&
-      mount.route !== '/register',
+      mount.route !== '/register' &&
+      mount.route !== '/settings' &&
+      mount.route !== '/settings/profile' &&
+      mount.route !== '/settings/storefront',
   );
 
   return (
@@ -52,6 +56,18 @@ export function AppRoutes() {
       <Route
         path="/onboarding/kyc"
         element={<OnboardingRemotePage key="kyc" screen="kyc" />}
+      />
+      <Route
+        path="/settings/profile"
+        element={<SettingsRemotePage key="profile" screen="profile" />}
+      />
+      <Route
+        path="/settings/storefront"
+        element={<SettingsRemotePage key="storefront" screen="storefront" />}
+      />
+      <Route
+        path="/settings/*"
+        element={<RemoteModulePage remoteName="settings" />}
       />
       {mounts.map((mount) => (
         <Route

@@ -5,6 +5,8 @@ import { resetApiClientState } from '@/modules/api';
 import { resetTelemetry } from '@/modules/api';
 import { resetTokenStore } from '@/modules/api';
 import { resetSessionSnapshot } from '@/modules/session';
+import { resetHostEvents } from '@/modules/mfe/lib/host-events';
+import { resetStorefrontStatus } from '@/modules/settings/store/storefront-status';
 
 vi.mock('@medmate/host-kit', async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>;
@@ -24,6 +26,8 @@ afterEach(() => {
   resetApiClientState();
   resetTokenStore();
   resetSessionSnapshot();
+  resetStorefrontStatus();
+  resetHostEvents();
   resetTelemetry();
   resetRuntimeConfig();
   vi.stubEnv('VITE_MFE_DOMAIN_SUFFIX', '');

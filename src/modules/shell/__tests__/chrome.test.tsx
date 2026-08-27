@@ -12,6 +12,7 @@ import { renderApp } from '@/shared/test/render';
 import { SESSION_FIXTURES } from '@/modules/session';
 import { ToastProvider, useToast } from '@/modules/shell';
 import { getTokens, resetTokenStore, setTokens } from '@/modules/api';
+import { applyStorefrontStatus } from '@/modules/settings/store/storefront-status';
 
 afterEach(() => {
   cleanup();
@@ -204,5 +205,20 @@ describe('toast', () => {
     expect(await screen.findByTestId('toast')).toHaveTextContent(
       'POS_TOKEN_RESTRICTED',
     );
+  });
+});
+
+describe('storefront chip', () => {
+  it('shows Online then Offline from host status', () => {
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(screen.queryByTestId('storefront-chip')).toBeNull();
+    cleanup();
+    applyStorefrontStatus({ is_online: true });
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('storefront-chip')).toHaveTextContent('Online');
+    cleanup();
+    applyStorefrontStatus({ is_online: false });
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('storefront-chip')).toHaveTextContent('Offline');
   });
 });

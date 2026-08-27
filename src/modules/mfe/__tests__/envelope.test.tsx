@@ -92,6 +92,42 @@ describe('host envelope helpers', () => {
     });
   });
 
+  it('delivers host events to subscribers and storefront status', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    function EventProbe() {
+      const caps = useHostCapabilities();
+      return (
+        <button
+          type="button"
+          data-testid="event-probe"
+          onClick={() => {
+            const stop = caps.events?.on('probe', (payload) => {
+              const el = document.querySelector('[data-testid="event-seen"]');
+              if (el) el.textContent = String(payload);
+            });
+            caps.events?.emit('probe', 'hello');
+            caps.events?.emit('pharmacy.storefront', { is_online: true });
+            stop?.();
+          }}
+        >
+          go
+        </button>
+      );
+    }
+    render(
+      <MemoryRouter>
+        <EventProbe />
+        <span data-testid="event-seen" />
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByTestId('event-probe'));
+    expect(screen.getByTestId('event-seen').textContent).toBe('hello');
+    const { getStorefrontStatus } =
+      await import('@/modules/settings/store/storefront-status');
+    expect(getStorefrontStatus().isOnline).toBe(true);
+  });
+
   it('builds envelopes with default and custom context', () => {
     const { rerender } = render(
       <MemoryRouter>

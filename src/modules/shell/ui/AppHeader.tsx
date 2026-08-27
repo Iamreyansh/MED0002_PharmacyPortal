@@ -3,6 +3,7 @@ import { PharmacySwitcher } from '@/modules/shell/ui/PharmacySwitcher';
 import { SessionMenu } from '@/modules/shell/ui/SessionMenu';
 import type { ViewportMode } from '@/modules/shell/lib/use-viewport';
 import { useSession } from '@/modules/session';
+import { useStorefrontStatus } from '@/modules/settings/store/storefront-status';
 
 export type AppHeaderProps = {
   viewport: ViewportMode;
@@ -12,7 +13,14 @@ export type AppHeaderProps = {
 
 export function AppHeader({ viewport, navOpen, onToggleNav }: AppHeaderProps) {
   const session = useSession();
+  const storefront = useStorefrontStatus();
   const showMenu = viewport !== 'desktop';
+  const chip =
+    storefront.isOnline === null
+      ? null
+      : storefront.isOnline
+        ? 'Online'
+        : 'Offline';
 
   return (
     <header className="app-header" role="banner">
@@ -33,6 +41,15 @@ export function AppHeader({ viewport, navOpen, onToggleNav }: AppHeaderProps) {
       <p className="app-header__pharmacy" data-testid="pharmacy-name">
         {session.pharmacyName}
       </p>
+      {chip ? (
+        <p
+          className="app-header__storefront"
+          data-testid="storefront-chip"
+          role="status"
+        >
+          {chip}
+        </p>
+      ) : null}
       <SessionMenu />
     </header>
   );

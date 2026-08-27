@@ -129,6 +129,16 @@ a,
   font-size: 0.9rem;
 }
 
+.app-header__storefront {
+  margin: 0;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .app-header__menu {
   min-width: var(--touch);
   min-height: var(--touch);

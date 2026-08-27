@@ -7,9 +7,12 @@ import {
 } from '@medmate/contracts';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { STOREFRONT_EVENT } from '@medmate/settings-contract';
 import { hostApi } from '@/modules/api';
 import { createIdempotencyKey } from '@/modules/api';
 import { track } from '@/modules/api';
+import { emitHostEvent, onHostEvent } from '@/modules/mfe/lib/host-events';
+import { applyStorefrontStatus } from '@/modules/settings/store/storefront-status';
 
 export const DEFAULT_HOST_CONTEXT: HostContext = {
   hostId: 'pharmacy-portal',
@@ -76,8 +79,13 @@ export function useHostCapabilities(): HostCapabilities {
         track,
       },
       events: {
-        emit: () => undefined,
-        on: () => () => undefined,
+        emit: (event, payload) => {
+          if (event === STOREFRONT_EVENT) {
+            applyStorefrontStatus(payload);
+          }
+          emitHostEvent(event, payload);
+        },
+        on: (event, handler) => onHostEvent(event, handler),
       },
       api: {
         request: async (input) =>

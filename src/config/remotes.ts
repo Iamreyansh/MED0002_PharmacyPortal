@@ -102,7 +102,7 @@ export const PRODUCT_REMOTE_REGISTRY = {
     name: 'settings',
     module: './Mfe',
     route: '/settings',
-    routes: ['/settings'],
+    routes: ['/settings', '/settings/profile', '/settings/storefront'],
     navLabel: 'Settings',
   },
   subscription: {

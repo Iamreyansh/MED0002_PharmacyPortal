@@ -8,11 +8,11 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
-| Phase 1 | 27    | 17               | 0                |
+| Phase 1 | 27    | 20               | 0                |
 | Phase 2 | 21    | 0                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 17               | 0                |
+| Total   | 70    | 20               | 0                |
 
 ## Phase 1
 
@@ -35,9 +35,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P004 | [STORY-P004-002](./EPIC-P004-onboarding-kyc/STORY-P004-002-verify-email-otp.md)                          | Registration email OTP verify and resend            | MED0003 | staging-deployed | 2026-08-27 | Host intercepts verify tokens |
 | EPIC-P004 | [STORY-P004-003](./EPIC-P004-onboarding-kyc/STORY-P004-003-registration-status.md)                       | Registration status gate                            | MED0003 | staging-deployed | 2026-08-27 | Host GET registration-status |
 | EPIC-P004 | [STORY-P004-004](./EPIC-P004-onboarding-kyc/STORY-P004-004-kyc-documents-submit.md)                      | KYC document upload, list, delete, submit           | MED0003 | staging-deployed | 2026-08-27 | Host FormData KYC + submit |
-| EPIC-P005 | [STORY-P005-001](./EPIC-P005-profile-storefront/STORY-P005-001-profile-get-patch.md)                     | View and edit pharmacy profile                      | MED0003 | pending          |            |                            |
-| EPIC-P005 | [STORY-P005-002](./EPIC-P005-profile-storefront/STORY-P005-002-profile-completeness-tax-bank-contact.md) | Completeness, tax, bank account, contact verify     | MED0003 | pending          |            |                            |
-| EPIC-P005 | [STORY-P005-003](./EPIC-P005-profile-storefront/STORY-P005-003-storefront-toggle.md)                     | Storefront online/offline                           | MED0003 | pending          |            |                            |
+| EPIC-P005 | [STORY-P005-001](./EPIC-P005-profile-storefront/STORY-P005-001-profile-get-patch.md)                     | View and edit pharmacy profile                      | MED0003 | staging-deployed | 2026-08-27 | Settings remote profile; host onSubmit |
+| EPIC-P005 | [STORY-P005-002](./EPIC-P005-profile-storefront/STORY-P005-002-profile-completeness-tax-bank-contact.md) | Completeness, tax, bank account, contact verify     | MED0003 | staging-deployed | 2026-08-27 | Same profile screen; host API |
+| EPIC-P005 | [STORY-P005-003](./EPIC-P005-profile-storefront/STORY-P005-003-storefront-toggle.md)                     | Storefront online/offline                           | MED0003 | staging-deployed | 2026-08-27 | Named buttons; header chip |
 | EPIC-P006 | [STORY-P006-001](./EPIC-P006-roles-permissions/STORY-P006-001-roles-list-create-delete.md)               | Role catalogue create and delete                    | MED0003 | pending          |            |                            |
 | EPIC-P006 | [STORY-P006-002](./EPIC-P006-roles-permissions/STORY-P006-002-role-permissions-editor.md)                | Role permission editor                              | MED0003 | pending          |            |                            |
 | EPIC-P006 | [STORY-P006-003](./EPIC-P006-roles-permissions/STORY-P006-003-permission-aware-ui-contract.md)           | Document permission-aware UI contract for remotes   | MED0002 | pending          |            |                            |
