@@ -3,8 +3,13 @@ name: Rollback Portal
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: Environment to restore
+        required: true
+        type: choice
+        options: [staging, production]
       git_sha:
-        description: 'Previous release git SHA (must exist under s3://…/releases/<sha>/)'
+        description: Previous release git SHA (must exist under s3://…/releases/<sha>/)
         required: true
         type: string
 
@@ -12,50 +17,61 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: delivery-med0002
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'ap-south-1' }}
+  PROJECT: med0002-pharmacy-portal
+
 jobs:
   rollback:
     name: rollback
     runs-on: ubuntu-latest
-    environment: production
-    timeout-minutes: 15
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
 
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           role-session-name: portal-rollback-${{ github.run_id }}
-          aws-region: ${{ vars.AWS_REGION || 'ap-south-1' }}
+          aws-region: ${{ env.AWS_REGION }}
           role-duration-seconds: 1800
 
       - name: Promote previous release
         env:
-          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
           SHA: ${{ inputs.git_sha }}
+          ENV_NAME: ${{ inputs.environment }}
         run: |
           set -euo pipefail
-          if [ -z "${S3_BUCKET_NAME:-}" ] || [ -z "${CLOUDFRONT_DISTRIBUTION_ID:-}" ]; then
-            echo "::error::S3_BUCKET_NAME and CLOUDFRONT_DISTRIBUTION_ID secrets are required"
+          PREFIX="/${PROJECT}/${ENV_NAME}"
+          BUCKET="$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)"
+          DISTRIBUTION="$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)"
+          URL="$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)"
+          if ! aws s3 ls "s3://${BUCKET}/releases/${SHA}/index.html" >/dev/null 2>&1; then
+            echo "::error::Release ${SHA} not found"
             exit 1
           fi
-          if ! aws s3 ls "s3://${S3_BUCKET_NAME}/releases/${SHA}/index.html" >/dev/null 2>&1; then
-            echo "::error::Release ${SHA} not found at s3://${S3_BUCKET_NAME}/releases/${SHA}/"
-            exit 1
-          fi
-          # Promote release to live root while preserving other release folders.
-          aws s3 sync "s3://${S3_BUCKET_NAME}/releases/${SHA}/" "s3://${S3_BUCKET_NAME}/" \
+          aws s3 sync "s3://${BUCKET}/releases/${SHA}/" "s3://${BUCKET}/" \
             --delete \
             --exclude "releases/*" \
             --only-show-errors
-          aws cloudfront create-invalidation \
-            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
-            --paths "/*" \
-            --no-cli-pager
-          echo "Rolled back portal to ${SHA}"
+          INVALIDATION_ID="$(
+            aws cloudfront create-invalidation \
+              --distribution-id "${DISTRIBUTION}" \
+              --paths "/index.html" "/runtime-config.json" "/" \
+              --query 'Invalidation.Id' \
+              --output text \
+              --no-cli-pager
+          )"
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "${DISTRIBUTION}" \
+            --id "${INVALIDATION_ID}"
+          echo "url=${URL}" >> "$GITHUB_ENV"
+          echo "Rolled back ${ENV_NAME} to ${SHA}"
 
       - name: Post-rollback smoke
-        run: |
-          chmod +x scripts/post-deploy-smoke.sh
-          ./scripts/post-deploy-smoke.sh
+        run: bash scripts/post-deploy-smoke.sh "${url}/"

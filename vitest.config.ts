@@ -10,6 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(rootDir, './src'),
+      '@medmate/ui': path.resolve(rootDir, 'src/app/lib/medmate-ui-shim.tsx'),
     },
   },
   test: {

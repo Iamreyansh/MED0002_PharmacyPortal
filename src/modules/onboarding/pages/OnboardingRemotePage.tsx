@@ -1,8 +1,8 @@
-import { getRemoteUrl } from '@medmate/federation-config';
 import type { OnboardingScreen } from '@medmate/onboarding-contract';
 import type { RemoteImporter } from '@medmate/host-kit';
 import { Navigate } from 'react-router-dom';
 import { postAuthPath } from '@/app/router/route-policy';
+import { resolveRemoteUrl } from '@/config';
 import { useOnboardingFeature } from '@/modules/onboarding/lib/onboarding-feature';
 import { buildHostContext, MfeOutlet, useMfeEnvelope } from '@/modules/mfe';
 import { useSession } from '@/modules/session';
@@ -46,10 +46,7 @@ export function OnboardingRemotePage({
       userId: session.staffId ?? undefined,
     }),
   );
-  const configuredUrl = getRemoteUrl(
-    'onboarding',
-    import.meta.env as Record<string, string | undefined>,
-  );
+  const configuredUrl = resolveRemoteUrl('onboarding');
   const remoteUrl =
     configuredUrl ||
     (loadRemote ? '/__mfe/onboarding/mf-manifest.json' : undefined);

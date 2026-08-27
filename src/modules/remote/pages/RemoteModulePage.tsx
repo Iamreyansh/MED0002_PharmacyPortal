@@ -1,4 +1,4 @@
-import { getRemoteUrl } from '@medmate/federation-config';
+import { resolveRemoteUrl } from '@/config';
 import { buildHostContext, useMfeEnvelope } from '@/modules/mfe';
 import { MfeOutlet } from '@/modules/mfe';
 import { getRemoteMeta } from '@/modules/mfe';
@@ -30,10 +30,7 @@ export function RemoteModulePage({
     return <NotFoundPage />;
   }
 
-  const remoteUrl = getRemoteUrl(
-    remote.name,
-    import.meta.env as Record<string, string | undefined>,
-  );
+  const remoteUrl = resolveRemoteUrl(remote.name);
 
   return (
     <div data-testid={`remote-page-${remote.name}`}>

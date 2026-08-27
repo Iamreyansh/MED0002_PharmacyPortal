@@ -5,114 +5,214 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 concurrency:
-  group: production-deploy
+  group: delivery-med0002
   cancel-in-progress: false
 
 env:
   HUSKY: '0'
   CI: 'true'
-  VITE_MFE_DOMAIN_SUFFIX: mfe.nammamedmate.com
   MFE_REPO: ${{ vars.MFE_REPO || 'Iamreyansh/MED0003_MFE' }}
+  AWS_REGION: ${{ vars.AWS_REGION || 'ap-south-1' }}
+  PROJECT: med0002-pharmacy-portal
 
 jobs:
   quality:
     name: quality
     uses: ./.github/workflows/quality.yml
-    secrets: inherit
+    secrets:
+      MFE_REPO_TOKEN: ${{ secrets.MFE_REPO_TOKEN }}
 
-  deploy:
-    name: deploy
+  e2e:
+    name: e2e
     needs: [quality]
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment: production
-    steps:
-      - name: Checkout portal
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
-        with:
-          path: portal
-          fetch-depth: 0
-          persist-credentials: false
-      - name: 'Checkout MED0003 (file deps)'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
-        with:
-          repository: ${{ env.MFE_REPO }}
-          path: MED0003_MFE
-          token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.1.0
-        with:
-          package_json_file: portal/package.json
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: portal/pnpm-lock.yaml
-      - working-directory: portal
-        run: pnpm install --frozen-lockfile
-      - name: Build Medmate package dists
-        working-directory: portal
-        run: |
-          chmod +x scripts/build-mfe-deps.sh
-          ./scripts/build-mfe-deps.sh
-      - working-directory: portal
-        run: pnpm run build
-      - name: Verify build
-        working-directory: portal
-        run: test -f dist/index.html
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          role-session-name: portal-release-${{ github.run_id }}
-          aws-region: ${{ vars.AWS_REGION || 'ap-south-1' }}
-          role-duration-seconds: 1800
-      - name: Sync dist to S3
-        working-directory: portal
-        env:
-          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-        run: |
-          set -euo pipefail
-          SHA="${GITHUB_SHA}"
-          # Versioned release for rollback
-          aws s3 sync dist/ "s3://${S3_BUCKET_NAME}/releases/${SHA}/" \
-            --delete \
-            --only-show-errors \
-            --cache-control "public,max-age=31536000,immutable"
-          # Live site (hashed assets immutable; HTML/JSON must-revalidate)
-          aws s3 sync dist/ "s3://${S3_BUCKET_NAME}/" \
-            --delete \
-            --only-show-errors \
-            --cache-control "public,max-age=31536000,immutable" \
-            --exclude "index.html" \
-            --exclude "*.json" \
-            --exclude "releases/*"
-          aws s3 sync dist/ "s3://${S3_BUCKET_NAME}/" \
-            --only-show-errors \
-            --cache-control "public,max-age=0,must-revalidate" \
-            --exclude "*" \
-            --include "index.html" \
-            --include "*.json"
-      - name: Invalidate CloudFront
-        env:
-          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id "${CLOUDFRONT_DISTRIBUTION_ID}" \
-            --paths "/*" \
-            --no-cli-pager
-
-  post-deploy:
-    name: post-deploy
-    needs: deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
-      - name: Post-deployment smoke
+        with:
+          path: portal
+      - name: Read MED0003 pin
+        id: mfe
+        working-directory: portal
+        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        with:
+          repository: ${{ env.MFE_REPO }}
+          ref: ${{ steps.mfe.outputs.ref }}
+          path: MED0003_MFE
+          token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+      - uses: ./portal/.github/actions/setup-portal
+      - working-directory: portal
+        run: pnpm exec playwright install --with-deps chromium
+      - working-directory: portal
+        env:
+          VITE_SESSION_FIXTURE: owner-free
+        run: pnpm run test:e2e
+
+  terraform-staging:
+    name: terraform-staging
+    needs: [quality]
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: staging
+      action: apply
+    secrets: inherit
+
+  staging:
+    name: staging
+    needs: [quality, e2e, terraform-staging]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    outputs:
+      sha: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        with:
+          path: portal
+          persist-credentials: false
+      - name: Read MED0003 pin
+        id: mfe
+        working-directory: portal
+        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        with:
+          repository: ${{ env.MFE_REPO }}
+          ref: ${{ steps.mfe.outputs.ref }}
+          path: MED0003_MFE
+          token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+      - uses: ./portal/.github/actions/setup-portal
+      - working-directory: portal
+        run: pnpm run build && test -f dist/index.html
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: portal-staging-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: 1800
+      - name: Read stack outputs
+        id: stack
         run: |
-          chmod +x scripts/post-deploy-smoke.sh
-          ./scripts/post-deploy-smoke.sh
+          set -euo pipefail
+          PREFIX="/${{ env.PROJECT }}/staging"
+          echo "bucket=$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+      - name: Deploy staging
+        working-directory: portal
+        run: |
+          set -euo pipefail
+          bash scripts/write-runtime-config.sh /tmp/runtime-config.json "${{ steps.stack.outputs.suffix }}"
+          bash scripts/deploy-site.sh \
+            "${{ steps.stack.outputs.bucket }}" \
+            dist \
+            "${GITHUB_SHA}" \
+            "${{ steps.stack.outputs.distribution }}" \
+            /tmp/runtime-config.json
+      - name: Staging smoke
+        run: bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
+
+  terraform-production:
+    name: terraform-production
+    needs: [staging]
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: production
+      action: apply
+    secrets: inherit
+
+  production:
+    name: production
+    needs: [staging, terraform-production]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        with:
+          path: portal
+          persist-credentials: false
+      - name: Read MED0003 pin
+        id: mfe
+        working-directory: portal
+        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        with:
+          repository: ${{ env.MFE_REPO }}
+          ref: ${{ steps.mfe.outputs.ref }}
+          path: MED0003_MFE
+          token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+      - uses: ./portal/.github/actions/setup-portal
+      - working-directory: portal
+        run: pnpm run build && test -f dist/index.html
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: portal-production-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: 1800
+      - name: Read stack outputs
+        id: stack
+        run: |
+          set -euo pipefail
+          PREFIX="/${{ env.PROJECT }}/production"
+          echo "bucket=$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+          echo "previous=$(aws ssm get-parameter --name "${PREFIX}/current_release_sha" --query Parameter.Value --output text)" >> "$GITHUB_OUTPUT"
+      - name: Deploy production
+        working-directory: portal
+        run: |
+          set -euo pipefail
+          bash scripts/write-runtime-config.sh /tmp/runtime-config.json "${{ steps.stack.outputs.suffix }}"
+          bash scripts/deploy-site.sh \
+            "${{ steps.stack.outputs.bucket }}" \
+            dist \
+            "${GITHUB_SHA}" \
+            "${{ steps.stack.outputs.distribution }}" \
+            /tmp/runtime-config.json
+      - name: Production smoke
+        id: smoke
+        continue-on-error: true
+        run: bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
+      - name: Record known-good SHA
+        if: steps.smoke.outcome == 'success'
+        run: |
+          set -euo pipefail
+          PREFIX="/${{ env.PROJECT }}/production"
+          aws ssm put-parameter --name "${PREFIX}/previous_release_sha" --type String --value "${{ steps.stack.outputs.previous }}" --overwrite
+          aws ssm put-parameter --name "${PREFIX}/current_release_sha" --type String --value "${GITHUB_SHA}" --overwrite
+      - name: Rollback application artifact
+        if: steps.smoke.outcome != 'success'
+        env:
+          PREV: ${{ steps.stack.outputs.previous }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PREV}" ] || [ "${PREV}" = "unset" ]; then
+            echo "::error::Production smoke failed and no previous known-good SHA exists"
+            exit 1
+          fi
+          aws s3 sync "s3://${{ steps.stack.outputs.bucket }}/releases/${PREV}/" "s3://${{ steps.stack.outputs.bucket }}/" \
+            --delete \
+            --exclude "releases/*" \
+            --only-show-errors
+          INVALIDATION_ID="$(
+            aws cloudfront create-invalidation \
+              --distribution-id "${{ steps.stack.outputs.distribution }}" \
+              --paths "/index.html" "/runtime-config.json" "/" \
+              --query 'Invalidation.Id' \
+              --output text \
+              --no-cli-pager
+          )"
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "${{ steps.stack.outputs.distribution }}" \
+            --id "${INVALIDATION_ID}"
+          bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
+          echo "::error::Production smoke failed; restored ${PREV}"
+          exit 1
