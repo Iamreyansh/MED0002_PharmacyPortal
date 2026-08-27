@@ -2,7 +2,7 @@ function handler(event) {
   var request = event.request;
   var uri = request.uri;
 
-  if (uri.indexOf('/api/') === 0 || uri === '/runtime-config.json') {
+  if (uri === '/runtime-config.json') {
     return request;
   }
 

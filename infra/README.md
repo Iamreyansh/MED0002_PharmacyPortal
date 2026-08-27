@@ -4,12 +4,12 @@ Host-only AWS stack. MED0001 Core and MED0003 remotes stay in their own repos.
 
 ## Environments
 
-| Stack      | Hostname                            | Core origin (`/api/*`)              | MFE suffix                     | State key                           |
+| Stack      | Hostname                            | Core (browser)                      | MFE suffix                     | State key                           |
 | ---------- | ----------------------------------- | ----------------------------------- | ------------------------------ | ----------------------------------- |
 | Staging    | `pharmacy.staging.nammamedmate.com` | `core.api.staging.nammamedmate.com` | `staging.mfe.nammamedmate.com` | `MED0002/staging/terraform.tfstate` |
 | Production | `pharmacy.nammamedmate.com`         | `core.api.nammamedmate.com`         | `mfe.nammamedmate.com`         | `MED0002/terraform.tfstate`         |
 
-The browser always calls same-origin `/api/v1`. CloudFront forwards `/api/*` to Core over HTTPS with caching disabled. Public runtime config (`/runtime-config.json`) carries only the MFE domain suffix.
+The browser calls Core at `https://<api_origin_domain>/api/v1`. CloudFront serves the SPA only. Public runtime config (`/runtime-config.json`) carries `apiBaseUrl` and the MFE domain suffix. MED0001 must allow CORS for the pharmacy origins; see [Core CORS](../docs/infra/core-cors.md).
 
 ## Layout
 
@@ -31,7 +31,7 @@ Never apply without a saved plan from the same job:
 5. `scripts/tf-plan-guard.sh` (blocks unexpected destroy/replace)
 6. `terraform apply tfplan`
 
-GitHub Actions does this in `.github/workflows/terraform.yml`. Release applies staging, deploys and smokes staging, then deploys production. Production Terraform apply stays on `workflow_dispatch` until you are ready to attach WAF and `/api/*` to the live distribution.
+GitHub Actions does this in `.github/workflows/terraform.yml`. Release deploys and smokes the staging SPA (with `apiBaseUrl`) first, then applies staging Terraform (CSP + SSM + drop leftover `/api/*`). Production SPA deploys next. Production Terraform apply stays on `workflow_dispatch` until the production SPA with `apiBaseUrl` is live, then drop `/api/*` and update CSP.
 
 ## GitHub environments
 
@@ -41,8 +41,8 @@ Required reviewers belong on `production` and `terraform` only if you want a hum
 
 After the first apply, copy these outputs into environment variables/secrets:
 
-- `github_actions_role_arn` → `AWS_ROLE_ARN` (deploy)
+- `github_actions_role_arn` → `AWS_ROLE_ARN` (staging and production deploy + rollback)
 - `github_actions_terraform_role_arn` → `AWS_TF_APPLY_ROLE_ARN` / existing `AWS_TF_ROLE_ARN`
 - `github_actions_terraform_plan_role_arn` → `AWS_TF_PLAN_ROLE_ARN`
 
-Bucket and CloudFront IDs are published to SSM (`/med0002-pharmacy-portal/<env>/...`). Deploy jobs read SSM; they should not store those IDs as secrets.
+Bucket, CloudFront IDs, MFE suffix, and Core hostname are published to SSM (`/med0002-pharmacy-portal/<env>/...`). Deploy jobs read SSM; they should not store those IDs as secrets.

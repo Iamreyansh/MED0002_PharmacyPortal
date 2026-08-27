@@ -51,7 +51,7 @@ resource "aws_cloudfront_origin_access_control" "site" {
 resource "aws_cloudfront_function" "spa_router" {
   name    = "${var.project_name}-${var.environment}-spa-router"
   runtime = "cloudfront-js-2.0"
-  comment = "SPA routes stay on index.html; /api and runtime-config pass through"
+  comment = "SPA routes stay on index.html; runtime-config passes through"
   publish = true
   code    = file("${path.module}/spa-router.js")
 }
@@ -72,18 +72,6 @@ resource "aws_cloudfront_distribution" "site" {
     origin_access_control_id = aws_cloudfront_origin_access_control.site.id
   }
 
-  origin {
-    domain_name = var.api_origin_domain
-    origin_id   = local.api_origin_id
-
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
-
   default_cache_behavior {
     target_origin_id           = local.site_origin_id
     viewer_protocol_policy     = "redirect-to-https"
@@ -97,18 +85,6 @@ resource "aws_cloudfront_distribution" "site" {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.spa_router.arn
     }
-  }
-
-  ordered_cache_behavior {
-    path_pattern               = "/api/*"
-    target_origin_id           = local.api_origin_id
-    viewer_protocol_policy     = "redirect-to-https"
-    allowed_methods            = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods             = ["GET", "HEAD"]
-    compress                   = true
-    cache_policy_id            = local.cache_disabled
-    origin_request_policy_id   = local.all_viewer_except_host
-    response_headers_policy_id = var.response_headers_policy_id
   }
 
   restrictions {

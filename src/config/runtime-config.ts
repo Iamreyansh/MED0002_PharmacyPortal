@@ -7,6 +7,10 @@ const ALLOWED_KEYS = new Set(['apiBaseUrl', 'mfeDomainSuffix']);
 const REJECTED_KEY = /token|secret|password|credential|private/i;
 const HTTPS_ORIGIN = /^https:\/\/[a-z0-9](?:[a-z0-9.-]*[a-z0-9])$/i;
 const HOST_SUFFIX = /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])$/i;
+const ALLOWED_API_BASE_URLS = new Set([
+  'https://core.api.nammamedmate.com',
+  'https://core.api.staging.nammamedmate.com',
+]);
 
 const EMPTY: RuntimeConfig = {
   apiBaseUrl: '',
@@ -55,6 +59,9 @@ function readHttpsOriginOrEmpty(value: unknown, field: string): string {
   const trimmed = value.replace(/\/$/, '');
   if (!HTTPS_ORIGIN.test(trimmed)) {
     throw new Error(`${field} must be an https origin or empty`);
+  }
+  if (!ALLOWED_API_BASE_URLS.has(trimmed)) {
+    throw new Error(`${field} must be an allowlisted Core origin or empty`);
   }
   return trimmed;
 }

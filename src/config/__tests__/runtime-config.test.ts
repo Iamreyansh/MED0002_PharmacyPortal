@@ -42,6 +42,11 @@ describe('runtime config', () => {
     expect(() =>
       parseRuntimeConfig({ apiBaseUrl: 'https://core.example.com/v1?x=1' }),
     ).toThrow(/https origin/);
+    expect(() =>
+      parseRuntimeConfig({
+        apiBaseUrl: 'https://attacker.example.com',
+      }),
+    ).toThrow(/allowlisted Core origin/);
     expect(() => parseRuntimeConfig({ mfeDomainSuffix: 1 })).toThrow(/string/);
     expect(() =>
       parseRuntimeConfig({ mfeDomainSuffix: 'https://evil.test' }),

@@ -53,18 +53,9 @@ jobs:
           VITE_SESSION_FIXTURE: owner-free
         run: pnpm run test:e2e
 
-  terraform-staging:
-    name: terraform-staging
-    needs: [quality]
-    uses: ./.github/workflows/terraform.yml
-    with:
-      environment: staging
-      action: apply
-    secrets: inherit
-
   staging:
     name: staging
-    needs: [quality, e2e, terraform-staging]
+    needs: [quality, e2e]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: staging
@@ -88,7 +79,7 @@ jobs:
         run: pnpm run build && test -f dist/index.html
       - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.0.2
         with:
-          role-to-assume: ${{ needs.terraform-staging.outputs.deploy_role_arn }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           role-session-name: portal-staging-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
           role-duration-seconds: 1800
@@ -97,17 +88,24 @@ jobs:
         run: |
           set -euo pipefail
           PREFIX="/${{ env.PROJECT }}/staging"
+          API_DOMAIN="$(aws ssm get-parameter --name "${PREFIX}/api_origin_domain" --query Parameter.Value --output text 2>/dev/null || true)"
+          if [ -z "${API_DOMAIN}" ] || [ "${API_DOMAIN}" = "None" ]; then
+            API_DOMAIN="core.api.staging.nammamedmate.com"
+          fi
           {
             echo "bucket=$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text)"
             echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)"
             echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)"
             echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)"
+            echo "api=${API_DOMAIN}"
           } >> "$GITHUB_OUTPUT"
       - name: Deploy staging
         working-directory: portal
         run: |
           set -euo pipefail
-          bash scripts/write-runtime-config.sh /tmp/runtime-config.json "${{ steps.stack.outputs.suffix }}"
+          bash scripts/write-runtime-config.sh /tmp/runtime-config.json \
+            "${{ steps.stack.outputs.suffix }}" \
+            "https://${{ steps.stack.outputs.api }}"
           bash scripts/deploy-site.sh \
             "${{ steps.stack.outputs.bucket }}" \
             dist \
@@ -116,6 +114,24 @@ jobs:
             /tmp/runtime-config.json
       - name: Staging smoke
         run: bash portal/scripts/post-deploy-smoke.sh "${{ steps.stack.outputs.url }}/"
+
+  terraform-staging:
+    name: terraform-staging
+    needs: [staging]
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: staging
+      action: apply
+    secrets: inherit
+
+  staging-post-terraform:
+    name: staging-post-terraform-smoke
+    needs: [terraform-staging]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - run: bash scripts/post-deploy-smoke.sh https://pharmacy.staging.nammamedmate.com/
 
   production:
     name: production
@@ -156,11 +172,16 @@ jobs:
           set -euo pipefail
           PREFIX="/${{ env.PROJECT }}/production"
           if BUCKET="$(aws ssm get-parameter --name "${PREFIX}/s3_bucket_name" --query Parameter.Value --output text 2>/dev/null)"; then
+            API_DOMAIN="$(aws ssm get-parameter --name "${PREFIX}/api_origin_domain" --query Parameter.Value --output text 2>/dev/null || true)"
+            if [ -z "${API_DOMAIN}" ] || [ "${API_DOMAIN}" = "None" ]; then
+              API_DOMAIN="core.api.nammamedmate.com"
+            fi
             {
               echo "bucket=${BUCKET}"
               echo "distribution=$(aws ssm get-parameter --name "${PREFIX}/cloudfront_distribution_id" --query Parameter.Value --output text)"
               echo "url=$(aws ssm get-parameter --name "${PREFIX}/site_url" --query Parameter.Value --output text)"
               echo "suffix=$(aws ssm get-parameter --name "${PREFIX}/mfe_domain_suffix" --query Parameter.Value --output text)"
+              echo "api=${API_DOMAIN}"
               echo "previous=$(aws ssm get-parameter --name "${PREFIX}/current_release_sha" --query Parameter.Value --output text)"
               echo "ssm=true"
             } >> "$GITHUB_OUTPUT"
@@ -174,6 +195,7 @@ jobs:
               echo "distribution=${FALLBACK_DISTRIBUTION}"
               echo "url=https://pharmacy.nammamedmate.com"
               echo "suffix=mfe.nammamedmate.com"
+              echo "api=core.api.nammamedmate.com"
               echo "previous=unset"
               echo "ssm=false"
             } >> "$GITHUB_OUTPUT"
@@ -182,7 +204,9 @@ jobs:
         working-directory: portal
         run: |
           set -euo pipefail
-          bash scripts/write-runtime-config.sh /tmp/runtime-config.json "${{ steps.stack.outputs.suffix }}"
+          bash scripts/write-runtime-config.sh /tmp/runtime-config.json \
+            "${{ steps.stack.outputs.suffix }}" \
+            "https://${{ steps.stack.outputs.api }}"
           bash scripts/deploy-site.sh \
             "${{ steps.stack.outputs.bucket }}" \
             dist \

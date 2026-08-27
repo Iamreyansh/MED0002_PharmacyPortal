@@ -2,7 +2,7 @@
 
 ## Failed staging smoke
 
-Release stops before production. Fix the host or Core staging origin (`core.api.staging.nammamedmate.com`), then re-run by merging a follow-up or re-running **Release**. Terraform is not auto-reverted.
+Release stops before production. Fix the host, Core staging origin (`core.api.staging.nammamedmate.com`), or [Core CORS](core-cors.md), then re-run by merging a follow-up or re-running **Release**. Terraform is not auto-reverted.
 
 ## Failed production smoke
 

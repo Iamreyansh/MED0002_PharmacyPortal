@@ -30,6 +30,11 @@ aws s3 sync "${DIST}/" "s3://${BUCKET}/" \
   --include "*.json" \
   --exclude "runtime-config.json"
 
+aws s3 cp "${RUNTIME_CONFIG}" "s3://${BUCKET}/releases/${SHA}/runtime-config.json" \
+  --only-show-errors \
+  --cache-control "public,max-age=0,must-revalidate" \
+  --content-type "application/json"
+
 aws s3 cp "${RUNTIME_CONFIG}" "s3://${BUCKET}/runtime-config.json" \
   --only-show-errors \
   --cache-control "public,max-age=0,must-revalidate" \

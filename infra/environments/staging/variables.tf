@@ -15,7 +15,7 @@ variable "domain_name" {
 
 variable "api_origin_domain" {
   type        = string
-  description = "MED0001 Core hostname (no scheme). Browser still calls same-origin /api."
+  description = "MED0001 Core hostname (no scheme). Browser calls this origin; CloudFront is SPA only."
 }
 
 variable "mfe_domain_suffix" {

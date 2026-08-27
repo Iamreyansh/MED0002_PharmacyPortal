@@ -20,7 +20,7 @@ variable "bucket_name" {
 
 variable "api_origin_domain" {
   type        = string
-  description = "MED0001 Core hostname, without scheme."
+  description = "MED0001 Core hostname (no scheme). Published to SSM and CSP; not a CloudFront origin."
 }
 
 variable "mfe_domain_suffix" {

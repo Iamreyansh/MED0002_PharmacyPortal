@@ -18,7 +18,7 @@ locals {
     "font-src 'self';",
     "style-src 'self' 'unsafe-inline';",
     "script-src 'self' https://*.${var.mfe_domain_suffix};",
-    "connect-src 'self' https://*.${var.mfe_domain_suffix};",
+    "connect-src 'self' https://${var.api_origin_domain} https://*.${var.mfe_domain_suffix};",
     "worker-src 'self' blob:;",
   ])
 }

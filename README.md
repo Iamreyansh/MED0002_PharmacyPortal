@@ -61,3 +61,4 @@ Optional demo remote (not product nav):
 - [Local development](docs/development/local-development.md)
 - [Deploy](docs/deploy/deploy.md)
 - [AWS bootstrap](docs/infra/aws-bootstrap.md)
+- [Core CORS](docs/infra/core-cors.md)

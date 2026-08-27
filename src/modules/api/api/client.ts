@@ -190,6 +190,7 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
         headers,
         body: method === 'GET' ? undefined : payload,
         signal: controller.signal,
+        credentials: 'omit',
       });
 
       if (input.binary && response.ok) {

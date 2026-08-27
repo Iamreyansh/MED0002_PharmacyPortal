@@ -21,7 +21,7 @@ pnpm dev
 
 The pharmacy shell does not require a Todo remote. Todo is **demo-only**.
 
-`pnpm dev` proxies `/api` to Core (`VITE_API_PROXY_TARGET`, default `http://localhost:8080`). Leave `VITE_API_BASE_URL` unset locally so the browser stays same-origin and avoids CORS. Set `VITE_API_BASE_URL` only for builds against an API that allows the SPA origin.
+`pnpm dev` proxies `/api` to Core (`VITE_API_PROXY_TARGET`, default `http://localhost:8080`). Leave `VITE_API_BASE_URL` unset locally so the browser stays same-origin and avoids CORS. Deployed environments set `apiBaseUrl` in `/runtime-config.json` to Core (`core.api.staging.nammamedmate.com` / `core.api.nammamedmate.com`) and require [Core CORS](../infra/core-cors.md).
 
 Anonymous visits land on `/login`. Sign in with Core `POST /api/v1/auth/pharmacy/login` (email or +91 mobile + password). POS counters use `/pos-login` with `pharmacy_id`, `staff_id`, and a 4-digit PIN.
 

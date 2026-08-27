@@ -56,6 +56,13 @@ resource "aws_ssm_parameter" "mfe_domain_suffix" {
   tags  = var.tags
 }
 
+resource "aws_ssm_parameter" "api_origin_domain" {
+  name  = "/${var.project_name}/${var.environment}/api_origin_domain"
+  type  = "String"
+  value = var.api_origin_domain
+  tags  = var.tags
+}
+
 resource "aws_ssm_parameter" "current_release_sha" {
   name  = "/${var.project_name}/${var.environment}/current_release_sha"
   type  = "String"

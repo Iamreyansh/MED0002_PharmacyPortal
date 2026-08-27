@@ -192,6 +192,7 @@ describe('createApiClient facade', () => {
       'http://env.test/api/v1/search',
     );
     expect(fetch.mock.calls[0]?.[1]?.body).toBeUndefined();
+    expect(fetch.mock.calls[0]?.[1]?.credentials).toBe('omit');
   });
 
   it('times out hung requests as NETWORK_ERROR', async () => {

@@ -125,5 +125,5 @@ jobs:
             echo "- terraform role: \`${TF_ROLE}\`"
             echo "- site: ${URL}"
             echo
-            echo "Copy the deploy role into GitHub environment \`${{ inputs.environment }}\` as \`AWS_ROLE_ARN\` for rollback jobs."
+            echo "Copy the deploy role into GitHub environment \`${{ inputs.environment }}\` as \`AWS_ROLE_ARN\` for deploy and rollback jobs."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -26,9 +26,9 @@ Cross-module production code imports `@/modules/<name>` barrels. Same-module dee
 
 ## Session and API
 
-The host owns the Core fetch client (same-origin `/api/v1` locally and in deployed environments). CloudFront `/api/*` forwards to Core (`core.api.staging.nammamedmate.com` or `core.api.nammamedmate.com`). Remotes call `data.capabilities.api.request` and never store tokens. Tokens live in `sessionStorage` via `modules/api/store/token-store`. Envelope `pharmacyId` / `userId` come from session, not demo constants.
+The host owns the Core fetch client. Locally the browser stays same-origin (`/api/v1` via the Vite proxy). Deployed environments call Core directly (`https://core.api.staging.nammamedmate.com` or `https://core.api.nammamedmate.com`) using `/runtime-config.json` `apiBaseUrl`. Remotes call `data.capabilities.api.request` and never store tokens. Tokens live in `sessionStorage` via `modules/api/store/token-store`. Envelope `pharmacyId` / `userId` come from session, not demo constants.
 
-Deployed builds do not bake environment URLs. `public/runtime-config.json` is overwritten per environment with a public MFE suffix only.
+Deployed builds do not bake environment URLs. `public/runtime-config.json` is overwritten per environment with `apiBaseUrl` and the public MFE suffix.
 
 Auth screens (`/login`, `/pos-login`, `/sessions`) load the `auth` remote. Onboarding screens (`/register`, `/register/verify`, `/onboarding/status`, `/onboarding/kyc`) load the `onboarding` remote. Environment runtime config sets `mfeDomainSuffix` so every remote resolves without a per-MFE URL. Host adapters (`AuthRemotePage` / `OnboardingRemotePage`) own `onSubmit`, tokens, hydrate, and navigation. Remotes never receive `access_token` / `refresh_token` / MFA challenge tokens. Default Playwright (`e2e/portal.spec.ts`) keeps remotes off; `e2e/auth-federation.spec.ts` and `e2e/onboarding-federation.spec.ts` are the federation contracts (require `MED0003_MFE/dist/auth` and `dist/onboarding`).
 

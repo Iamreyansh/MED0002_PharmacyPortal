@@ -13,11 +13,11 @@ Locking uses native S3 lockfiles (`use_lockfile = true`). Provider locks are com
 
 Already done for this account: GitHub OIDC provider and the state bucket. GitHub environments that must exist: `staging`, `production`, `terraform`, `terraform-staging`. Optional for plan jobs: `terraform-plan-staging`, `terraform-plan-production`.
 
-Release on `main` applies staging Terraform (GitHub environment `terraform` + `AWS_TF_ROLE_ARN`), deploys and smokes staging, then deploys production. The first staging apply attaches a temporary `staging-bootstrap` inline policy to the existing terraform role so it can create the new bucket, WAF, and SSM parameters. The staging deploy job assumes the role Terraform just created; do not point `staging` at the production `AWS_ROLE_ARN`.
+Release on `main` deploys and smokes the staging SPA (with `apiBaseUrl`) first, then applies staging Terraform (GitHub environment `terraform` + `AWS_TF_ROLE_ARN`). Production SPA deploys next. The first staging apply attaches a temporary `staging-bootstrap` inline policy to the existing terraform role so it can create the new bucket, WAF, and SSM parameters. Staging deploy assumes GitHub environment `staging` `AWS_ROLE_ARN`; do not point `staging` at the production `AWS_ROLE_ARN`.
 
 1. Keep `AWS_TF_ROLE_ARN` (existing production terraform role) available to environment `terraform`.
-2. Dispatch **Terraform** `production` / `apply` when you are ready for WAF, SSM, and `/api/*` on production CloudFront. Re-run if the first apply updates IAM and a later resource is still denied in the same session.
-3. After the first successful staging apply, copy `github_actions_role_arn` into GitHub environment `staging` as `AWS_ROLE_ARN` (needed for **Rollback Portal**). Copy `github_actions_terraform_role_arn` into `terraform-staging` as `AWS_TF_APPLY_ROLE_ARN` when you switch staging apply off the production terraform role.
+2. Copy `github_actions_role_arn` into GitHub environment `staging` as `AWS_ROLE_ARN` (required for **Release** staging deploy and **Rollback Portal**). Copy `github_actions_terraform_role_arn` into `terraform-staging` as `AWS_TF_APPLY_ROLE_ARN` when you switch staging apply off the production terraform role.
+3. Dispatch **Terraform** `production` / `apply` after the production SPA with `apiBaseUrl` is live, to drop leftover `/api/*`, publish SSM, and update CSP. Re-run if the first apply updates IAM and a later resource is still denied in the same session.
 
 ## Local commands
 

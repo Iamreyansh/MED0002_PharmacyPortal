@@ -49,6 +49,7 @@ module "edge" {
 
   name              = "${var.project_name}-${local.environment}"
   mfe_domain_suffix = var.mfe_domain_suffix
+  api_origin_domain = var.api_origin_domain
   enable_waf        = true
   rate_limit        = var.waf_rate_limit
   csp_report_only   = true
