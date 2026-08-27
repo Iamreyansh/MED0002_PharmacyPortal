@@ -1,44 +1,6 @@
-resource "aws_s3_bucket" "site" {
-  bucket = local.bucket_name
-
-  tags = {
-    Project = var.project_name
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "site" {
-  bucket = aws_s3_bucket.site.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket_ownership_controls" "site" {
-  bucket = aws_s3_bucket.site.id
-
-  rule {
-    object_ownership = "BucketOwnerEnforced"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "site" {
-  bucket = aws_s3_bucket.site.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_versioning" "site" {
-  bucket = aws_s3_bucket.site.id
-
-  versioning_configuration {
-    status = "Enabled"
-  }
+data "aws_route53_zone" "primary" {
+  name         = var.root_domain
+  private_zone = false
 }
 
 resource "aws_acm_certificate" "site" {
@@ -51,9 +13,7 @@ resource "aws_acm_certificate" "site" {
     create_before_destroy = true
   }
 
-  tags = {
-    Project = var.project_name
-  }
+  tags = var.tags
 }
 
 resource "aws_route53_record" "acm_validation" {
@@ -81,34 +41,74 @@ resource "aws_acm_certificate_validation" "site" {
 }
 
 resource "aws_cloudfront_origin_access_control" "site" {
-  name                              = "${var.project_name}-oac"
-  description                       = "OAC for ${var.project_name}"
+  name                              = local.oac_name
+  description                       = "OAC for ${var.project_name} ${var.environment}"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
 
+resource "aws_cloudfront_function" "spa_router" {
+  name    = "${var.project_name}-${var.environment}-spa-router"
+  runtime = "cloudfront-js-2.0"
+  comment = "SPA routes stay on index.html; /api and runtime-config pass through"
+  publish = true
+  code    = file("${path.module}/spa-router.js")
+}
+
 resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "${var.project_name} host"
+  comment             = "${var.project_name} ${var.environment}"
   default_root_object = "index.html"
-  price_class         = "PriceClass_200"
+  price_class         = var.price_class
   aliases             = [var.domain_name]
+  web_acl_id          = var.web_acl_id == "" ? null : var.web_acl_id
+  tags                = var.tags
 
   origin {
     domain_name              = aws_s3_bucket.site.bucket_regional_domain_name
-    origin_id                = "s3-site"
+    origin_id                = local.site_origin_id
     origin_access_control_id = aws_cloudfront_origin_access_control.site.id
   }
 
+  origin {
+    domain_name = var.api_origin_domain
+    origin_id   = local.api_origin_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
   default_cache_behavior {
-    target_origin_id       = "s3-site"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
-    cached_methods         = ["GET", "HEAD"]
-    compress               = true
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    target_origin_id           = local.site_origin_id
+    viewer_protocol_policy     = "redirect-to-https"
+    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
+    cached_methods             = ["GET", "HEAD"]
+    compress                   = true
+    cache_policy_id            = local.cache_optimized
+    response_headers_policy_id = var.response_headers_policy_id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.spa_router.arn
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern               = "/api/*"
+    target_origin_id           = local.api_origin_id
+    viewer_protocol_policy     = "redirect-to-https"
+    allowed_methods            = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods             = ["GET", "HEAD"]
+    compress                   = true
+    cache_policy_id            = local.cache_disabled
+    origin_request_policy_id   = local.all_viewer_except_host
+    response_headers_policy_id = var.response_headers_policy_id
   }
 
   restrictions {
@@ -123,47 +123,9 @@ resource "aws_cloudfront_distribution" "site" {
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
-  custom_error_response {
-    error_code            = 403
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 0
+  lifecycle {
+    prevent_destroy = true
   }
-
-  custom_error_response {
-    error_code            = 404
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 0
-  }
-
-  tags = {
-    Project = var.project_name
-  }
-}
-
-resource "aws_s3_bucket_policy" "site" {
-  bucket = aws_s3_bucket.site.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowCloudFrontServicePrincipalRead"
-        Effect = "Allow"
-        Principal = {
-          Service = "cloudfront.amazonaws.com"
-        }
-        Action   = ["s3:GetObject"]
-        Resource = ["${aws_s3_bucket.site.arn}/*"]
-        Condition = {
-          StringEquals = {
-            "AWS:SourceArn" = aws_cloudfront_distribution.site.arn
-          }
-        }
-      }
-    ]
-  })
 }
 
 resource "aws_route53_record" "ipv4" {

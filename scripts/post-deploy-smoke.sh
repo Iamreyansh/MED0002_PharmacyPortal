@@ -1,61 +1,45 @@
 #!/usr/bin/env bash
-# Post-deploy smoke for the Pharmacy Portal host.
+# Host/API smoke for Pharmacy Portal. Does not call live MFE CDNs.
 set -euo pipefail
 
 URL="${1:-https://pharmacy.nammamedmate.com/}"
-TODO_MANIFEST="${TODO_MANIFEST_URL:-https://todo.mfe.nammamedmate.com/mf-manifest.json}"
-AUTH_MANIFEST="${AUTH_MANIFEST_URL:-https://auth.mfe.nammamedmate.com/mf-manifest.json}"
-ONBOARDING_MANIFEST="${ONBOARDING_MANIFEST_URL:-https://onboarding.mfe.nammamedmate.com/mf-manifest.json}"
-# Derive origin for /todos without trailing-slash surprises.
 ORIGIN="${URL%/}"
-TODOS_URL="${ORIGIN}/todos"
 
-echo "Smoke: ${URL}"
-body="$(curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors "$URL")"
-echo "$body" | grep -qiE 'Pharmacy Portal|DOCTYPE|root'
-echo "OK ${URL}"
-
-echo "Smoke: ${TODOS_URL}"
-todos_code="$(curl -fsSIL --retry 5 --retry-delay 2 --retry-all-errors -o /dev/null -w '%{http_code}' "$TODOS_URL")"
-if [ "$todos_code" != "200" ]; then
-  echo "::error::/todos returned HTTP ${todos_code}" >&2
-  exit 1
-fi
-todos_body="$(curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors "$TODOS_URL")"
-echo "$todos_body" | grep -qiE 'DOCTYPE|root|Pharmacy Portal|Todos'
-echo "OK ${TODOS_URL}"
-
-smoke_manifest() {
-  local url="$1"
-  echo "Smoke: ${url}"
-  manifest="$(curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors "$url")"
-  if command -v jq >/dev/null 2>&1; then
-    echo "$manifest" | jq -e 'type == "object"' >/dev/null
-    echo "$manifest" | jq -e 'has("id") or has("name") or has("meta") or has("exposes") or length > 0' >/dev/null
-  else
-    echo "$manifest" | grep -qiE 'exposes|remoteEntry|id|name'
+smoke_html() {
+  local path="$1"
+  local target="${ORIGIN}${path}"
+  echo "Smoke: ${target}"
+  local code
+  code="$(curl -fsSIL --retry 8 --retry-delay 3 --retry-all-errors -o /dev/null -w '%{http_code}' "${target}")"
+  if [ "${code}" != "200" ]; then
+    echo "::error::${path} returned HTTP ${code}" >&2
+    exit 1
   fi
-  echo "OK ${url}"
+  echo "OK ${target}"
 }
 
-LOGIN_URL="${ORIGIN}/login"
-echo "Smoke: ${LOGIN_URL}"
-login_code="$(curl -fsSIL --retry 5 --retry-delay 2 --retry-all-errors -o /dev/null -w '%{http_code}' "$LOGIN_URL")"
-if [ "$login_code" != "200" ]; then
-  echo "::error::/login returned HTTP ${login_code}" >&2
+smoke_html "/"
+smoke_html "/login"
+smoke_html "/register"
+
+echo "Smoke: ${ORIGIN}/runtime-config.json"
+CONFIG="$(curl -fsSL --retry 8 --retry-delay 3 --retry-all-errors "${ORIGIN}/runtime-config.json")"
+echo "${CONFIG}" | grep -q '"mfeDomainSuffix"'
+echo "OK runtime-config.json"
+
+echo "Smoke: ${ORIGIN}/api/v1/auth/me"
+API_CODE="$(curl -sS --retry 8 --retry-delay 3 --retry-all-errors -o /tmp/portal-api-me.json -w '%{http_code}' "${ORIGIN}/api/v1/auth/me" || true)"
+if [ "${API_CODE}" = "200" ]; then
+  if grep -qiE 'DOCTYPE|Pharmacy Portal' /tmp/portal-api-me.json; then
+    echo "::error::/api/v1/auth/me returned SPA HTML instead of Core" >&2
+    exit 1
+  fi
+  echo "OK /api/v1/auth/me HTTP 200 (JSON)"
+elif [ "${API_CODE}" = "401" ] || [ "${API_CODE}" = "403" ]; then
+  echo "OK /api/v1/auth/me HTTP ${API_CODE} (Core reachable)"
+else
+  echo "::error::/api/v1/auth/me returned HTTP ${API_CODE}" >&2
   exit 1
 fi
-echo "OK ${LOGIN_URL}"
 
-REGISTER_URL="${ORIGIN}/register"
-echo "Smoke: ${REGISTER_URL}"
-register_code="$(curl -fsSIL --retry 5 --retry-delay 2 --retry-all-errors -o /dev/null -w '%{http_code}' "$REGISTER_URL")"
-if [ "$register_code" != "200" ]; then
-  echo "::error::/register returned HTTP ${register_code}" >&2
-  exit 1
-fi
-echo "OK ${REGISTER_URL}"
-
-smoke_manifest "${TODO_MANIFEST}"
-smoke_manifest "${AUTH_MANIFEST}"
-smoke_manifest "${ONBOARDING_MANIFEST}"
+echo "Host smoke passed for ${ORIGIN}"

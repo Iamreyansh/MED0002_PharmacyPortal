@@ -14,16 +14,14 @@ concurrency:
 env:
   HUSKY: '0'
   CI: 'true'
-  VITE_MFE_DOMAIN_SUFFIX: mfe.nammamedmate.com
-  # Override with repo var MFE_REPO if the producer lives elsewhere.
-  # For private cross-repo checkout, set secret MFE_REPO_TOKEN (contents:read).
   MFE_REPO: ${{ vars.MFE_REPO || 'Iamreyansh/MED0003_MFE' }}
 
 jobs:
   quality:
     name: quality
     uses: ./.github/workflows/quality.yml
-    secrets: inherit
+    secrets:
+      MFE_REPO_TOKEN: ${{ secrets.MFE_REPO_TOKEN }}
 
   build:
     name: build
@@ -31,35 +29,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout portal
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           path: portal
-      - name: 'Checkout MED0003 (file deps)'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - name: Read MED0003 pin
+        id: mfe
+        working-directory: portal
+        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           repository: ${{ env.MFE_REPO }}
+          ref: ${{ steps.mfe.outputs.ref }}
           path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.1.0
-        with:
-          package_json_file: portal/package.json
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: portal/pnpm-lock.yaml
-      - working-directory: portal
-        run: pnpm install --frozen-lockfile
-      - name: Build Medmate package dists
-        working-directory: portal
-        run: |
-          chmod +x scripts/build-mfe-deps.sh
-          ./scripts/build-mfe-deps.sh
+      - uses: ./portal/.github/actions/setup-portal
       - working-directory: portal
         run: pnpm run build
       - working-directory: portal
-        run: test -f dist/index.html
+        run: test -f dist/index.html && test -f dist/runtime-config.json
 
   e2e:
     name: e2e
@@ -67,47 +54,78 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Checkout portal
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           path: portal
-
-      - name: 'Checkout MED0003 (file deps + optional local remote)'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - name: Read MED0003 pin
+        id: mfe
+        working-directory: portal
+        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           repository: ${{ env.MFE_REPO }}
+          ref: ${{ steps.mfe.outputs.ref }}
           path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
-
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.1.0
+      - uses: ./portal/.github/actions/setup-portal
+      - name: Cache Playwright browsers
+        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
         with:
-          package_json_file: portal/package.json
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: |
-            portal/pnpm-lock.yaml
-            MED0003_MFE/pnpm-lock.yaml
-
-      - name: Install portal
-        working-directory: portal
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Medmate package dists
-        working-directory: portal
-        run: |
-          chmod +x scripts/build-mfe-deps.sh
-          ./scripts/build-mfe-deps.sh
-
-      - name: Install Playwright Chromium
-        working-directory: portal
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('portal/pnpm-lock.yaml') }}
+      - working-directory: portal
         run: pnpm exec playwright install --with-deps chromium
-
-      - name: Run e2e
-        working-directory: portal
+      - working-directory: portal
         env:
           VITE_SESSION_FIXTURE: owner-free
-          VITE_REMOTE_POS_URL: http://127.0.0.1:9/mf-manifest.json
         run: pnpm run test:e2e
+
+  terraform:
+    name: terraform
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TF_IN_AUTOMATION: 'true'
+      TF_INPUT: 'false'
+      TF_VERSION: '1.10.5'
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [staging, production]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+      - name: Format and validate
+        working-directory: infra/environments/${{ matrix.environment }}
+        run: |
+          set -euo pipefail
+          terraform fmt -check -recursive ../..
+          terraform init -backend=false -input=false -lockfile=readonly
+          terraform validate
+
+  required:
+    name: required
+    needs: [quality, build, e2e, terraform]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require deterministic gates
+        run: |
+          set -euo pipefail
+          for job in quality build e2e terraform; do
+            result="${{ needs.quality.result }}"
+            case "$job" in
+              quality) result="${{ needs.quality.result }}" ;;
+              build) result="${{ needs.build.result }}" ;;
+              e2e) result="${{ needs.e2e.result }}" ;;
+              terraform) result="${{ needs.terraform.result }}" ;;
+            esac
+            echo "$job=$result"
+            if [ "$result" != "success" ]; then
+              echo "::error::$job failed"
+              exit 1
+            fi
+          done

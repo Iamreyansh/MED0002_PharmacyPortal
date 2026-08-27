@@ -1,9 +1,11 @@
 /**
  * Host-owned remote registry — single source for route, nav, and module metadata.
- * Manifest URLs come from VITE_MFE_DOMAIN_SUFFIX
+ * Manifest URLs come from runtime `mfeDomainSuffix`, VITE_MFE_DOMAIN_SUFFIX
  * (`https://<name>.<suffix>/mf-manifest.json`) or an explicit VITE_REMOTE_<NAME>_URL.
  * Product iteration must use PRODUCT_REMOTE_REGISTRY (Todo is demo-only).
  */
+import { getRemoteUrl } from '@medmate/federation-config';
+import { readRemoteLookupEnv, type EnvLike } from '@/config/env';
 export type RemoteRegistryMeta = {
   name: string;
   module: string;
@@ -144,4 +146,11 @@ export function listProductRegistry(): RemoteRegistryMeta[] {
 
 export function listRemoteRegistry(): RemoteRegistryMeta[] {
   return listProductRegistry();
+}
+
+export function resolveRemoteUrl(
+  name: string,
+  env: EnvLike = import.meta.env as EnvLike,
+): string | undefined {
+  return getRemoteUrl(name, readRemoteLookupEnv(env));
 }

@@ -1,8 +1,0 @@
-aws_region     = "ap-south-1"
-root_domain    = "nammamedmate.com"
-domain_name    = "pharmacy.nammamedmate.com"
-github_org     = "Iamreyansh"
-github_org_id  = "43453546"
-github_repo    = "MED0002_PharmacyPortal"
-github_repo_id = "1309166870"
-project_name   = "med0002-pharmacy-portal"

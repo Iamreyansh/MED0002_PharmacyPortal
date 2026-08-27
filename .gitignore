@@ -13,6 +13,7 @@ coverage
 *.tfplan
 tfplan
 infra/tfplan
+infra/environments/**/tfplan
 crash.log
 .idea
 .vscode/*

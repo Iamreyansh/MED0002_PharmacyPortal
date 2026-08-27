@@ -7,7 +7,12 @@ export {
   isPublicAuthPath,
   isValidApiPath,
 } from '@/config/api-client';
-export { readApiBaseUrl, readEnv, readPublicEnv } from '@/config/env';
+export {
+  readApiBaseUrl,
+  readEnv,
+  readPublicEnv,
+  readRemoteLookupEnv,
+} from '@/config/env';
 export { isDemoRemotesEnabled } from '@/config/features';
 export {
   DEFAULT_MFE_DIST_ROOT,
@@ -23,7 +28,15 @@ export {
   REMOTE_REGISTRY,
   listProductRegistry,
   listRemoteRegistry,
+  resolveRemoteUrl,
 } from '@/config/remotes';
+export {
+  applyRuntimeConfig,
+  getRuntimeConfig,
+  parseRuntimeConfig,
+  resetRuntimeConfig,
+} from '@/config/runtime-config';
+export type { RuntimeConfig } from '@/config/runtime-config';
 export type {
   ProductRemoteName,
   RemoteName,

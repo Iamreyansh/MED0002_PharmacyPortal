@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { isPublicAuthPath, isValidApiPath } from '@/config/api-client';
-import { readApiBaseUrl, readEnv, readPublicEnv } from '@/config/env';
+import {
+  readApiBaseUrl,
+  readEnv,
+  readPublicEnv,
+  readRemoteLookupEnv,
+} from '@/config/env';
 import { isDemoRemotesEnabled } from '@/config/features';
 import {
   DEFAULT_MFE_DIST_ROOT,
@@ -59,6 +64,9 @@ describe('env helpers', () => {
     expect(readEnv()).toBeDefined();
     expect(typeof readApiBaseUrl()).toBe('string');
     expect(readPublicEnv('VITE_SESSION_FIXTURE')).toBeUndefined();
+    expect(readRemoteLookupEnv({ VITE_MFE_DOMAIN_SUFFIX: 'mfe.test' })).toEqual(
+      { VITE_MFE_DOMAIN_SUFFIX: 'mfe.test' },
+    );
   });
 });
 

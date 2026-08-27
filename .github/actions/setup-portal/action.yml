@@ -1,0 +1,29 @@
+name: Setup portal
+description: Install pnpm deps and build pinned MED0003 file packages.
+
+inputs:
+  working-directory:
+    description: Portal checkout directory
+    required: false
+    default: portal
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.1.0
+      with:
+        package_json_file: ${{ inputs.working-directory }}/package.json
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      with:
+        node-version: '20'
+        cache: pnpm
+        cache-dependency-path: ${{ inputs.working-directory }}/pnpm-lock.yaml
+    - name: Install and build file deps
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        HUSKY: '0'
+      run: |
+        set -euo pipefail
+        pnpm install --frozen-lockfile
+        bash scripts/build-mfe-deps.sh

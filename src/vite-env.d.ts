@@ -16,3 +16,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv & Record<string, string | undefined>;
 }
+
+declare module '@medmate/ui' {
+  import type { ComponentType } from 'react';
+  export const Spinner: ComponentType<{ className?: string; block?: boolean }>;
+}

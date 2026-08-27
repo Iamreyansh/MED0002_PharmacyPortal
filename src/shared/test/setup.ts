@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
+import { resetRuntimeConfig } from '@/config/runtime-config';
 import { resetApiClientState } from '@/modules/api';
 import { resetTelemetry } from '@/modules/api';
 import { resetTokenStore } from '@/modules/api';
@@ -24,5 +25,6 @@ afterEach(() => {
   resetTokenStore();
   resetSessionSnapshot();
   resetTelemetry();
+  resetRuntimeConfig();
   vi.stubEnv('VITE_MFE_DOMAIN_SUFFIX', '');
 });

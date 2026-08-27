@@ -1,8 +1,8 @@
-import { getRemoteUrl } from '@medmate/federation-config';
 import type { AuthPortalType } from '@medmate/auth-contract';
 import type { RemoteImporter } from '@medmate/host-kit';
 import { Navigate } from 'react-router-dom';
 import { postAuthPath } from '@/app/router/route-policy';
+import { resolveRemoteUrl } from '@/config';
 import { useAuthFeature } from '@/modules/auth/lib/auth-feature';
 import { buildHostContext, MfeOutlet, useMfeEnvelope } from '@/modules/mfe';
 import { useSession } from '@/modules/session';
@@ -46,10 +46,7 @@ export function AuthRemotePage({
       userId: session.staffId ?? undefined,
     }),
   );
-  const configuredUrl = getRemoteUrl(
-    'auth',
-    import.meta.env as Record<string, string | undefined>,
-  );
+  const configuredUrl = resolveRemoteUrl('auth');
   const remoteUrl =
     configuredUrl || (loadRemote ? '/__mfe/auth/mf-manifest.json' : undefined);
 
