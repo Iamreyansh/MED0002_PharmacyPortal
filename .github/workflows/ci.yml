@@ -68,11 +68,6 @@ jobs:
           path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
       - uses: ./portal/.github/actions/setup-portal
-      - name: Cache Playwright browsers
-        uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('portal/pnpm-lock.yaml') }}
       - working-directory: portal
         run: pnpm exec playwright install --with-deps chromium
       - working-directory: portal
