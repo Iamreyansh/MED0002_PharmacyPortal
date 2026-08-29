@@ -65,8 +65,7 @@ export async function submitBilling(
         path: PAY_PATH,
         method: 'POST',
         body: { invoice_id: command.values.invoice_id },
-        idempotencyKey:
-          command.values.idempotencyKey ?? createIdempotencyKey(),
+        idempotencyKey: command.values.idempotencyKey ?? createIdempotencyKey(),
       });
       if (!result.ok) {
         return failureResult(result.code, result.message, result.details);

@@ -52,6 +52,12 @@ export const NAV_CATALOG: readonly NavItem[] = [
     homeShortcut: true,
   },
   {
+    id: 'catalogue-mapping',
+    path: '/catalogue/mapping',
+    label: 'Mappings',
+    group: 'stock',
+  },
+  {
     id: 'inventory',
     path: '/inventory',
     label: 'Inventory',

@@ -19,6 +19,9 @@ importers:
       '@medmate/auth-contract':
         specifier: file:../MED0003_MFE/packages/auth-contract
         version: file:../MED0003_MFE/packages/auth-contract
+      '@medmate/catalogue-contract':
+        specifier: file:../MED0003_MFE/packages/catalogue-contract
+        version: file:../MED0003_MFE/packages/catalogue-contract
       '@medmate/contracts':
         specifier: file:../MED0003_MFE/packages/contracts
         version: file:../MED0003_MFE/packages/contracts
@@ -584,6 +587,9 @@ packages:
 
   '@medmate/auth-contract@file:../MED0003_MFE/packages/auth-contract':
     resolution: {directory: ../MED0003_MFE/packages/auth-contract, type: directory}
+
+  '@medmate/catalogue-contract@file:../MED0003_MFE/packages/catalogue-contract':
+    resolution: {directory: ../MED0003_MFE/packages/catalogue-contract, type: directory}
 
   '@medmate/contracts@file:../MED0003_MFE/packages/contracts':
     resolution: {directory: ../MED0003_MFE/packages/contracts, type: directory}
@@ -3508,6 +3514,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   '@medmate/auth-contract@file:../MED0003_MFE/packages/auth-contract': {}
+
+  '@medmate/catalogue-contract@file:../MED0003_MFE/packages/catalogue-contract': {}
 
   '@medmate/contracts@file:../MED0003_MFE/packages/contracts': {}
 

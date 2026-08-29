@@ -46,7 +46,7 @@ export const PRODUCT_REMOTE_REGISTRY = {
     name: 'catalogue',
     module: './Mfe',
     route: '/catalogue',
-    routes: ['/catalogue'],
+    routes: ['/catalogue', '/catalogue/mapping'],
     navLabel: 'Catalogue',
   },
   inventory: {

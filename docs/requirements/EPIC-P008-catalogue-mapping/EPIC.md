@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P008` |
 | Phase | 2 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-catalogue` |
 | Story count | 2 |
@@ -34,8 +34,8 @@ Pharmacy-scoped medicine search and catalogue mapping CRUD.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P008-001](./STORY-P008-001-catalogue-search.md) | Pharmacy catalogue search | MED0003 | mfe-catalogue | FREE+ | P0 | M | pending |
-| [STORY-P008-002](./STORY-P008-002-catalogue-mapping-crud.md) | Catalogue mapping list and CRUD | MED0003 | mfe-catalogue | FREE+ | P0 | M | pending |
+| [STORY-P008-001](./STORY-P008-001-catalogue-search.md) | Pharmacy catalogue search | MED0003 | mfe-catalogue | FREE+ | P0 | M | staging-deployed |
+| [STORY-P008-002](./STORY-P008-002-catalogue-mapping-crud.md) | Catalogue mapping list and CRUD | MED0003 | mfe-catalogue | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

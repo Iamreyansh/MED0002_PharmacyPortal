@@ -40,7 +40,10 @@ const plans = [
   },
 ];
 
-async function seedSession(page: Page, role: 'pharmacy_owner' | 'pharmacy_staff') {
+async function seedSession(
+  page: Page,
+  role: 'pharmacy_owner' | 'pharmacy_staff',
+) {
   await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({
       status: 200,
@@ -101,10 +104,7 @@ async function seedSession(page: Page, role: 'pharmacy_owner' | 'pharmacy_staff'
 }
 
 test.describe('subscription federation', () => {
-  test.skip(
-    !hasSubscriptionRemote,
-    'subscription remote dist is not built',
-  );
+  test.skip(!hasSubscriptionRemote, 'subscription remote dist is not built');
 
   test('owner catalogue uses display labels and subscribe idempotency', async ({
     page,
@@ -185,10 +185,14 @@ test.describe('subscription federation', () => {
     });
     await page.goto('/subscription');
     await expect(page.getByTestId('plans-forbidden')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Subscribe' })).toHaveCount(
+      0,
+    );
   });
 
-  test('billing return URL refetches and stays processing', async ({ page }) => {
+  test('billing return URL refetches and stays processing', async ({
+    page,
+  }) => {
     await seedSession(page, 'pharmacy_owner');
     await page.route('**/api/v1/pharmacy/billing/invoices', async (route) => {
       await route.fulfill({

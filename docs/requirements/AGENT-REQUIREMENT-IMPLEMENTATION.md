@@ -9,10 +9,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
-| Phase 2 | 21    | 0                | 0                |
+| Phase 2 | 21    | 2                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 27               | 0                |
+| Total   | 70    | 29               | 0                |
 
 ## Phase 1
 
@@ -50,8 +50,8 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Epic      | Story                                                                                    | Title                                              | Repo    | Status  | Completed | Notes |
 | --------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------- | ------- | ------- | --------- | ----- |
-| EPIC-P008 | [STORY-P008-001](./EPIC-P008-catalogue-mapping/STORY-P008-001-catalogue-search.md)       | Pharmacy catalogue search                          | MED0003 | pending |           |       |
-| EPIC-P008 | [STORY-P008-002](./EPIC-P008-catalogue-mapping/STORY-P008-002-catalogue-mapping-crud.md) | Catalogue mapping list and CRUD                    | MED0003 | pending |           |       |
+| EPIC-P008 | [STORY-P008-001](./EPIC-P008-catalogue-mapping/STORY-P008-001-catalogue-search.md)       | Pharmacy catalogue search                          | MED0003 | staging-deployed | 2026-08-29 | Catalogue remote search; host onSubmit |
+| EPIC-P008 | [STORY-P008-002](./EPIC-P008-catalogue-mapping/STORY-P008-002-catalogue-mapping-crud.md) | Catalogue mapping list and CRUD                    | MED0003 | staging-deployed | 2026-08-29 | Mapping table + drawer; host CRUD |
 | EPIC-P009 | [STORY-P009-001](./EPIC-P009-inventory/STORY-P009-001-inventory-master.md)               | Inventory list, summary, detail, and product patch | MED0003 | pending |           |       |
 | EPIC-P009 | [STORY-P009-002](./EPIC-P009-inventory/STORY-P009-002-batches-expiry-writeoff.md)        | Batches, FEFO, expiry alerts, write-off            | MED0003 | pending |           |       |
 | EPIC-P009 | [STORY-P009-003](./EPIC-P009-inventory/STORY-P009-003-rack-locations.md)                 | Rack locations, assign, print labels               | MED0003 | pending |           |       |

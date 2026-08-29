@@ -18,9 +18,9 @@ describe('plan lock mapping', () => {
     expect(shouldShowUpgradeCta('PLAN_FEATURE_LOCKED', 'pharmacy_owner')).toBe(
       true,
     );
-    expect(shouldShowUpgradeCta('INSUFFICIENT_PERMISSIONS', 'pharmacy_owner')).toBe(
-      false,
-    );
+    expect(
+      shouldShowUpgradeCta('INSUFFICIENT_PERMISSIONS', 'pharmacy_owner'),
+    ).toBe(false);
     expect(shouldShowUpgradeCta('MODULE_NOT_IN_PLAN', 'pharmacy_staff')).toBe(
       false,
     );

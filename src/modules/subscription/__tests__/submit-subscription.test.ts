@@ -62,9 +62,9 @@ describe('subscription submitters', () => {
     vi.spyOn(hostApi, 'request')
       .mockResolvedValueOnce(fail('FORBIDDEN'))
       .mockResolvedValueOnce(fail('VALIDATION_ERROR'));
-    expect(await submitPlans({ screen: 'plans', action: 'load' })).toMatchObject(
-      { ok: false, code: 'VALIDATION_ERROR' },
-    );
+    expect(
+      await submitPlans({ screen: 'plans', action: 'load' }),
+    ).toMatchObject({ ok: false, code: 'VALIDATION_ERROR' });
     vi.spyOn(hostApi, 'request')
       .mockResolvedValueOnce(fail('FORBIDDEN'))
       .mockResolvedValueOnce({
@@ -72,9 +72,9 @@ describe('subscription submitters', () => {
         status: 500,
         data: undefined as never,
       });
-    expect(await submitPlans({ screen: 'plans', action: 'load' })).toMatchObject(
-      { ok: false, code: 'FORBIDDEN' },
-    );
+    expect(
+      await submitPlans({ screen: 'plans', action: 'load' }),
+    ).toMatchObject({ ok: false, code: 'FORBIDDEN' });
   });
 
   it('normalizes plan arrays and subscribe idempotency', async () => {
@@ -147,14 +147,18 @@ describe('subscription submitters', () => {
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
       ok({ invoices: [{ id: 'inv-1', status: 'unpaid' }] }),
     );
-    expect(await submitBilling({ screen: 'billing', action: 'load' })).toMatchObject({
+    expect(
+      await submitBilling({ screen: 'billing', action: 'load' }),
+    ).toMatchObject({
       ok: true,
       invoices: [{ id: 'inv-1' }],
     });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
       ok({ items: [{ id: 'inv-2' }] }),
     );
-    expect(await submitBilling({ screen: 'billing', action: 'load' })).toMatchObject({
+    expect(
+      await submitBilling({ screen: 'billing', action: 'load' }),
+    ).toMatchObject({
       ok: true,
       invoices: [{ id: 'inv-2' }],
     });
@@ -192,10 +196,12 @@ describe('subscription submitters', () => {
 
   it('maps billing failures and empty lists', async () => {
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(fail('FORBIDDEN'));
-    expect(await submitBilling({ screen: 'billing', action: 'load' })).toMatchObject(
-      { ok: false, code: 'FORBIDDEN' },
+    expect(
+      await submitBilling({ screen: 'billing', action: 'load' }),
+    ).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('INVOICE_NOT_FOUND'),
     );
-    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(fail('INVOICE_NOT_FOUND'));
     expect(
       await submitBilling({
         screen: 'billing',
@@ -203,7 +209,9 @@ describe('subscription submitters', () => {
         values: { id: 'missing' },
       }),
     ).toMatchObject({ ok: false, code: 'INVOICE_NOT_FOUND' });
-    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(fail('VALIDATION_ERROR'));
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('VALIDATION_ERROR'),
+    );
     expect(
       await submitBilling({
         screen: 'billing',
@@ -212,9 +220,9 @@ describe('subscription submitters', () => {
       }),
     ).toMatchObject({ ok: false, code: 'VALIDATION_ERROR' });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok({}));
-    expect(await submitBilling({ screen: 'billing', action: 'load' })).toMatchObject(
-      { ok: true, invoices: [] },
-    );
+    expect(
+      await submitBilling({ screen: 'billing', action: 'load' }),
+    ).toMatchObject({ ok: true, invoices: [] });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(null as never));
     expect(
       await submitBilling({
@@ -226,7 +234,9 @@ describe('subscription submitters', () => {
     vi.spyOn(hostApi, 'request')
       .mockResolvedValueOnce(ok({}))
       .mockResolvedValueOnce(ok(null as never));
-    expect(await submitPlans({ screen: 'plans', action: 'load' })).toMatchObject({
+    expect(
+      await submitPlans({ screen: 'plans', action: 'load' }),
+    ).toMatchObject({
       ok: true,
       plans: [],
       subscription: null,
@@ -234,14 +244,18 @@ describe('subscription submitters', () => {
     vi.spyOn(hostApi, 'request')
       .mockResolvedValueOnce(ok({ items: [{ id: 'p2', name: 'FREE' }] }))
       .mockResolvedValueOnce(ok({ current_plan: 'FREE' }));
-    expect(await submitPlans({ screen: 'plans', action: 'load' })).toMatchObject({
+    expect(
+      await submitPlans({ screen: 'plans', action: 'load' }),
+    ).toMatchObject({
       ok: true,
       plans: [{ id: 'p2' }],
     });
     vi.spyOn(hostApi, 'request')
       .mockResolvedValueOnce(ok([{ id: 'p3', name: 'FREE' }]))
       .mockResolvedValueOnce(fail('FORBIDDEN'));
-    expect(await submitPlans({ screen: 'plans', action: 'load' })).toMatchObject({
+    expect(
+      await submitPlans({ screen: 'plans', action: 'load' }),
+    ).toMatchObject({
       ok: true,
       plans: [{ id: 'p3' }],
       subscription: null,
@@ -250,7 +264,9 @@ describe('subscription submitters', () => {
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
       ok([{ id: 'inv-3', status: 'paid' }]),
     );
-    expect(await submitBilling({ screen: 'billing', action: 'load' })).toMatchObject({
+    expect(
+      await submitBilling({ screen: 'billing', action: 'load' }),
+    ).toMatchObject({
       ok: true,
       invoices: [{ id: 'inv-3' }],
     });

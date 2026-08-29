@@ -116,10 +116,9 @@ test('locked Khata on Free fixture', async ({ page }) => {
   await expect(khataLock.first()).toBeVisible();
   await expect(khataLock.first()).not.toHaveAttribute('href', '/khata');
   await expect(page.getByText(/Khata needs Starter/).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Upgrade' }).first()).toHaveAttribute(
-    'href',
-    '/subscription',
-  );
+  await expect(
+    page.getByRole('link', { name: 'Upgrade' }).first(),
+  ).toHaveAttribute('href', '/subscription');
 });
 
 test('staff fixture has no Upgrade on locked Khata', async ({ page }) => {

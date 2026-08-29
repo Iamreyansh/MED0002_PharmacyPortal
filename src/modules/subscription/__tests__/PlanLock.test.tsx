@@ -11,10 +11,7 @@ afterEach(() => {
   cleanup();
 });
 
-function wrap(
-  ui: ReactElement,
-  session = SESSION_FIXTURES['owner-free'],
-) {
+function wrap(ui: ReactElement, session = SESSION_FIXTURES['owner-free']) {
   return render(
     <MemoryRouter>
       <SessionProvider session={session}>{ui}</SessionProvider>
@@ -27,11 +24,7 @@ describe('PlanLock', () => {
     const sink = vi.fn();
     const stop = subscribeTelemetry(sink);
     wrap(
-      <PlanLock
-        itemLabel="Khata"
-        feature="khata"
-        code="PLAN_FEATURE_LOCKED"
-      />,
+      <PlanLock itemLabel="Khata" feature="khata" code="PLAN_FEATURE_LOCKED" />,
     );
     expect(screen.getByTestId('plan-lock')).toBeTruthy();
     expect(screen.getByText(/Starter/)).toBeTruthy();
@@ -61,18 +54,13 @@ describe('PlanLock', () => {
         code="MODULE_NOT_IN_PLAN"
       />,
     );
-    expect(screen.getAllByRole('link', { name: 'Upgrade' }).length).toBeGreaterThan(
-      0,
-    );
+    expect(
+      screen.getAllByRole('link', { name: 'Upgrade' }).length,
+    ).toBeGreaterThan(0);
   });
 
   it('hides the upgrade link for permission denials and staff', () => {
-    wrap(
-      <PlanLock
-        itemLabel="Roles"
-        code="INSUFFICIENT_PERMISSIONS"
-      />,
-    );
+    wrap(<PlanLock itemLabel="Roles" code="INSUFFICIENT_PERMISSIONS" />);
     expect(screen.queryByRole('link', { name: 'Upgrade' })).toBeNull();
     expect(screen.getByText(/permission/)).toBeTruthy();
     cleanup();
@@ -108,9 +96,7 @@ describe('PlanLock', () => {
     cleanup();
     const permissionSink = vi.fn();
     const stopPermission = subscribeTelemetry(permissionSink);
-    wrap(
-      <PlanLock itemLabel="Roles" code="INSUFFICIENT_PERMISSIONS" />,
-    );
+    wrap(<PlanLock itemLabel="Roles" code="INSUFFICIENT_PERMISSIONS" />);
     expect(permissionSink).not.toHaveBeenCalled();
     stopPermission();
   });

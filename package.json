@@ -42,6 +42,7 @@
     "@medmate/onboarding-contract": "file:../MED0003_MFE/packages/onboarding-contract",
     "@medmate/settings-contract": "file:../MED0003_MFE/packages/settings-contract",
     "@medmate/subscription-contract": "file:../MED0003_MFE/packages/subscription-contract",
+    "@medmate/catalogue-contract": "file:../MED0003_MFE/packages/catalogue-contract",
     "@medmate/contracts": "file:../MED0003_MFE/packages/contracts",
     "@medmate/federation-config": "file:../MED0003_MFE/packages/federation-config",
     "@medmate/host-kit": "file:../MED0003_MFE/packages/host-kit",

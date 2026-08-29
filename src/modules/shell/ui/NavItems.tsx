@@ -28,7 +28,7 @@ function LockedNavItem({
   className: string;
   variant: NavItemControlProps['variant'];
   explanationId: string;
-  explanationRef: RefObject<HTMLParagraphElement | null>;
+  explanationRef: RefObject<HTMLParagraphElement>;
 }) {
   const session = useSession();
   useEffect(() => {

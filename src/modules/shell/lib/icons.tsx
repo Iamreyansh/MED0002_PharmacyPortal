@@ -33,6 +33,8 @@ const FALLBACK_PATH =
 const NAV_GLYPH_PATHS: Record<string, string> = {
   pos: 'M4 5h16v12H4V5zm2 2v8h12V7H6zm-2 12h16v2H4v-2zm5-9h2v3H9V10zm4 0h2v3h-2V10z',
   catalogue: 'M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z',
+  'catalogue-mapping':
+    'M7 7h10v2H7V7zm0 4h10v2H7v-2zm-3 8 4-4-1.4-1.4L4 16.2l-1.6-1.6L1 16l3 3zM7 17h10v2H7v-2z',
   inventory: 'M3 7l9-4 9 4v3H3V7zm0 5h8v9H3v-9zm10 0h8v9h-8v-9z',
   purchases:
     'M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6.2 6l.8 2h11.5l-1.4 6H8.1L6.2 6zM3 4h2.4l.6 1.5L5.2 6H3V4z',

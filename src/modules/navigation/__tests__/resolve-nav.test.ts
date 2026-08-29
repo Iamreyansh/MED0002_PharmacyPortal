@@ -90,9 +90,20 @@ describe('resolveNavItems', () => {
   it('groups items and lists home shortcuts', () => {
     const items = resolveNavItems(SESSION_FIXTURES['owner-free']);
     expect(items.some((item) => item.id === 'saas-billing')).toBe(true);
+    expect(items.some((item) => item.id === 'catalogue')).toBe(true);
+    const mapping = items.find((item) => item.id === 'catalogue-mapping');
+    expect(mapping?.path).toBe('/catalogue/mapping');
+    expect(mapping?.label).toBe('Mappings');
+    expect(mapping?.group).toBe('stock');
     const groups = groupNavItems(items);
     expect(groups.map((group) => group.group)).toContain('counter');
     expect(homeShortcuts(items).some((item) => item.id === 'pos')).toBe(true);
+    expect(homeShortcuts(items).some((item) => item.id === 'catalogue')).toBe(
+      true,
+    );
+    expect(
+      homeShortcuts(items).some((item) => item.id === 'catalogue-mapping'),
+    ).toBe(false);
     expect(groupNavItems([]).length).toBe(0);
   });
 
