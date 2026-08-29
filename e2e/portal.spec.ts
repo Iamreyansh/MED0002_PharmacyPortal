@@ -115,6 +115,65 @@ test('locked Khata on Free fixture', async ({ page }) => {
   const khataLock = page.getByTestId('plan-lock').filter({ hasText: 'Khata' });
   await expect(khataLock.first()).toBeVisible();
   await expect(khataLock.first()).not.toHaveAttribute('href', '/khata');
+  await expect(page.getByText(/Khata needs Starter/).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Upgrade' }).first()).toHaveAttribute(
+    'href',
+    '/subscription',
+  );
+});
+
+test('staff fixture has no Upgrade on locked Khata', async ({ page }) => {
+  await mockCore(page);
+  await page.addInitScript(
+    ({ tokens, snapshot }) => {
+      sessionStorage.setItem('medmate.portal.tokens', tokens);
+      sessionStorage.setItem('medmate.portal.session', snapshot);
+    },
+    {
+      tokens: JSON.stringify({
+        accessToken: 'access',
+        refreshToken: 'refresh',
+        tokenType: 'Bearer',
+        tokenScope: 'full',
+        accessTokenExpiresAt: Date.now() + 60_000,
+      }),
+      snapshot: JSON.stringify({
+        pharmacies: [],
+        staffId: STAFF_ID,
+        staffName: 'Priya Sharma',
+        pharmacyId: PHARMACY_ID,
+        pharmacyName: 'Sri Rama Medicals',
+        role: 'pharmacy_staff',
+        plan: 'FREE',
+        pharmacyStatus: 'ACTIVE',
+        permissions: ['*'],
+        tokenScope: 'full',
+      }),
+    },
+  );
+  await page.route('**/api/v1/auth/me', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          id: STAFF_ID,
+          name: 'Priya Sharma',
+          role: 'pharmacy_staff',
+          permissions: ['*'],
+          active_pharmacy: { id: PHARMACY_ID, name: 'Sri Rama Medicals' },
+        },
+      }),
+    });
+  });
+  await page.goto('/');
+  const khataLock = page.getByTestId('plan-lock').filter({ hasText: 'Khata' });
+  await expect(khataLock.first()).toBeVisible();
+  await expect(
+    page.getByText(/Khata needs Starter\. Ask the pharmacy owner/).first(),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Upgrade' })).toHaveCount(0);
 });
 
 test('me bootstrap hydrates the header', async ({ page }) => {

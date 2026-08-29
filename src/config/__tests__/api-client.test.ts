@@ -113,6 +113,7 @@ describe('session and telemetry constants', () => {
     expect(PORTAL_TOKEN_STORAGE_KEY).toBe('medmate.portal.tokens');
     expect(SESSION_FIXTURE_ENV_KEY).toBe('VITE_SESSION_FIXTURE');
     expect(TELEMETRY_EVENT_ALLOWLIST).toContain('api_error');
+    expect(TELEMETRY_EVENT_ALLOWLIST).toContain('plan_lock_shown');
     expect(TELEMETRY_SECRET_KEY.test('refresh_token')).toBe(true);
     expect(TELEMETRY_SECRET_KEY.test('status')).toBe(false);
   });

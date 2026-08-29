@@ -9,6 +9,7 @@ export default defineConfig({
     '**/auth-federation.spec.ts',
     '**/onboarding-federation.spec.ts',
     '**/settings-federation.spec.ts',
+    '**/subscription-federation.spec.ts',
   ],
   use: {
     baseURL: 'http://127.0.0.1:5173',

@@ -79,6 +79,15 @@ describe('permission and plan nav', () => {
     cleanup();
     renderApp('/', SESSION_FIXTURES['staff-star']);
     expect(screen.queryByRole('link', { name: 'Settlements' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Billing' })).toBeNull();
+  });
+
+  it('shows owner-only SaaS Billing next to Subscription', () => {
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    expect(screen.getAllByRole('link', { name: 'Billing' })[0]).toHaveAttribute(
+      'href',
+      '/billing',
+    );
   });
 
   it('locks Khata on Free and enables Analytics on Growth', () => {

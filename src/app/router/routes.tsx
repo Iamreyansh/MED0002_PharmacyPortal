@@ -6,6 +6,7 @@ import { HomePage } from '@/modules/home';
 import { NotFoundPage } from '@/modules/not-found';
 import { RemoteModulePage } from '@/modules/remote';
 import { SettingsRemotePage } from '@/modules/settings';
+import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
 export function AppRoutes() {
@@ -20,7 +21,9 @@ export function AppRoutes() {
       mount.route !== '/settings' &&
       mount.route !== '/settings/profile' &&
       mount.route !== '/settings/storefront' &&
-      mount.route !== '/settings/roles',
+      mount.route !== '/settings/roles' &&
+      mount.route !== '/subscription' &&
+      mount.route !== '/billing',
   );
 
   return (
@@ -73,6 +76,14 @@ export function AppRoutes() {
       <Route
         path="/settings/*"
         element={<RemoteModulePage remoteName="settings" />}
+      />
+      <Route
+        path="/subscription"
+        element={<SubscriptionRemotePage key="plans" screen="plans" />}
+      />
+      <Route
+        path="/billing"
+        element={<SubscriptionRemotePage key="billing" screen="billing" />}
       />
       {mounts.map((mount) => (
         <Route

@@ -8,11 +8,11 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
-| Phase 1 | 27    | 23               | 0                |
+| Phase 1 | 27    | 27               | 0                |
 | Phase 2 | 21    | 0                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 23               | 0                |
+| Total   | 70    | 27               | 0                |
 
 ## Phase 1
 
@@ -41,10 +41,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P006 | [STORY-P006-001](./EPIC-P006-roles-permissions/STORY-P006-001-roles-list-create-delete.md)               | Role catalogue create and delete                    | MED0003 | staging-deployed | 2026-08-29 | Settings remote roles list |
 | EPIC-P006 | [STORY-P006-002](./EPIC-P006-roles-permissions/STORY-P006-002-role-permissions-editor.md)                | Role permission editor                              | MED0003 | staging-deployed | 2026-08-29 | Permission matrix; host PUT |
 | EPIC-P006 | [STORY-P006-003](./EPIC-P006-roles-permissions/STORY-P006-003-permission-aware-ui-contract.md)           | Document permission-aware UI contract for remotes   | MED0002 | staging-deployed | 2026-08-29 | Shared can(); POS-aware   |
-| EPIC-P007 | [STORY-P007-001](./EPIC-P007-subscription-saas-billing/STORY-P007-001-plan-catalogue.md)                 | Plan catalogue with display labels                  | MED0003 | pending          |            |                            |
-| EPIC-P007 | [STORY-P007-002](./EPIC-P007-subscription-saas-billing/STORY-P007-002-subscribe-change-cancel.md)        | Subscribe, upgrade, downgrade, cancel, auto-renew   | MED0003 | pending          |            |                            |
-| EPIC-P007 | [STORY-P007-003](./EPIC-P007-subscription-saas-billing/STORY-P007-003-saas-invoices-cashfree.md)         | SaaS invoices and Cashfree pay handoff              | MED0003 | pending          |            |                            |
-| EPIC-P007 | [STORY-P007-004](./EPIC-P007-subscription-saas-billing/STORY-P007-004-plan-lock-ux.md)                   | Global plan-lock and upgrade prompt                 | MED0002 | pending          |            |                            |
+| EPIC-P007 | [STORY-P007-001](./EPIC-P007-subscription-saas-billing/STORY-P007-001-plan-catalogue.md)                 | Plan catalogue with display labels                  | MED0003 | staging-deployed | 2026-08-29 | Subscription remote catalogue; host onSubmit |
+| EPIC-P007 | [STORY-P007-002](./EPIC-P007-subscription-saas-billing/STORY-P007-002-subscribe-change-cancel.md)        | Subscribe, upgrade, downgrade, cancel, auto-renew   | MED0003 | staging-deployed | 2026-08-29 | Owner confirms; idempotency keys |
+| EPIC-P007 | [STORY-P007-003](./EPIC-P007-subscription-saas-billing/STORY-P007-003-saas-invoices-cashfree.md)         | SaaS invoices and Cashfree pay handoff              | MED0003 | staging-deployed | 2026-08-29 | Public pay fields only; no secrets |
+| EPIC-P007 | [STORY-P007-004](./EPIC-P007-subscription-saas-billing/STORY-P007-004-plan-lock-ux.md)                   | Global plan-lock and upgrade prompt                 | MED0002 | staging-deployed | 2026-08-29 | Shared PlanLock; plan_lock_shown |
 
 ## Phase 2
 

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { LockGlyph, SignOutGlyph, navGlyph } from '@/modules/shell/lib/icons';
@@ -6,11 +6,73 @@ import { NAV_GROUP_LABEL } from '@/modules/navigation';
 import { groupNavItems, type ResolvedNavItem } from '@/modules/navigation';
 import { performLogout } from '@/modules/session';
 import { useSession, useSessionStore } from '@/modules/session';
+import { track } from '@/modules/api';
+import {
+  navLockTelemetryCode,
+  shouldShowUpgradeCta,
+} from '@/modules/subscription/lib/plan-lock';
 
 export type NavItemControlProps = {
   item: ResolvedNavItem;
   variant: 'sidebar' | 'home' | 'bottom';
 };
+
+function LockedNavItem({
+  item,
+  className,
+  variant,
+  explanationId,
+  explanationRef,
+}: {
+  item: ResolvedNavItem;
+  className: string;
+  variant: NavItemControlProps['variant'];
+  explanationId: string;
+  explanationRef: RefObject<HTMLParagraphElement | null>;
+}) {
+  const session = useSession();
+  useEffect(() => {
+    track('plan_lock_shown', { code: navLockTelemetryCode() });
+  }, [item.id]);
+
+  return (
+    <div className="nav-lock">
+      <button
+        type="button"
+        className={className}
+        data-testid="plan-lock"
+        aria-describedby={explanationId}
+        title={item.label}
+        onClick={() => explanationRef.current?.focus()}
+      >
+        {variant === 'home' ? (
+          item.label
+        ) : (
+          <NavItemBody item={item} showLockBadge={variant === 'sidebar'} />
+        )}
+        {variant === 'home' ? (
+          <span className="nav-lock__badge">
+            <LockGlyph /> Locked
+          </span>
+        ) : null}
+      </button>
+      <p
+        id={explanationId}
+        ref={explanationRef}
+        tabIndex={-1}
+        className="nav-lock__explain"
+      >
+        {item.lockCopy}
+        {shouldShowUpgradeCta('PLAN_FEATURE_LOCKED', session.role) ? (
+          <>
+            {' '}
+            <Link to="/subscription">Upgrade</Link>
+          </>
+        ) : null}
+      </p>
+    </div>
+  );
+}
 
 function NavItemBody({
   item,
@@ -33,7 +95,6 @@ function NavItemBody({
 }
 
 export function NavItemControl({ item, variant }: NavItemControlProps) {
-  const session = useSession();
   const explanationRef = useRef<HTMLParagraphElement>(null);
   const explanationId = `nav-lock-${item.id}`;
 
@@ -45,41 +106,13 @@ export function NavItemControl({ item, variant }: NavItemControlProps) {
           ? 'bottom-nav__item'
           : 'nav-lock__trigger';
     return (
-      <div className="nav-lock">
-        <button
-          type="button"
-          className={className}
-          data-testid="plan-lock"
-          aria-describedby={explanationId}
-          title={item.label}
-          onClick={() => explanationRef.current?.focus()}
-        >
-          {variant === 'home' ? (
-            item.label
-          ) : (
-            <NavItemBody item={item} showLockBadge={variant === 'sidebar'} />
-          )}
-          {variant === 'home' ? (
-            <span className="nav-lock__badge">
-              <LockGlyph /> Locked
-            </span>
-          ) : null}
-        </button>
-        <p
-          id={explanationId}
-          ref={explanationRef}
-          tabIndex={-1}
-          className="nav-lock__explain"
-        >
-          {item.lockCopy}
-          {session.role !== 'pharmacy_staff' ? (
-            <>
-              {' '}
-              <Link to="/subscription">Upgrade</Link>
-            </>
-          ) : null}
-        </p>
-      </div>
+      <LockedNavItem
+        item={item}
+        className={className}
+        variant={variant}
+        explanationId={explanationId}
+        explanationRef={explanationRef}
+      />
     );
   }
 

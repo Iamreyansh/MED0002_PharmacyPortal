@@ -19,6 +19,8 @@ Shared packages resolve via `file:` dependencies in `package.json`:
 
 There is no `sync:contracts` script — edit contracts in MED0003 and reinstall / let `file:` resolve.
 
+CI and release check out the latest `MED0003_MFE` `main` automatically. You do not bump a pin file for contract or remote changes. To freeze a run, set the repository Actions variable `MFE_REF`.
+
 ## Quick start
 
 ```bash

@@ -8,7 +8,7 @@ export function sanitizeTelemetry(
   event: string,
   properties?: Record<string, unknown>,
 ): Record<string, unknown> | undefined {
-  if (event === 'api_error') {
+  if (event === 'api_error' || event === 'plan_lock_shown') {
     const code =
       properties && typeof properties.code === 'string'
         ? properties.code

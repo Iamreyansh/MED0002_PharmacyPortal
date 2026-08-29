@@ -160,6 +160,13 @@ export const NAV_CATALOG: readonly NavItem[] = [
     homeShortcut: true,
   },
   {
+    id: 'saas-billing',
+    path: '/billing',
+    label: 'Billing',
+    group: 'money',
+    ownerOnly: true,
+  },
+  {
     id: 'analytics',
     path: '/analytics',
     label: 'Analytics',

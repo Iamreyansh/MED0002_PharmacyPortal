@@ -11,6 +11,13 @@ describe('telemetry', () => {
       }),
     ).toEqual({ code: 'PLAN_FEATURE_LOCKED' });
     expect(sanitizeTelemetry('api_error')).toEqual({ code: 'UNKNOWN' });
+    expect(
+      sanitizeTelemetry('plan_lock_shown', {
+        code: 'PLAN_FEATURE_LOCKED',
+        feature: 'khata',
+      }),
+    ).toEqual({ code: 'PLAN_FEATURE_LOCKED' });
+    expect(sanitizeTelemetry('plan_lock_shown')).toEqual({ code: 'UNKNOWN' });
   });
 
   it('strips secret keys and token-like values from other events', () => {

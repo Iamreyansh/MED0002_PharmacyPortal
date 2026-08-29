@@ -56,6 +56,8 @@ const NAV_GLYPH_PATHS: Record<string, string> = {
   settlements:
     'M4 10h16v10H4V10zm2 3v2h4v-2H6zm8 0v2h4v-2h-4zM11 3h2v3h-2V3zM7 5l1.5 2.5L6 9 4 6.5 7 5zm10 0l3 1.5L18 9l-2.5-1.5L17 5z',
   subscription: 'M3 7h18v11H3V7zm2 3v2h6v-2H5zm0 4v2h4v-2H5z',
+  'saas-billing':
+    'M7 2h10l1 3v17l-3-1.5L12 22l-3-1.5L6 22V5l1-3zm1 7h8v2H8V9zm0 4h8v2H8v-2z',
   analytics: 'M4 18h16v2H4v-2zM6 10h3v6H6v-6zm5-6h3v12h-3V4zm5 4h3v8h-3V8z',
   support:
     'M12 3a7 7 0 0 0-7 7v3a3 3 0 0 0 3 3h1v-6H7a5 5 0 0 1 10 0h-2v6h1a3 3 0 0 0 3-3v-3a7 7 0 0 0-7-7zm-3 16h6v2H9v-2z',

@@ -75,6 +75,7 @@ describe('resolveNavItems', () => {
   it('omits Settlements for staff even with star permissions', () => {
     const items = resolveNavItems(SESSION_FIXTURES['staff-star']);
     expect(items.some((item) => item.id === 'settlements')).toBe(false);
+    expect(items.some((item) => item.id === 'saas-billing')).toBe(false);
     expect(items.some((item) => item.id === 'roles')).toBe(true);
   });
 
@@ -88,6 +89,7 @@ describe('resolveNavItems', () => {
 
   it('groups items and lists home shortcuts', () => {
     const items = resolveNavItems(SESSION_FIXTURES['owner-free']);
+    expect(items.some((item) => item.id === 'saas-billing')).toBe(true);
     const groups = groupNavItems(items);
     expect(groups.map((group) => group.group)).toContain('counter');
     expect(homeShortcuts(items).some((item) => item.id === 'pos')).toBe(true);

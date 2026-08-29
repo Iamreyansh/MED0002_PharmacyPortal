@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P007` |
 | Phase | 1 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-subscription` |
 | Story count | 4 |
@@ -37,10 +37,10 @@ Pharmacy-facing plan catalogue, subscribe/upgrade/downgrade/cancel/auto-renew, S
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P007-001](./STORY-P007-001-plan-catalogue.md) | Plan catalogue with display labels | MED0003 | mfe-subscription | FREE+ | P0 | M | pending |
-| [STORY-P007-002](./STORY-P007-002-subscribe-change-cancel.md) | Subscribe, upgrade, downgrade, cancel, auto-renew | MED0003 | mfe-subscription | FREE+ | P0 | M | pending |
-| [STORY-P007-003](./STORY-P007-003-saas-invoices-cashfree.md) | SaaS invoices and Cashfree pay handoff | MED0003 | mfe-subscription | FREE+ | P0 | M | pending |
-| [STORY-P007-004](./STORY-P007-004-plan-lock-ux.md) | Global plan-lock and upgrade prompt | MED0002 | host | FREE+ | P0 | M | pending |
+| [STORY-P007-001](./STORY-P007-001-plan-catalogue.md) | Plan catalogue with display labels | MED0003 | mfe-subscription | FREE+ | P0 | M | staging-deployed |
+| [STORY-P007-002](./STORY-P007-002-subscribe-change-cancel.md) | Subscribe, upgrade, downgrade, cancel, auto-renew | MED0003 | mfe-subscription | FREE+ | P0 | M | staging-deployed |
+| [STORY-P007-003](./STORY-P007-003-saas-invoices-cashfree.md) | SaaS invoices and Cashfree pay handoff | MED0003 | mfe-subscription | FREE+ | P0 | M | staging-deployed |
+| [STORY-P007-004](./STORY-P007-004-plan-lock-ux.md) | Global plan-lock and upgrade prompt | MED0002 | host | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 
