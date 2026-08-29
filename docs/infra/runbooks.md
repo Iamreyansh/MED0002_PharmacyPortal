@@ -18,4 +18,6 @@ Dispatch Terraform `plan` for the environment. Apply only from a reviewed `workf
 
 ## MFE version
 
-Portal CI/release check out the SHA in `.github/mfe-ref`. Bumping federation is a portal PR that changes that file.
+Portal CI, nightly, and release resolve `MED0003_MFE` `main` at the start of the run and log the SHA. Quality, build, e2e, and deploy jobs in the same run reuse that SHA.
+
+To freeze CI on a known commit, set the repository Actions variable `MFE_REF` to that SHA. Leave it unset to track `main`.

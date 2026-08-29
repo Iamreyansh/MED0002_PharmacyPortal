@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { isPublicAuthPathname } from '@/app/router/route-policy';
 import { AppHeader } from '@/modules/shell/ui/AppHeader';
@@ -15,6 +15,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [navOpen, setNavOpen] = useState(false);
   const authChrome = isPublicAuthPathname(location.pathname);
   const items = resolveNavItems(session);
+  const mobileDrawer = !authChrome && viewport === 'mobile';
   const shellClass = [
     'app-shell',
     authChrome ? 'app-shell--auth' : '',
@@ -24,6 +25,23 @@ export function AppLayout({ children }: { children: ReactNode }) {
   ]
     .filter(Boolean)
     .join(' ');
+
+  useEffect(() => {
+    setNavOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!navOpen) {
+      return;
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setNavOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [navOpen]);
 
   return (
     <ToastProvider>
@@ -42,7 +60,20 @@ export function AppLayout({ children }: { children: ReactNode }) {
             onToggleNav={() => setNavOpen((open) => !open)}
           />
         )}
-        {authChrome ? null : <SidebarNav items={items} />}
+        {mobileDrawer ? (
+          <button
+            type="button"
+            className="app-nav-scrim"
+            data-testid="nav-scrim"
+            aria-label="Dismiss navigation"
+            tabIndex={navOpen ? 0 : -1}
+            aria-hidden={!navOpen}
+            onClick={() => setNavOpen(false)}
+          />
+        ) : null}
+        {authChrome ? null : (
+          <SidebarNav items={items} inert={mobileDrawer && !navOpen} />
+        )}
         <main className="app-main" id="main-content">
           {session.pharmacyStatus === 'SUSPENDED' && !authChrome ? (
             <p

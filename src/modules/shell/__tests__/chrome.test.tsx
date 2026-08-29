@@ -8,11 +8,13 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderApp } from '@/shared/test/render';
+import { renderApp, setViewportWidth } from '@/shared/test/render';
 import { SESSION_FIXTURES } from '@/modules/session';
 import { ToastProvider, useToast } from '@/modules/shell';
 import { getTokens, resetTokenStore, setTokens } from '@/modules/api';
 import { applyStorefrontStatus } from '@/modules/settings/store/storefront-status';
+import { NAV_CATALOG } from '@/modules/navigation';
+import { hasNavGlyph, navGlyph } from '@/modules/shell/lib/icons';
 
 afterEach(() => {
   cleanup();
@@ -20,6 +22,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
   resetTokenStore();
+  setViewportWidth(1280);
 });
 
 const pharmacies = [
@@ -36,6 +39,47 @@ const pharmacies = [
     isActive: true,
   },
 ];
+
+describe('nav glyphs', () => {
+  it('maps a glyph for every catalog item and falls back', () => {
+    for (const item of NAV_CATALOG) {
+      expect(hasNavGlyph(item.id)).toBe(true);
+      const { container } = render(navGlyph(item.id));
+      expect(container.querySelector('svg')).toBeTruthy();
+    }
+    expect(hasNavGlyph('missing-id')).toBe(false);
+    const { container } = render(navGlyph('missing-id'));
+    expect(container.querySelector('svg')).toBeTruthy();
+  });
+});
+
+describe('mobile nav drawer', () => {
+  it('closes on Escape, scrim, and navigation', async () => {
+    const user = userEvent.setup();
+    setViewportWidth(375);
+    renderApp('/', SESSION_FIXTURES['owner-free']);
+    await user.click(screen.getByRole('button', { name: 'Open navigation' }));
+    expect(screen.getByTestId('nav-scrim')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'Tab' });
+    expect(
+      screen.getByRole('button', { name: 'Close navigation' }),
+    ).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(
+      screen.getByRole('button', { name: 'Open navigation' }),
+    ).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Open navigation' }));
+    await user.click(screen.getByTestId('nav-scrim'));
+    expect(
+      screen.getByRole('button', { name: 'Open navigation' }),
+    ).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Open navigation' }));
+    await user.click(screen.getAllByRole('link', { name: 'POS' })[0]!);
+    expect(
+      screen.getByRole('button', { name: 'Open navigation' }),
+    ).toBeTruthy();
+  });
+});
 
 describe('POS sidebar logout', () => {
   it('signs the counter out from the sidebar', async () => {

@@ -35,16 +35,11 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           path: portal
-      - name: Read MED0003 pin
-        id: mfe
-        working-directory: portal
-        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: ./portal/.github/actions/checkout-mfe
         with:
           repository: ${{ env.MFE_REPO }}
-          ref: ${{ steps.mfe.outputs.ref }}
-          path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+          ref: ${{ needs.quality.outputs.mfe-ref }}
       - uses: ./portal/.github/actions/setup-portal
       - working-directory: portal
         run: pnpm exec playwright install --with-deps chromium
@@ -73,16 +68,11 @@ jobs:
         with:
           path: portal
           persist-credentials: false
-      - name: Read MED0003 pin
-        id: mfe
-        working-directory: portal
-        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: ./portal/.github/actions/checkout-mfe
         with:
           repository: ${{ env.MFE_REPO }}
-          ref: ${{ steps.mfe.outputs.ref }}
-          path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+          ref: ${{ needs.quality.outputs.mfe-ref }}
       - uses: ./portal/.github/actions/setup-portal
       - working-directory: portal
         run: pnpm run build && test -f dist/index.html
@@ -126,7 +116,7 @@ jobs:
 
   production:
     name: production
-    needs: [staging]
+    needs: [quality, staging]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
@@ -135,16 +125,11 @@ jobs:
         with:
           path: portal
           persist-credentials: false
-      - name: Read MED0003 pin
-        id: mfe
-        working-directory: portal
-        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: ./portal/.github/actions/checkout-mfe
         with:
           repository: ${{ env.MFE_REPO }}
-          ref: ${{ steps.mfe.outputs.ref }}
-          path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+          ref: ${{ needs.quality.outputs.mfe-ref }}
       - uses: ./portal/.github/actions/setup-portal
       - working-directory: portal
         run: pnpm run build && test -f dist/index.html

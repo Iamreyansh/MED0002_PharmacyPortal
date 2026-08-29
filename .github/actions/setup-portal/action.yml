@@ -1,5 +1,5 @@
 name: Setup portal
-description: Install pnpm deps and build pinned MED0003 file packages.
+description: Install pnpm deps and build MED0003 file packages.
 
 inputs:
   working-directory:

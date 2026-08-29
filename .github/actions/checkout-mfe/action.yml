@@ -1,0 +1,51 @@
+name: Checkout MED0003
+description: Resolve MED0003_MFE to a commit SHA (latest main by default) and check it out.
+
+inputs:
+  repository:
+    description: MED0003 GitHub repository (owner/name)
+    required: true
+  token:
+    description: Token that can read MED0003
+    required: true
+  path:
+    description: Checkout path relative to the workspace
+    required: false
+    default: MED0003_MFE
+  ref:
+    description: Branch or commit SHA. Empty uses latest main.
+    required: false
+    default: ''
+
+outputs:
+  sha:
+    description: Resolved MED0003 commit SHA
+    value: ${{ steps.resolve.outputs.sha }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve MED0003 SHA
+      id: resolve
+      shell: bash
+      env:
+        MFE_REPO: ${{ inputs.repository }}
+        MFE_REF: ${{ inputs.ref }}
+        GH_TOKEN: ${{ inputs.token }}
+      run: |
+        set -euo pipefail
+        REQUESTED="${MFE_REF:-main}"
+        SHA="$(gh api "repos/${MFE_REPO}/commits/${REQUESTED}" --jq .sha)"
+        if [ -z "${SHA}" ]; then
+          echo "::error::Could not resolve ${MFE_REPO}@${REQUESTED}"
+          exit 1
+        fi
+        echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+        echo "MED0003 ${MFE_REPO}@${REQUESTED} -> ${SHA}"
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ steps.resolve.outputs.sha }}
+        path: ${{ inputs.path }}
+        token: ${{ inputs.token }}
+        persist-credentials: false

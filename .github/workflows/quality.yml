@@ -5,6 +5,10 @@ on:
     secrets:
       MFE_REPO_TOKEN:
         required: false
+    outputs:
+      mfe-ref:
+        description: MED0003 commit SHA used for this run
+        value: ${{ jobs.quality.outputs.mfe-ref }}
 
 permissions:
   contents: read
@@ -19,22 +23,20 @@ jobs:
     name: quality
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    outputs:
+      mfe-ref: ${{ steps.mfe.outputs.sha }}
     steps:
       - name: Checkout portal
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           path: portal
-      - name: Read MED0003 pin
-        id: mfe
-        working-directory: portal
-        run: echo "ref=$(tr -d '[:space:]' < .github/mfe-ref)" >> "$GITHUB_OUTPUT"
       - name: Checkout MED0003
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        id: mfe
+        uses: ./portal/.github/actions/checkout-mfe
         with:
           repository: ${{ env.MFE_REPO }}
-          ref: ${{ steps.mfe.outputs.ref }}
-          path: MED0003_MFE
           token: ${{ secrets.MFE_REPO_TOKEN || github.token }}
+          ref: ${{ vars.MFE_REF }}
       - uses: ./portal/.github/actions/setup-portal
       - name: Format
         working-directory: portal
