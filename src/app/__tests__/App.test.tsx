@@ -124,6 +124,7 @@ describe('permission and plan nav', () => {
       0,
     );
     expect(screen.queryByRole('link', { name: 'Roles' })).toBeNull();
+    expect(screen.queryByTestId('settings-roles-page')).toBeNull();
     expect(
       screen.getAllByRole('button', { name: 'Sign out' }).length,
     ).toBeGreaterThan(0);

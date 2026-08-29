@@ -45,7 +45,9 @@ function CapProbe() {
 function EnvelopeProbe({ withContext }: { withContext?: boolean }) {
   const data = useMfeEnvelope(
     { title: 'x' },
-    withContext ? buildHostContext({ permissions: ['todo:read'] }) : undefined,
+    withContext
+      ? buildHostContext({ permissions: ['staff:manage'] })
+      : undefined,
   );
   return (
     <div data-testid="envelope">
@@ -143,7 +145,12 @@ describe('host envelope helpers', () => {
         <EnvelopeProbe withContext />
       </MemoryRouter>,
     );
-    expect(screen.getByTestId('envelope').textContent).toContain('todo:read');
+    expect(screen.getByTestId('envelope').textContent).toContain(
+      'staff:manage',
+    );
+    expect(screen.getByTestId('envelope').textContent).not.toContain(
+      'todo:read',
+    );
   });
 
   it('does not put refresh_token on the MFE envelope', () => {

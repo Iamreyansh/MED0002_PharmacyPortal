@@ -8,11 +8,11 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
-| Phase 1 | 27    | 20               | 0                |
+| Phase 1 | 27    | 23               | 0                |
 | Phase 2 | 21    | 0                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 20               | 0                |
+| Total   | 70    | 23               | 0                |
 
 ## Phase 1
 
@@ -38,9 +38,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P005 | [STORY-P005-001](./EPIC-P005-profile-storefront/STORY-P005-001-profile-get-patch.md)                     | View and edit pharmacy profile                      | MED0003 | staging-deployed | 2026-08-27 | Settings remote profile; host onSubmit |
 | EPIC-P005 | [STORY-P005-002](./EPIC-P005-profile-storefront/STORY-P005-002-profile-completeness-tax-bank-contact.md) | Completeness, tax, bank account, contact verify     | MED0003 | staging-deployed | 2026-08-27 | Same profile screen; host API |
 | EPIC-P005 | [STORY-P005-003](./EPIC-P005-profile-storefront/STORY-P005-003-storefront-toggle.md)                     | Storefront online/offline                           | MED0003 | staging-deployed | 2026-08-27 | Named buttons; header chip |
-| EPIC-P006 | [STORY-P006-001](./EPIC-P006-roles-permissions/STORY-P006-001-roles-list-create-delete.md)               | Role catalogue create and delete                    | MED0003 | pending          |            |                            |
-| EPIC-P006 | [STORY-P006-002](./EPIC-P006-roles-permissions/STORY-P006-002-role-permissions-editor.md)                | Role permission editor                              | MED0003 | pending          |            |                            |
-| EPIC-P006 | [STORY-P006-003](./EPIC-P006-roles-permissions/STORY-P006-003-permission-aware-ui-contract.md)           | Document permission-aware UI contract for remotes   | MED0002 | pending          |            |                            |
+| EPIC-P006 | [STORY-P006-001](./EPIC-P006-roles-permissions/STORY-P006-001-roles-list-create-delete.md)               | Role catalogue create and delete                    | MED0003 | staging-deployed | 2026-08-29 | Settings remote roles list |
+| EPIC-P006 | [STORY-P006-002](./EPIC-P006-roles-permissions/STORY-P006-002-role-permissions-editor.md)                | Role permission editor                              | MED0003 | staging-deployed | 2026-08-29 | Permission matrix; host PUT |
+| EPIC-P006 | [STORY-P006-003](./EPIC-P006-roles-permissions/STORY-P006-003-permission-aware-ui-contract.md)           | Document permission-aware UI contract for remotes   | MED0002 | staging-deployed | 2026-08-29 | Shared can(); POS-aware   |
 | EPIC-P007 | [STORY-P007-001](./EPIC-P007-subscription-saas-billing/STORY-P007-001-plan-catalogue.md)                 | Plan catalogue with display labels                  | MED0003 | pending          |            |                            |
 | EPIC-P007 | [STORY-P007-002](./EPIC-P007-subscription-saas-billing/STORY-P007-002-subscribe-change-cancel.md)        | Subscribe, upgrade, downgrade, cancel, auto-renew   | MED0003 | pending          |            |                            |
 | EPIC-P007 | [STORY-P007-003](./EPIC-P007-subscription-saas-billing/STORY-P007-003-saas-invoices-cashfree.md)         | SaaS invoices and Cashfree pay handoff              | MED0003 | pending          |            |                            |

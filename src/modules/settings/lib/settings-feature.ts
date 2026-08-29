@@ -4,6 +4,7 @@ import type {
   SettingsFeatureData,
   SettingsScreen,
 } from '@medmate/settings-contract';
+import { can } from '@medmate/contracts';
 import { useSession } from '@/modules/session';
 import { useToast } from '@/modules/shell';
 import { submitBank } from '@/modules/settings/lib/submit-bank';
@@ -11,6 +12,7 @@ import { submitCompleteness } from '@/modules/settings/lib/submit-completeness';
 import { submitContact } from '@/modules/settings/lib/submit-contact';
 import { submitLogo } from '@/modules/settings/lib/submit-logo';
 import { submitProfile } from '@/modules/settings/lib/submit-profile';
+import { submitRoles } from '@/modules/settings/lib/submit-roles';
 import { submitStorefront } from '@/modules/settings/lib/submit-storefront';
 import { submitTax } from '@/modules/settings/lib/submit-tax';
 import { useStorefrontStatus } from '@/modules/settings/store/storefront-status';
@@ -21,6 +23,9 @@ const TOAST_BY_ACTION: Partial<Record<SettingsCommand['action'], string>> = {
   saveBank: 'Bank account submitted',
   verifyContact: 'Contact verified',
   uploadLogo: 'Logo uploaded',
+  create: 'Role created',
+  delete: 'Role deleted',
+  savePermissions: 'Permissions saved',
 };
 
 export function useSettingsFeature(
@@ -33,6 +38,16 @@ export function useSettingsFeature(
   const onSubmit = useCallback(
     async (command: SettingsCommand) => {
       let result;
+      if (command.screen === 'roles') {
+        result = await submitRoles(command);
+        if (result.ok) {
+          const toast = TOAST_BY_ACTION[command.action];
+          if (toast) {
+            showToast(toast);
+          }
+        }
+        return result;
+      }
       if (command.screen === 'storefront') {
         result = await submitStorefront(command);
         if (result.ok) {
@@ -76,6 +91,9 @@ export function useSettingsFeature(
       onSubmit,
       role: session.role,
       canWrite: session.role === 'pharmacy_owner',
+      canEditPermissions:
+        session.role === 'pharmacy_owner' ||
+        can(session.permissions, 'staff:manage'),
       pharmacyName: session.pharmacyName,
       pharmacyStatus: session.pharmacyStatus,
       isOnline: storefront.isOnline,
@@ -84,6 +102,7 @@ export function useSettingsFeature(
     [
       onSubmit,
       screen,
+      session.permissions,
       session.pharmacyName,
       session.pharmacyStatus,
       session.role,

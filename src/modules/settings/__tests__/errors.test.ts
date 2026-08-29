@@ -32,6 +32,24 @@ describe('settings errors', () => {
     expect(settingsErrorCopy('FORBIDDEN', undefined)).toBe(
       'You do not have permission to do that.',
     );
+    expect(settingsErrorCopy('INSUFFICIENT_PERMISSIONS', undefined)).toBe(
+      'You do not have permission to do that.',
+    );
+    expect(settingsErrorCopy('MODULE_NOT_IN_PLAN', undefined)).toBe(
+      'Roles are not included in this plan.',
+    );
+    expect(settingsErrorCopy('ROLE_NOT_FOUND', undefined)).toBe(
+      'This role is no longer available.',
+    );
+    expect(settingsErrorCopy('ROLE_NAME_CONFLICT', undefined)).toBe(
+      'A role with this name already exists.',
+    );
+    expect(settingsErrorCopy('ROLE_IN_USE', undefined)).toBe(
+      'This role is assigned to staff and cannot be deleted.',
+    );
+    expect(
+      settingsErrorCopy('INSUFFICIENT_PERMISSIONS', undefined),
+    ).not.toMatch(/upgrade/i);
     expect(settingsErrorCopy('ADMIN_OVERRIDE_ACTIVE', undefined)).toBe(
       'Admin has forced this pharmacy offline. Contact support.',
     );

@@ -57,8 +57,20 @@ export function settingsErrorCopy(
   if (code === 'VALIDATION_ERROR') {
     return 'Check the highlighted fields and try again.';
   }
-  if (code === 'FORBIDDEN') {
+  if (code === 'FORBIDDEN' || code === 'INSUFFICIENT_PERMISSIONS') {
     return 'You do not have permission to do that.';
+  }
+  if (code === 'MODULE_NOT_IN_PLAN') {
+    return 'Roles are not included in this plan.';
+  }
+  if (code === 'ROLE_NOT_FOUND') {
+    return 'This role is no longer available.';
+  }
+  if (code === 'ROLE_NAME_CONFLICT') {
+    return 'A role with this name already exists.';
+  }
+  if (code === 'ROLE_IN_USE') {
+    return 'This role is assigned to staff and cannot be deleted.';
   }
   if (code === 'ADMIN_OVERRIDE_ACTIVE') {
     return 'Admin has forced this pharmacy offline. Contact support.';

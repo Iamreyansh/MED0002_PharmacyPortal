@@ -6,6 +6,7 @@ import { submitCompleteness } from '@/modules/settings/lib/submit-completeness';
 import { submitContact } from '@/modules/settings/lib/submit-contact';
 import { submitLogo } from '@/modules/settings/lib/submit-logo';
 import { submitProfile } from '@/modules/settings/lib/submit-profile';
+import { submitRoles } from '@/modules/settings/lib/submit-roles';
 import { submitStorefront } from '@/modules/settings/lib/submit-storefront';
 import { submitTax } from '@/modules/settings/lib/submit-tax';
 import { getStorefrontStatus } from '@/modules/settings/store/storefront-status';
@@ -62,6 +63,9 @@ describe('settings submitters', () => {
     ).toMatchObject({ ok: false });
     expect(
       await submitLogo({ screen: 'profile', action: 'load' }),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitRoles({ screen: 'profile', action: 'load' }),
     ).toMatchObject({ ok: false });
   });
 
@@ -299,5 +303,181 @@ describe('settings submitters', () => {
       ok: true,
       storefront: { is_online: true },
     });
+  });
+
+  it('loads, creates, deletes, and updates role permissions', async () => {
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok([
+        {
+          id: 'system-owner',
+          name: 'owner',
+          display_name: 'Pharmacy Owner',
+          is_system: true,
+          staff_count: 1,
+        },
+      ]),
+    );
+    expect(
+      await submitRoles({ screen: 'roles', action: 'load' }),
+    ).toMatchObject({
+      ok: true,
+      roles: [{ id: 'system-owner' }],
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(undefined as never));
+    expect(
+      await submitRoles({ screen: 'roles', action: 'load' }),
+    ).toMatchObject({ ok: true, roles: [] });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('MODULE_NOT_IN_PLAN'),
+    );
+    expect(
+      await submitRoles({ screen: 'roles', action: 'load' }),
+    ).toMatchObject({ ok: false, code: 'MODULE_NOT_IN_PLAN' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok(
+        {
+          id: 'role-1',
+          name: 'night_shift',
+          display_name: 'Night Shift',
+          is_system: false,
+          permissions: ['orders:read'],
+        },
+        201,
+      ),
+    );
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'create',
+        values: {
+          name: 'night_shift',
+          display_name: 'Night Shift',
+          permissions: ['orders:read'],
+        },
+      }),
+    ).toMatchObject({ ok: true, createdRole: { id: 'role-1' } });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('VALIDATION_ERROR', 'name is required', 400),
+    );
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'create',
+        values: { name: '', display_name: '', permissions: [] },
+      }),
+    ).toMatchObject({ ok: false, code: 'VALIDATION_ERROR' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(undefined as never));
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'create',
+        values: {
+          name: 'x',
+          display_name: 'X',
+          permissions: ['orders:read'],
+        },
+      }),
+    ).toMatchObject({ ok: false });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: false,
+      status: 204,
+      data: undefined as never,
+      code: 'UPSTREAM_INVALID_JSON',
+    });
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'delete',
+        values: { id: 'role-1' },
+      }),
+    ).toMatchObject({ ok: true });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok({}));
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'delete',
+        values: { id: 'role-1' },
+      }),
+    ).toMatchObject({ ok: true });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(fail('FORBIDDEN'));
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'delete',
+        values: { id: 'system-owner' },
+      }),
+    ).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({
+        role_id: 'role-1',
+        role_name: 'night_shift',
+        is_system: false,
+        permissions: [
+          { permission: 'orders:read', resource: 'orders', action: 'read' },
+        ],
+      }),
+    );
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'loadPermissions',
+        values: { id: 'role-1' },
+      }),
+    ).toMatchObject({
+      ok: true,
+      rolePermissions: { role_id: 'role-1' },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(fail('ROLE_NOT_FOUND'));
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'loadPermissions',
+        values: { id: 'missing' },
+      }),
+    ).toMatchObject({ ok: false, code: 'ROLE_NOT_FOUND' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(undefined as never));
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'loadPermissions',
+        values: { id: 'role-1' },
+      }),
+    ).toMatchObject({ ok: false });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({
+        role_id: 'role-1',
+        role_name: 'night_shift',
+        permissions: ['orders:read'],
+        updated_at: '2026-08-29T00:00:00Z',
+      }),
+    );
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'savePermissions',
+        values: { id: 'role-1', permissions: ['orders:read'] },
+      }),
+    ).toMatchObject({
+      ok: true,
+      savedPermissions: { role_id: 'role-1' },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('INSUFFICIENT_PERMISSIONS'),
+    );
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'savePermissions',
+        values: { id: 'role-1', permissions: [] },
+      }),
+    ).toMatchObject({ ok: false, code: 'INSUFFICIENT_PERMISSIONS' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(undefined as never));
+    expect(
+      await submitRoles({
+        screen: 'roles',
+        action: 'savePermissions',
+        values: { id: 'role-1', permissions: ['orders:read'] },
+      }),
+    ).toMatchObject({ ok: false });
   });
 });

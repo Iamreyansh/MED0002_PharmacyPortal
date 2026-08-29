@@ -248,4 +248,109 @@ test.describe('settings federation contract', () => {
     await expect(page.getByLabel('Business name')).toBeVisible();
     await expect(page.getByLabel('Account number')).toHaveCount(0);
   });
+
+  test('owner can create a custom role', async ({ page }) => {
+    const roles = [
+      {
+        id: 'system-owner',
+        name: 'owner',
+        display_name: 'Pharmacy Owner',
+        is_system: true,
+        staff_count: 1,
+      },
+    ];
+    await seedOwner(page);
+    await page.route('**/api/v1/pharmacy/roles', async (route) => {
+      if (route.request().method() === 'POST') {
+        const body = (await route.request().postDataJSON()) as {
+          name: string;
+          display_name: string;
+          permissions: string[];
+        };
+        const created = {
+          id: 'role-custom',
+          name: body.name,
+          display_name: body.display_name,
+          is_system: false,
+          pharmacy_id: PHARMACY_ID,
+          permissions: body.permissions,
+          created_at: '2026-08-29T00:00:00Z',
+        };
+        roles.push(created);
+        await route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, data: created }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: roles }),
+      });
+    });
+    await page.goto('/settings/roles');
+    await expect(page.getByRole('heading', { name: 'Roles' })).toBeVisible();
+    await expect(page.getByText('Pharmacy Owner')).toBeVisible();
+    await page.getByRole('button', { name: 'Create role' }).click();
+    await page.getByLabel('Display name').fill('Night Shift');
+    await page.getByRole('button', { name: 'Create' }).click();
+    await expect(page.getByTestId('toast')).toHaveText('Role created');
+    await expect(page.getByText('Night Shift')).toBeVisible();
+  });
+
+  test('owner role permissions stay read-only', async ({ page }) => {
+    await seedOwner(page);
+    await page.route(
+      '**/api/v1/pharmacy/roles/*/permissions',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: true,
+            data: {
+              role_id: 'system-owner',
+              role_name: 'owner',
+              is_system: true,
+              permissions: [
+                {
+                  permission: 'reports:read',
+                  resource: 'reports',
+                  action: 'read',
+                },
+              ],
+            },
+          }),
+        });
+      },
+    );
+    await page.route('**/api/v1/pharmacy/roles', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              id: 'system-owner',
+              name: 'owner',
+              display_name: 'Pharmacy Owner',
+              is_system: true,
+              staff_count: 1,
+            },
+          ],
+        }),
+      });
+    });
+    await page.goto('/settings/roles');
+    await expect(page.getByText('Pharmacy Owner')).toBeVisible();
+    await page.getByRole('button', { name: 'View permissions' }).click();
+    await expect(page.getByTestId('roles-matrix')).toBeVisible();
+    await expect(page.getByLabel('Read')).toBeDisabled();
+    await expect(
+      page.getByRole('button', { name: 'Save permissions' }),
+    ).toHaveCount(0);
+  });
 });

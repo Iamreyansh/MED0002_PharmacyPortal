@@ -1,3 +1,4 @@
+import { can } from '@medmate/contracts';
 import { describe, expect, it } from 'vitest';
 import {
   formatPlanLockCopy,
@@ -62,11 +63,72 @@ describe('permissions', () => {
       true,
     );
   });
+
+  it('matches cashier, pharmacist, owner, empty, and wildcards', () => {
+    expect(can(SESSION_FIXTURES.cashier.permissions, 'inventory:write')).toBe(
+      false,
+    );
+    expect(can(['*'], 'reports:read')).toBe(true);
+    expect(
+      can(SESSION_FIXTURES.pharmacist.permissions, 'prescriptions:verify'),
+    ).toBe(true);
+    expect(can([], 'orders:read')).toBe(false);
+    expect(can([], undefined)).toBe(true);
+    expect(can(['inventory:*'], 'inventory:write')).toBe(true);
+    expect(can(['inventory:*'], 'inventory:read')).toBe(true);
+    expect(hasPermission(SESSION_FIXTURES.cashier, 'inventory:write')).toBe(
+      false,
+    );
+    expect(hasPermission(SESSION_FIXTURES['owner-free'], 'reports:read')).toBe(
+      true,
+    );
+    expect(
+      hasPermission(SESSION_FIXTURES.pharmacist, 'prescriptions:verify'),
+    ).toBe(true);
+    expect(
+      hasPermission(
+        { ...SESSION_FIXTURES.cashier, permissions: [] },
+        'orders:read',
+      ),
+    ).toBe(false);
+    expect(
+      hasPermission(
+        { ...SESSION_FIXTURES.cashier, permissions: [] },
+        undefined,
+      ),
+    ).toBe(true);
+    expect(
+      hasPermission(
+        {
+          ...SESSION_FIXTURES.pharmacist,
+          permissions: ['inventory:*'],
+        },
+        'inventory:write',
+      ),
+    ).toBe(true);
+  });
+
+  it('ignores non-POS grants when the token is POS-scoped', () => {
+    expect(
+      hasPermission(SESSION_FIXTURES['pos-scope'], 'inventory:write'),
+    ).toBe(false);
+    expect(hasPermission(SESSION_FIXTURES['pos-scope'], 'pos:sell')).toBe(true);
+    expect(
+      hasPermission(
+        {
+          ...SESSION_FIXTURES['pos-scope'],
+          permissions: ['*', 'inventory:write'],
+        },
+        'inventory:write',
+      ),
+    ).toBe(false);
+  });
 });
 
 describe('session fixtures', () => {
   it('reads named fixtures and falls back', () => {
     expect(isSessionFixtureName('owner-free')).toBe(true);
+    expect(isSessionFixtureName('pharmacist')).toBe(true);
     expect(isSessionFixtureName('nope')).toBe(false);
     expect(readSessionFixture('owner-free')).toEqual(
       SESSION_FIXTURES['owner-free'],

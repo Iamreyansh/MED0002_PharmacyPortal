@@ -11,9 +11,7 @@ export type SettingsRemotePageProps = {
 };
 
 function rootTestId(screen: SettingsScreen): string {
-  return screen === 'profile'
-    ? 'settings-profile-page'
-    : 'settings-storefront-page';
+  return `settings-${screen}-page`;
 }
 
 export function SettingsRemotePage({

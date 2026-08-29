@@ -29,6 +29,7 @@ function wrap(
           <Routes>
             <Route path="/settings/profile" element={ui} />
             <Route path="/settings/storefront" element={ui} />
+            <Route path="/settings/roles" element={ui} />
           </Routes>
         </ToastProvider>
       </SessionProvider>
@@ -154,6 +155,50 @@ function profileStub(): RemoteImporter {
   });
 }
 
+function rolesStub(): RemoteImporter {
+  return async () => ({
+    default: function RolesStub(props: Record<string, unknown>) {
+      const data = props.data as {
+        feature: SettingsFeatureData;
+        context: { permissions: string[] };
+      };
+      const [log, setLog] = useState('');
+      return (
+        <div>
+          <p data-testid="can-write">{String(data.feature.canWrite)}</p>
+          <p data-testid="can-edit">
+            {String(data.feature.canEditPermissions)}
+          </p>
+          <p data-testid="envelope-perms">
+            {data.context.permissions.join(',')}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              void data.feature
+                .onSubmit({
+                  screen: 'roles',
+                  action: 'create',
+                  values: {
+                    name: 'night_shift',
+                    display_name: 'Night Shift',
+                    permissions: ['orders:read'],
+                  },
+                })
+                .then((result) => {
+                  setLog(result.ok ? 'created' : (result.formError ?? 'fail'));
+                });
+            }}
+          >
+            Create
+          </button>
+          <p data-testid="log">{log}</p>
+        </div>
+      );
+    },
+  });
+}
+
 function storefrontStub(): RemoteImporter {
   return async () => ({
     default: function StorefrontStub(props: Record<string, unknown>) {
@@ -243,7 +288,7 @@ describe('SettingsRemotePage', () => {
       '/settings/storefront',
     );
     expect(await screen.findByTestId('settings-storefront-page')).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: 'Offline' }));
+    await user.click(await screen.findByRole('button', { name: 'Offline' }));
     await waitFor(() => {
       expect(getStorefrontStatus().isOnline).toBe(false);
       expect(screen.getByTestId('toast')).toHaveTextContent(
@@ -270,5 +315,54 @@ describe('SettingsRemotePage', () => {
     wrap(<SettingsRemotePage screen="storefront" />, '/settings/storefront');
     expect(await screen.findByTestId('settings-storefront-page')).toBeTruthy();
     expect(await screen.findByTestId('remote-error')).toBeTruthy();
+  });
+
+  it('toasts role creates and exposes permission flags', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(hostApi, 'request').mockResolvedValue({
+      ok: true,
+      status: 201,
+      data: {
+        id: 'role-1',
+        name: 'night_shift',
+        display_name: 'Night Shift',
+        is_system: false,
+      },
+    });
+    wrap(
+      <SettingsRemotePage screen="roles" loadRemote={rolesStub()} />,
+      '/settings/roles',
+    );
+    expect(await screen.findByTestId('settings-roles-page')).toBeTruthy();
+    expect(await screen.findByTestId('can-write')).toHaveTextContent('true');
+    expect(screen.getByTestId('can-edit')).toHaveTextContent('true');
+    expect(screen.getByTestId('envelope-perms').textContent).not.toContain(
+      'todo:read',
+    );
+    await user.click(screen.getByRole('button', { name: 'Create' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('log')).toHaveTextContent('created');
+      expect(screen.getByTestId('toast')).toHaveTextContent('Role created');
+    });
+  });
+
+  it('lets staff with staff:manage edit permissions but not create', async () => {
+    wrap(
+      <SettingsRemotePage screen="roles" loadRemote={rolesStub()} />,
+      '/settings/roles',
+      SESSION_FIXTURES['staff-active'],
+    );
+    expect(await screen.findByTestId('can-write')).toHaveTextContent('false');
+    expect(screen.getByTestId('can-edit')).toHaveTextContent('true');
+  });
+
+  it('denies cashier writes on the roles contract', async () => {
+    wrap(
+      <SettingsRemotePage screen="roles" loadRemote={rolesStub()} />,
+      '/settings/roles',
+      SESSION_FIXTURES.cashier,
+    );
+    expect(await screen.findByTestId('can-write')).toHaveTextContent('false');
+    expect(screen.getByTestId('can-edit')).toHaveTextContent('false');
   });
 });

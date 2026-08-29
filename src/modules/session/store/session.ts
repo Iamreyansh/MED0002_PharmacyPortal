@@ -1,3 +1,5 @@
+import { can } from '@medmate/contracts';
+
 export type PlanCode = 'FREE' | 'STARTER' | 'RETAIL_PRO' | 'ENTERPRISE';
 export type PharmacyRole = 'pharmacy_owner' | 'pharmacy_staff';
 export type PharmacyStatus =
@@ -100,6 +102,12 @@ export function formatPlanLockCopy(
   return `${itemLabel} needs ${need}. Your plan is ${current}.`;
 }
 
+const POS_CAPABILITIES = new Set([
+  'pos:sell',
+  'orders:pos-create',
+  'payments:collect',
+]);
+
 export function hasPermission(
   session: PortalSession,
   permission?: string,
@@ -107,13 +115,16 @@ export function hasPermission(
   if (!permission) {
     return true;
   }
+  if (session.tokenScope === 'pos') {
+    if (!POS_CAPABILITIES.has(permission)) {
+      return false;
+    }
+    return can(session.permissions, permission);
+  }
   if (session.role === 'pharmacy_owner') {
     return true;
   }
-  if (session.permissions.includes('*')) {
-    return true;
-  }
-  return session.permissions.includes(permission);
+  return can(session.permissions, permission);
 }
 
 export function mapPharmacyRole(role: unknown): PharmacyRole {
@@ -191,6 +202,16 @@ export const SESSION_FIXTURES = {
     permissions: ['pos:sell'],
     pharmacyName: 'Your pharmacy',
     staffName: 'Cashier',
+  }),
+  pharmacist: fixture({
+    authenticated: true,
+    role: 'pharmacy_staff',
+    plan: 'FREE',
+    pharmacyStatus: 'ACTIVE',
+    tokenScope: 'full',
+    permissions: ['orders:fulfill', 'inventory:read', 'prescriptions:verify'],
+    pharmacyName: 'Your pharmacy',
+    staffName: 'Pharmacist',
   }),
   'staff-star': fixture({
     authenticated: true,

@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P006` |
 | Phase | 1 |
 | Priority | P1 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-settings` |
 | Story count | 3 |
@@ -37,9 +37,9 @@ List/create/delete custom roles and edit permissions. No staff user CRUD.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P006-001](./STORY-P006-001-roles-list-create-delete.md) | Role catalogue create and delete | MED0003 | mfe-settings | FREE+ | P0 | M | pending |
-| [STORY-P006-002](./STORY-P006-002-role-permissions-editor.md) | Role permission editor | MED0003 | mfe-settings | FREE+ | P0 | M | pending |
-| [STORY-P006-003](./STORY-P006-003-permission-aware-ui-contract.md) | Document permission-aware UI contract for remotes | MED0002 | host | FREE+ | P0 | M | pending |
+| [STORY-P006-001](./STORY-P006-001-roles-list-create-delete.md) | Role catalogue create and delete | MED0003 | mfe-settings | FREE+ | P0 | M | staging-deployed |
+| [STORY-P006-002](./STORY-P006-002-role-permissions-editor.md) | Role permission editor | MED0003 | mfe-settings | FREE+ | P0 | M | staging-deployed |
+| [STORY-P006-003](./STORY-P006-003-permission-aware-ui-contract.md) | Document permission-aware UI contract for remotes | MED0002 | host | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

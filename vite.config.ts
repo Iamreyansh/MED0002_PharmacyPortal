@@ -42,6 +42,9 @@ export default createHostViteConfig({
   override: {
     define: localMfeRemoteDefines(localRemoteUrls),
     plugins: [serveLocalMfeDist(mfeDistRoot)],
+    optimizeDeps: {
+      exclude: ['@medmate/contracts'],
+    },
     resolve: {
       alias: {
         '@medmate/ui': path.resolve(rootDir, 'src/app/lib/medmate-ui-shim.tsx'),
