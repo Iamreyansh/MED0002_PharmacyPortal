@@ -5,6 +5,7 @@ import {
   isOnboardingStatus,
   isPosPath,
   isPublicAuthPathname,
+  isPublicContentPathname,
   isSafeReturnPath,
   postAuthPath,
 } from '@/app/router/route-policy';
@@ -33,7 +34,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
     if (hasStoredSession()) {
       return children;
     }
-    if (isPublicAuthPathname(pathname)) {
+    if (isPublicAuthPathname(pathname) || isPublicContentPathname(pathname)) {
       return children;
     }
     const target = `${pathname}${location.search}`;

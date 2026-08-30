@@ -53,6 +53,23 @@ describe('nav glyphs', () => {
   });
 });
 
+describe('public help chrome', () => {
+  it('uses auth chrome for anonymous help and full chrome when signed in', () => {
+    renderApp('/help', SESSION_FIXTURES.unauthenticated);
+    expect(screen.getByTestId('support-help-page')).toBeTruthy();
+    expect(
+      screen.queryByRole('button', { name: 'Open navigation' }),
+    ).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Inventory' })).toBeNull();
+    cleanup();
+    renderApp('/help', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('support-help-page')).toBeTruthy();
+    expect(
+      screen.getAllByRole('link', { name: 'Help' }).length,
+    ).toBeGreaterThan(0);
+  });
+});
+
 describe('mobile nav drawer', () => {
   it('closes on Escape, scrim, and navigation', async () => {
     const user = userEvent.setup();

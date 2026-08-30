@@ -1,6 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { isPublicAuthPathname } from '@/app/router/route-policy';
+import {
+  isPublicAuthPathname,
+  isPublicContentPathname,
+} from '@/app/router/route-policy';
 import { AppHeader } from '@/modules/shell/ui/AppHeader';
 import { BottomNav, SidebarNav } from '@/modules/shell/ui/NavItems';
 import { ToastProvider } from '@/modules/shell/ui/Toast';
@@ -13,7 +16,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const viewport = useViewportMode();
   const [navOpen, setNavOpen] = useState(false);
-  const authChrome = isPublicAuthPathname(location.pathname);
+  const authChrome =
+    isPublicAuthPathname(location.pathname) ||
+    (isPublicContentPathname(location.pathname) && !session.authenticated);
   const items = resolveNavItems(session);
   const mobileDrawer = !authChrome && viewport === 'mobile';
   const shellClass = [

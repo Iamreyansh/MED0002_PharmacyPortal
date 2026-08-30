@@ -13,6 +13,10 @@ export function isPublicAuthPathname(pathname: string): boolean {
   );
 }
 
+export function isPublicContentPathname(pathname: string): boolean {
+  return pathname === '/help' || pathname.startsWith('/help/');
+}
+
 export function isSafeReturnPath(path: string | null | undefined): boolean {
   if (!path || !path.startsWith('/') || path.startsWith('//')) {
     return false;

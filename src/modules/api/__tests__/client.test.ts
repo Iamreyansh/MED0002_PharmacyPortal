@@ -382,6 +382,34 @@ describe('auth attach and refresh', () => {
     expect(String(fetch.mock.calls[0]?.[0])).toContain('/login');
   });
 
+  it('omits Authorization and refresh when skipAuth is set', async () => {
+    setTokens({
+      accessToken: 'secret',
+      refreshToken: 'rt',
+      tokenType: 'Bearer',
+      tokenScope: 'full',
+      accessTokenExpiresAt: Date.now() + 1_000,
+    });
+    const fetch = vi.fn(async (_url: RequestInfo | URL, _init?: RequestInit) =>
+      okData({ articles: [] }),
+    );
+    const client = createApiClient({
+      fetch,
+      now: () => Date.now() + 2_000,
+      baseUrl: 'http://core.test',
+    });
+    await client.request(
+      { path: '/api/v1/support/help', method: 'GET' },
+      { skipAuth: true },
+    );
+    expect(header(fetch.mock.calls[0]?.[1], 'Authorization')).toBeNull();
+    expect(
+      fetch.mock.calls.some((call) =>
+        String(call[0]).includes('/auth/refresh'),
+      ),
+    ).toBe(false);
+  });
+
   it('treats a refresh success without access_token as session death', async () => {
     setTokens({
       accessToken: 'old',

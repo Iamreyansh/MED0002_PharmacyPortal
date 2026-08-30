@@ -15,6 +15,7 @@ import { RxRemotePage } from '@/modules/rx';
 import { OrdersRemotePage } from '@/modules/orders';
 import { FinanceRemotePage } from '@/modules/finance';
 import { AnalyticsRemotePage } from '@/modules/analytics';
+import { SupportIndexRedirect, SupportRemotePage } from '@/modules/support';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -53,7 +54,9 @@ export function AppRoutes() {
       mount.route !== '/rx-quotes' &&
       mount.route !== '/orders' &&
       mount.route !== '/finance/settlements' &&
-      mount.route !== '/analytics',
+      mount.route !== '/analytics' &&
+      mount.route !== '/help' &&
+      mount.route !== '/support',
   );
 
   return (
@@ -237,6 +240,25 @@ export function AppRoutes() {
         }
       />
       <Route path="/analytics" element={<AnalyticsRemotePage />} />
+      <Route path="/support" element={<SupportIndexRedirect />} />
+      <Route
+        path="/support/new"
+        element={<SupportRemotePage key="ticket-new" screen="ticket-new" />}
+      />
+      <Route
+        path="/support/tickets/:id"
+        element={
+          <SupportRemotePage key="ticket-detail" screen="ticket-detail" />
+        }
+      />
+      <Route
+        path="/help"
+        element={<SupportRemotePage key="help" screen="help" />}
+      />
+      <Route
+        path="/help/articles/:id"
+        element={<SupportRemotePage key="help-article" screen="help-article" />}
+      />
       {mounts.map((mount) => (
         <Route
           key={`${mount.remoteName}:${mount.route}`}

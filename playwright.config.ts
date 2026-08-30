@@ -19,6 +19,7 @@ export default defineConfig({
     '**/orders-federation.spec.ts',
     '**/finance-federation.spec.ts',
     '**/analytics-federation.spec.ts',
+    '**/support-federation.spec.ts',
   ],
   use: {
     baseURL: 'http://127.0.0.1:5173',

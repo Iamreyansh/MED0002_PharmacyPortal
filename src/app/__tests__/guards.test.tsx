@@ -65,6 +65,12 @@ describe('route guards', () => {
     expect(screen.getByTestId('register-verify-page')).toBeTruthy();
   });
 
+  it('allows anonymous help without a login redirect', () => {
+    renderApp('/help', SESSION_FIXTURES.unauthenticated);
+    expect(screen.getByTestId('support-help-page')).toBeTruthy();
+    expect(screen.queryByTestId('login-page')).toBeNull();
+  });
+
   it('keeps children while a stored session is hydrating and drops unsafe returns', () => {
     setTokens({
       accessToken: 'a',

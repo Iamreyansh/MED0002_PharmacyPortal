@@ -5,6 +5,7 @@ import {
   isOnboardingStatus,
   isPosPath,
   isPublicAuthPathname,
+  isPublicContentPathname,
   isSafeReturnPath,
   postAuthPath,
   readReturnParam,
@@ -18,6 +19,11 @@ describe('route policy', () => {
     expect(isPublicAuthPathname('/register/verify')).toBe(true);
     expect(isPublicAuthPathname('/pos-login')).toBe(true);
     expect(isPublicAuthPathname('/inventory')).toBe(false);
+    expect(isPublicContentPathname('/help')).toBe(true);
+    expect(isPublicContentPathname('/help/articles/hours')).toBe(true);
+    expect(isPublicContentPathname('/support/new')).toBe(false);
+    expect(isSafeReturnPath('/support/new')).toBe(true);
+    expect(isSafeReturnPath('/help')).toBe(true);
     expect(isSafeReturnPath('/invoices')).toBe(true);
     expect(isSafeReturnPath('https://evil.test')).toBe(false);
     expect(isSafeReturnPath('/register/verify')).toBe(false);

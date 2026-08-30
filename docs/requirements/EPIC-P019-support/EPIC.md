@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P019` |
 | Phase | 3 |
 | Priority | P1 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-support` |
 | Story count | 3 |
@@ -38,9 +38,9 @@ Create and continue pharmacy support tickets by id, plus public help and deflect
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P019-001](./STORY-P019-001-ticket-create-detail.md) | Create support ticket and view by id | MED0003 | mfe-support | FREE+ | P0 | M | pending |
-| [STORY-P019-002](./STORY-P019-002-ticket-reply-csat-reopen.md) | Ticket reply, CSAT, reopen | MED0003 | mfe-support | FREE+ | P0 | M | pending |
-| [STORY-P019-004](./STORY-P019-004-help-centre.md) | Public help centre and deflection | MED0003 | mfe-support | FREE+ | P0 | M | pending |
+| [STORY-P019-001](./STORY-P019-001-ticket-create-detail.md) | Create support ticket and view by id | MED0003 | mfe-support | FREE+ | P0 | M | staging-deployed |
+| [STORY-P019-002](./STORY-P019-002-ticket-reply-csat-reopen.md) | Ticket reply, CSAT, reopen | MED0003 | mfe-support | FREE+ | P0 | M | staging-deployed |
+| [STORY-P019-004](./STORY-P019-004-help-centre.md) | Public help centre and deflection | MED0003 | mfe-support | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

@@ -42,7 +42,11 @@ export type ApiClientDeps = {
   onSessionDeath?: (path: SessionDeathPath) => void;
 };
 
-export type ApiClient = HostApi & {
+export type ApiClient = Omit<HostApi, 'request'> & {
+  request: <T = unknown>(
+    input: HostApiRequest,
+    opts?: { skipAuth?: boolean },
+  ) => Promise<HostApiResponse<T>>;
   reset: () => void;
 };
 
@@ -244,6 +248,7 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
 
   async function request<T = unknown>(
     input: HostApiRequest,
+    opts: { skipAuth?: boolean } = {},
   ): Promise<HostApiResponse<T>> {
     if (!isValidApiPath(input.path)) {
       const rejected = fail<T>(
@@ -256,8 +261,10 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
     }
 
     const method = input.method ?? 'GET';
+    const skipAuth = opts.skipAuth === true;
 
     if (
+      !skipAuth &&
       !isPublicAuthPath(input.path) &&
       shouldProactiveRefresh(getTokens(), now())
     ) {
@@ -269,33 +276,35 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
       }
     }
 
-    let result = await executeOnce<T>(input);
+    let result = await executeOnce<T>(input, { skipAuth });
     let didRefresh = false;
 
     if (
       isUnauthorized(result) &&
+      !skipAuth &&
       !isPublicAuthPath(input.path) &&
       getTokens().refreshToken
     ) {
       const refreshed = await refreshSingleFlight();
       didRefresh = true;
       if (refreshed) {
-        result = await executeOnce<T>(input);
+        result = await executeOnce<T>(input, { skipAuth });
       }
     }
 
     if (isTransient(method, result)) {
       await sleep(retryWaitMs(result));
-      result = await executeOnce<T>(input);
+      result = await executeOnce<T>(input, { skipAuth });
       if (
         isUnauthorized(result) &&
         !didRefresh &&
+        !skipAuth &&
         !isPublicAuthPath(input.path) &&
         getTokens().refreshToken
       ) {
         const refreshed = await refreshSingleFlight();
         if (refreshed) {
-          result = await executeOnce<T>(input);
+          result = await executeOnce<T>(input, { skipAuth });
         }
       }
     }
