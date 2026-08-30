@@ -20,9 +20,10 @@ export function BillingRemotePage({
   loadRemote,
 }: BillingRemotePageProps) {
   const session = useSession();
-  const { invoiceId } = useParams();
+  const { invoiceId, customerId } = useParams();
   const feature = useBillingFeature(screen, {
     invoiceId: screen === 'invoice-detail' ? (invoiceId ?? null) : null,
+    customerId: screen === 'khata-detail' ? (customerId ?? null) : null,
   });
   const data = useMfeEnvelope(
     feature,
@@ -40,7 +41,7 @@ export function BillingRemotePage({
   return (
     <section className="page" data-testid={rootTestId(screen)}>
       <MfeOutlet
-        key={`${screen}:${invoiceId ?? ''}`}
+        key={`${screen}:${invoiceId ?? customerId ?? ''}`}
         remote="billing"
         module="./Mfe"
         remoteUrl={remoteUrl}

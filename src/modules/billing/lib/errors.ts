@@ -34,6 +34,30 @@ export function billingErrorCopy(
   if (code === 'STAFF_CANNOT_MARK_PAID') {
     return 'Only the owner can mark a sale paid.';
   }
+  if (code === 'CUSTOMER_NOT_FOUND') {
+    return 'This customer is no longer on the khata.';
+  }
+  if (code === 'STAFF_CANNOT_REMIND') {
+    return 'Only the owner can send reminders.';
+  }
+  if (code === 'REPAYMENT_EXCEEDS_OUTSTANDING') {
+    return 'The amount exceeds the outstanding balance.';
+  }
+  if (code === 'REMINDER_RATE_LIMITED') {
+    return 'A reminder was already sent in the last 24 hours.';
+  }
+  if (code === 'NO_OUTSTANDING_BALANCE') {
+    return 'This customer has no outstanding balance.';
+  }
+  if (code === 'OFFER_NOT_FOUND') {
+    return 'This offer is no longer available.';
+  }
+  if (code === 'OFFER_EXPIRED') {
+    return 'This offer has already expired.';
+  }
+  if (code === 'DISCOUNT_EXCEEDS_PLATFORM_LIMIT') {
+    return 'Discount exceeds the platform cap.';
+  }
   if (code === 'SALE_ALREADY_PAID') {
     return 'This sale is already paid.';
   }
@@ -89,7 +113,14 @@ export function failureResult(
         ? { ...fieldErrors, accent_color: billingErrorCopy(code, message) }
         : code === 'INVALID_IFSC_CODE'
           ? { ...fieldErrors, ifsc_code: billingErrorCopy(code, message) }
-          : fieldErrors;
+          : code === 'REPAYMENT_EXCEEDS_OUTSTANDING'
+            ? { ...fieldErrors, amount: billingErrorCopy(code, message) }
+            : code === 'DISCOUNT_EXCEEDS_PLATFORM_LIMIT'
+              ? {
+                  ...fieldErrors,
+                  discount_value: billingErrorCopy(code, message),
+                }
+              : fieldErrors;
   return {
     ok: false as const,
     code,

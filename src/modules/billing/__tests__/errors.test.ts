@@ -18,6 +18,24 @@ describe('billing errors', () => {
     expect(billingErrorCopy('STAFF_CANNOT_MARK_PAID', undefined)).toMatch(
       /owner/,
     );
+    expect(billingErrorCopy('CUSTOMER_NOT_FOUND', undefined)).toMatch(
+      /customer/,
+    );
+    expect(billingErrorCopy('STAFF_CANNOT_REMIND', undefined)).toMatch(/owner/);
+    expect(
+      billingErrorCopy('REPAYMENT_EXCEEDS_OUTSTANDING', undefined),
+    ).toMatch(/outstanding/);
+    expect(billingErrorCopy('REMINDER_RATE_LIMITED', undefined)).toMatch(
+      /24 hours/,
+    );
+    expect(billingErrorCopy('NO_OUTSTANDING_BALANCE', undefined)).toMatch(
+      /outstanding/,
+    );
+    expect(billingErrorCopy('OFFER_NOT_FOUND', undefined)).toMatch(/offer/);
+    expect(billingErrorCopy('OFFER_EXPIRED', undefined)).toMatch(/expired/);
+    expect(
+      billingErrorCopy('DISCOUNT_EXCEEDS_PLATFORM_LIMIT', undefined),
+    ).toMatch(/cap/);
     expect(billingErrorCopy('SALE_ALREADY_PAID', undefined)).toMatch(/paid/);
     expect(billingErrorCopy('AMOUNT_MISMATCH', undefined)).toMatch(/amount/);
     expect(billingErrorCopy('POS_TOKEN_RESTRICTED', undefined)).toMatch(
@@ -59,6 +77,14 @@ describe('billing errors', () => {
       failureResult('INVALID_IFSC_CODE', undefined, { ifsc_code: 'Bad' })
         .fieldErrors,
     ).toMatchObject({ ifsc_code: expect.stringMatching(/IFSC|Bad/) });
+    expect(
+      failureResult('REPAYMENT_EXCEEDS_OUTSTANDING', undefined, null)
+        .fieldErrors,
+    ).toMatchObject({ amount: expect.stringMatching(/outstanding/) });
+    expect(
+      failureResult('DISCOUNT_EXCEEDS_PLATFORM_LIMIT', undefined, null)
+        .fieldErrors,
+    ).toMatchObject({ discount_value: expect.stringMatching(/cap/) });
     expect(failureResult('FORBIDDEN', undefined, null)).toMatchObject({
       ok: false,
       code: 'FORBIDDEN',

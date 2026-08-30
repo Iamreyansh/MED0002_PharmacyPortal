@@ -404,4 +404,151 @@ test.describe('billing federation', () => {
     await page.getByRole('button', { name: 'Stay' }).click();
     await expect(page).toHaveURL(/\/invoice-settings/);
   });
+
+  test('opens khata detail from the list', async ({ page }) => {
+    await seedSession(page, 'pharmacy_owner', 'RETAIL_PRO');
+    await page.route('**/api/v1/pharmacy/khata/cust-1**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            customer: { customer_id: 'cust-1', name: 'Ramesh Gupta' },
+            total_outstanding: 8500,
+            unpaid_bills: [],
+            ledger: [
+              {
+                entry_id: 'e1',
+                type: 'DEBIT',
+                date: '2026-07-10',
+                amount: 8500,
+                running_balance: 8500,
+              },
+            ],
+          },
+        }),
+      });
+    });
+    await page.route('**/api/v1/pharmacy/khata**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            kpi: { total_outstanding: 8500 },
+            aging_chart: { current_0_30d: 8500 },
+            customers: [
+              {
+                customer_id: 'cust-1',
+                name: 'Ramesh Gupta',
+                outstanding: 8500,
+                is_overdue: true,
+              },
+            ],
+          },
+        }),
+      });
+    });
+    await page.goto('/khata');
+    await expect(page.getByTestId('khata-table')).toBeVisible();
+    await page.getByRole('button', { name: 'Open' }).click();
+    await expect(page).toHaveURL(/\/khata\/cust-1/);
+    await expect(page.getByTestId('khata-ledger')).toBeVisible();
+  });
+
+  test('hides remind for staff and never POSTs', async ({ page }) => {
+    const remindCalls: string[] = [];
+    await seedSession(page, 'pharmacy_staff', 'RETAIL_PRO');
+    await page.route('**/api/v1/pharmacy/khata/*/remind', async (route) => {
+      remindCalls.push(route.request().url());
+      await route.fulfill({
+        status: 403,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: false,
+          error: { code: 'STAFF_CANNOT_REMIND' },
+        }),
+      });
+    });
+    await page.route('**/api/v1/pharmacy/khata/cust-1**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            customer: { customer_id: 'cust-1', name: 'Ramesh Gupta' },
+            total_outstanding: 8500,
+            unpaid_bills: [],
+            ledger: [{ entry_id: 'e1', type: 'DEBIT', amount: 8500 }],
+          },
+        }),
+      });
+    });
+    await page.goto('/khata/cust-1');
+    await expect(page.getByTestId('khata-ledger')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Send reminder' }),
+    ).toHaveCount(0);
+    expect(remindCalls).toEqual([]);
+  });
+
+  test('owner creates an offer and staff cannot mutate', async ({ page }) => {
+    const creates: unknown[] = [];
+    await seedSession(page, 'pharmacy_owner', 'RETAIL_PRO');
+    await page.route('**/api/v1/pharmacy/offers**', async (route) => {
+      if (route.request().method() === 'POST') {
+        creates.push(route.request().postDataJSON());
+        await route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: true,
+            data: { offer_id: 'off-2', title: '15% Off', is_active: true },
+          }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            kpi: { active_count: 1 },
+            offers: [
+              {
+                offer_id: 'off-1',
+                title: '10% Off Antibiotics',
+                coupon_code: 'AB12CD',
+                discount_type: 'PERCENTAGE',
+                discount_value: 10,
+                valid_from: '2026-07-01',
+                valid_until: '2026-07-31',
+                is_active: true,
+              },
+            ],
+          },
+        }),
+      });
+    });
+    await page.goto('/offers');
+    await expect(page.getByTestId('offers-table')).toBeVisible();
+    await page.getByRole('button', { name: 'Create offer' }).click();
+    await expect(page.getByTestId('offer-editor')).toBeVisible();
+    await page.getByLabel('Title').fill('15% Off');
+    await page.getByLabel('Discount value').fill('15');
+    await page.getByLabel('Valid from').fill('2026-08-01');
+    await page.getByLabel('Valid until').fill('2026-08-31');
+    await page.getByRole('button', { name: 'Save offer' }).click();
+    await expect.poll(() => creates.length).toBe(1);
+  });
+
+  test('locks offers below Growth', async ({ page }) => {
+    await seedSession(page, 'pharmacy_owner', 'FREE');
+    await page.goto('/offers');
+    await expect(page.getByTestId('offers-plan-lock')).toBeVisible();
+  });
 });

@@ -9,10 +9,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
-| Phase 2 | 21    | 14               | 0                |
+| Phase 2 | 21    | 17               | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 41               | 0                |
+| Total   | 70    | 44               | 0                |
 
 ## Phase 1
 
@@ -68,9 +68,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P012 | [STORY-P012-002](./EPIC-P012-invoices-sales/STORY-P012-002-invoice-settings.md)          | Invoice settings                                   | MED0003 | staging-deployed | 2026-08-30 | Settings form; owner PATCH; no einvoice IRN |
 | EPIC-P012 | [STORY-P012-003](./EPIC-P012-invoices-sales/STORY-P012-003-sales-ledger.md)              | Sales ledger, summary, export                      | MED0003 | staging-deployed | 2026-08-30 | Ledger + summary cards; Excel export |
 | EPIC-P012 | [STORY-P012-004](./EPIC-P012-invoices-sales/STORY-P012-004-sales-mark-paid.md)           | Mark sale paid                                     | MED0003 | staging-deployed | 2026-08-30 | Owner confirm dialog; staff hidden |
-| EPIC-P013 | [STORY-P013-001](./EPIC-P013-khata-offers/STORY-P013-001-khata-list-detail.md)           | Khata list, detail, payment history (Starter+)     | MED0003 | pending |           |       |
-| EPIC-P013 | [STORY-P013-002](./EPIC-P013-khata-offers/STORY-P013-002-khata-repay-remind.md)          | Khata repayment and reminders                      | MED0003 | pending |           |       |
-| EPIC-P013 | [STORY-P013-003](./EPIC-P013-khata-offers/STORY-P013-003-offers-crud-validate.md)        | Pharmacy offers CRUD and validate (Growth+)        | MED0003 | pending |           |       |
+| EPIC-P013 | [STORY-P013-001](./EPIC-P013-khata-offers/STORY-P013-001-khata-list-detail.md)           | Khata list, detail, payment history (Starter+)     | MED0003 | staging-deployed | 2026-08-30 | Billing remote khata list/detail/history; host onSubmit |
+| EPIC-P013 | [STORY-P013-002](./EPIC-P013-khata-offers/STORY-P013-002-khata-repay-remind.md)          | Khata repayment and reminders                      | MED0003 | staging-deployed | 2026-08-30 | Owner remind; repay idempotency; staff hidden |
+| EPIC-P013 | [STORY-P013-003](./EPIC-P013-khata-offers/STORY-P013-003-offers-crud-validate.md)        | Pharmacy offers CRUD and validate (Growth+)        | MED0003 | staging-deployed | 2026-08-30 | Offers CRUD/toggle/validate; Growth lock |
 
 ## Phase 3
 

@@ -7,7 +7,7 @@
 | Phase | 2 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-billing` |
 | Minimum plan | `STARTER+` |

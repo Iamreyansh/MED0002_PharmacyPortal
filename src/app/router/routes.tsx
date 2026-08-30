@@ -40,7 +40,9 @@ export function AppRoutes() {
       mount.route !== '/pos' &&
       mount.route !== '/invoices' &&
       mount.route !== '/sales' &&
-      mount.route !== '/invoice-settings',
+      mount.route !== '/invoice-settings' &&
+      mount.route !== '/khata' &&
+      mount.route !== '/offers',
   );
 
   return (
@@ -165,6 +167,18 @@ export function AppRoutes() {
       <Route
         path="/sales"
         element={<BillingRemotePage key="sales" screen="sales" />}
+      />
+      <Route
+        path="/khata"
+        element={<BillingRemotePage key="khata" screen="khata" />}
+      />
+      <Route
+        path="/khata/:customerId"
+        element={<BillingRemotePage key="khata-detail" screen="khata-detail" />}
+      />
+      <Route
+        path="/offers"
+        element={<BillingRemotePage key="offers" screen="offers" />}
       />
       {mounts.map((mount) => (
         <Route
