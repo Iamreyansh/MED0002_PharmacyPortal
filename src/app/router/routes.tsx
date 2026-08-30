@@ -7,6 +7,7 @@ import { NotFoundPage } from '@/modules/not-found';
 import { RemoteModulePage } from '@/modules/remote';
 import { SettingsRemotePage } from '@/modules/settings';
 import { CatalogueRemotePage } from '@/modules/catalogue';
+import { InventoryRemotePage } from '@/modules/inventory';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -26,7 +27,10 @@ export function AppRoutes() {
       mount.route !== '/subscription' &&
       mount.route !== '/billing' &&
       mount.route !== '/catalogue' &&
-      mount.route !== '/catalogue/mapping',
+      mount.route !== '/catalogue/mapping' &&
+      mount.route !== '/inventory' &&
+      mount.route !== '/inventory/expiry' &&
+      mount.route !== '/racks',
   );
 
   return (
@@ -95,6 +99,22 @@ export function AppRoutes() {
       <Route
         path="/catalogue/mapping"
         element={<CatalogueRemotePage key="mapping" screen="mapping" />}
+      />
+      <Route
+        path="/inventory"
+        element={<InventoryRemotePage key="list" screen="list" />}
+      />
+      <Route
+        path="/inventory/expiry"
+        element={<InventoryRemotePage key="expiry" screen="expiry" />}
+      />
+      <Route
+        path="/inventory/:productId"
+        element={<InventoryRemotePage key="detail" screen="detail" />}
+      />
+      <Route
+        path="/racks"
+        element={<InventoryRemotePage key="racks" screen="racks" />}
       />
       {mounts.map((mount) => (
         <Route

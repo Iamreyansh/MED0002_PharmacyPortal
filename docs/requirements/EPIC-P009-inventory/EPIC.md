@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P009` |
 | Phase | 2 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-inventory` |
 | Story count | 4 |
@@ -38,10 +38,10 @@ Stock master, FEFO batches, expiry, write-off, racks, labels, online visibility 
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P009-001](./STORY-P009-001-inventory-master.md) | Inventory list, summary, detail, and product patch | MED0003 | mfe-inventory | FREE+ | P0 | M | pending |
-| [STORY-P009-002](./STORY-P009-002-batches-expiry-writeoff.md) | Batches, FEFO, expiry alerts, write-off | MED0003 | mfe-inventory | FREE+ | P0 | M | pending |
-| [STORY-P009-003](./STORY-P009-003-rack-locations.md) | Rack locations, assign, print labels | MED0003 | mfe-inventory | FREE+ | P0 | M | pending |
-| [STORY-P009-004](./STORY-P009-004-online-visibility.md) | Online visibility toggle (Growth+) | MED0003 | mfe-inventory | RETAIL_PRO+ | P0 | M | pending |
+| [STORY-P009-001](./STORY-P009-001-inventory-master.md) | Inventory list, summary, detail, and product patch | MED0003 | mfe-inventory | FREE+ | P0 | M | staging-deployed |
+| [STORY-P009-002](./STORY-P009-002-batches-expiry-writeoff.md) | Batches, FEFO, expiry alerts, write-off | MED0003 | mfe-inventory | FREE+ | P0 | M | staging-deployed |
+| [STORY-P009-003](./STORY-P009-003-rack-locations.md) | Rack locations, assign, print labels | MED0003 | mfe-inventory | FREE+ | P0 | M | staging-deployed |
+| [STORY-P009-004](./STORY-P009-004-online-visibility.md) | Online visibility toggle (Growth+) | MED0003 | mfe-inventory | RETAIL_PRO+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

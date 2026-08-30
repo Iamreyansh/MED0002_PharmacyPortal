@@ -31,6 +31,9 @@ importers:
       '@medmate/host-kit':
         specifier: file:../MED0003_MFE/packages/host-kit
         version: file:../MED0003_MFE/packages/host-kit(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@medmate/inventory-contract':
+        specifier: file:../MED0003_MFE/packages/inventory-contract
+        version: file:../MED0003_MFE/packages/inventory-contract
       '@medmate/onboarding-contract':
         specifier: file:../MED0003_MFE/packages/onboarding-contract
         version: file:../MED0003_MFE/packages/onboarding-contract
@@ -602,6 +605,9 @@ packages:
     peerDependencies:
       react: 18.3.1
       react-dom: 18.3.1
+
+  '@medmate/inventory-contract@file:../MED0003_MFE/packages/inventory-contract':
+    resolution: {directory: ../MED0003_MFE/packages/inventory-contract, type: directory}
 
   '@medmate/onboarding-contract@file:../MED0003_MFE/packages/onboarding-contract':
     resolution: {directory: ../MED0003_MFE/packages/onboarding-contract, type: directory}
@@ -3525,6 +3531,8 @@ snapshots:
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  '@medmate/inventory-contract@file:../MED0003_MFE/packages/inventory-contract': {}
 
   '@medmate/onboarding-contract@file:../MED0003_MFE/packages/onboarding-contract': {}
 

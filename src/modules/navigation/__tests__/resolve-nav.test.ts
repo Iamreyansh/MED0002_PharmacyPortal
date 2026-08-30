@@ -95,6 +95,10 @@ describe('resolveNavItems', () => {
     expect(mapping?.path).toBe('/catalogue/mapping');
     expect(mapping?.label).toBe('Mappings');
     expect(mapping?.group).toBe('stock');
+    const expiry = items.find((item) => item.id === 'inventory-expiry');
+    expect(expiry?.path).toBe('/inventory/expiry');
+    expect(expiry?.label).toBe('Expiry');
+    expect(expiry?.group).toBe('stock');
     const groups = groupNavItems(items);
     expect(groups.map((group) => group.group)).toContain('counter');
     expect(homeShortcuts(items).some((item) => item.id === 'pos')).toBe(true);

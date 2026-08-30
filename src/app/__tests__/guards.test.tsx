@@ -74,7 +74,7 @@ describe('route guards', () => {
       accessTokenExpiresAt: null,
     });
     renderApp('/inventory', SESSION_FIXTURES.unauthenticated);
-    expect(screen.getByTestId('remote-page-inventory')).toBeTruthy();
+    expect(screen.getByTestId('inventory-list-page')).toBeTruthy();
     cleanup();
     resetTokenStore();
     renderApp('/ok://x', SESSION_FIXTURES.unauthenticated);

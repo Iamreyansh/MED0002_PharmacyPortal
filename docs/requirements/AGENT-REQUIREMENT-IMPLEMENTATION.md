@@ -9,10 +9,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
-| Phase 2 | 21    | 2                | 0                |
+| Phase 2 | 21    | 6                | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 29               | 0                |
+| Total   | 70    | 33               | 0                |
 
 ## Phase 1
 
@@ -52,10 +52,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | --------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------- | ------- | ------- | --------- | ----- |
 | EPIC-P008 | [STORY-P008-001](./EPIC-P008-catalogue-mapping/STORY-P008-001-catalogue-search.md)       | Pharmacy catalogue search                          | MED0003 | staging-deployed | 2026-08-29 | Catalogue remote search; host onSubmit |
 | EPIC-P008 | [STORY-P008-002](./EPIC-P008-catalogue-mapping/STORY-P008-002-catalogue-mapping-crud.md) | Catalogue mapping list and CRUD                    | MED0003 | staging-deployed | 2026-08-29 | Mapping table + drawer; host CRUD |
-| EPIC-P009 | [STORY-P009-001](./EPIC-P009-inventory/STORY-P009-001-inventory-master.md)               | Inventory list, summary, detail, and product patch | MED0003 | pending |           |       |
-| EPIC-P009 | [STORY-P009-002](./EPIC-P009-inventory/STORY-P009-002-batches-expiry-writeoff.md)        | Batches, FEFO, expiry alerts, write-off            | MED0003 | pending |           |       |
-| EPIC-P009 | [STORY-P009-003](./EPIC-P009-inventory/STORY-P009-003-rack-locations.md)                 | Rack locations, assign, print labels               | MED0003 | pending |           |       |
-| EPIC-P009 | [STORY-P009-004](./EPIC-P009-inventory/STORY-P009-004-online-visibility.md)              | Online visibility toggle (Growth+)                 | MED0003 | pending |           |       |
+| EPIC-P009 | [STORY-P009-001](./EPIC-P009-inventory/STORY-P009-001-inventory-master.md)               | Inventory list, summary, detail, and product patch | MED0003 | staging-deployed | 2026-08-29 | Inventory remote list/detail; host onSubmit |
+| EPIC-P009 | [STORY-P009-002](./EPIC-P009-inventory/STORY-P009-002-batches-expiry-writeoff.md)        | Batches, FEFO, expiry alerts, write-off            | MED0003 | staging-deployed | 2026-08-29 | Batches + expiry; owner write-off |
+| EPIC-P009 | [STORY-P009-003](./EPIC-P009-inventory/STORY-P009-003-rack-locations.md)                 | Rack locations, assign, print labels               | MED0003 | staging-deployed | 2026-08-29 | Racks assign/print; host CRUD |
+| EPIC-P009 | [STORY-P009-004](./EPIC-P009-inventory/STORY-P009-004-online-visibility.md)              | Online visibility toggle (Growth+)                 | MED0003 | staging-deployed | 2026-08-29 | Growth lock; owner PATCH |
 | EPIC-P010 | [STORY-P010-001](./EPIC-P010-procurement/STORY-P010-001-grn-lifecycle.md)                | Purchase GRN create, items, save-and-stock         | MED0003 | pending |           |       |
 | EPIC-P010 | [STORY-P010-002](./EPIC-P010-procurement/STORY-P010-002-grn-csv-import.md)               | GRN CSV import and confirm                         | MED0003 | pending |           |       |
 | EPIC-P010 | [STORY-P010-003](./EPIC-P010-procurement/STORY-P010-003-distributors.md)                 | Distributor directory and price compare (Growth+)  | MED0003 | pending |           |       |

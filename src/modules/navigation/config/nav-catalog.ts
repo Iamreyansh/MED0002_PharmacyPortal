@@ -65,6 +65,12 @@ export const NAV_CATALOG: readonly NavItem[] = [
     homeShortcut: true,
   },
   {
+    id: 'inventory-expiry',
+    path: '/inventory/expiry',
+    label: 'Expiry',
+    group: 'stock',
+  },
+  {
     id: 'purchases',
     path: '/purchases',
     label: 'Purchases',

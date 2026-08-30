@@ -53,7 +53,7 @@ export const PRODUCT_REMOTE_REGISTRY = {
     name: 'inventory',
     module: './Mfe',
     route: '/inventory',
-    routes: ['/inventory', '/racks'],
+    routes: ['/inventory', '/inventory/expiry', '/racks'],
     navLabel: 'Inventory',
   },
   procurement: {

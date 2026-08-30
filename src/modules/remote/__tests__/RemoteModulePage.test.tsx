@@ -40,4 +40,21 @@ describe('RemoteModulePage', () => {
     );
     expect(await screen.findByTestId('pos-ok')).toBeTruthy();
   });
+
+  it('builds an envelope when session ids are missing', async () => {
+    render(
+      <MemoryRouter>
+        <SessionProvider
+          session={{
+            ...SESSION_FIXTURES['owner-free'],
+            pharmacyId: null,
+            staffId: null,
+          }}
+        >
+          <RemoteModulePage remoteName="pos" />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    expect(await screen.findByTestId('remote-page-pos')).toBeTruthy();
+  });
 });

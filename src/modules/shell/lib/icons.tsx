@@ -36,6 +36,8 @@ const NAV_GLYPH_PATHS: Record<string, string> = {
   'catalogue-mapping':
     'M7 7h10v2H7V7zm0 4h10v2H7v-2zm-3 8 4-4-1.4-1.4L4 16.2l-1.6-1.6L1 16l3 3zM7 17h10v2H7v-2z',
   inventory: 'M3 7l9-4 9 4v3H3V7zm0 5h8v9H3v-9zm10 0h8v9h-8v-9z',
+  'inventory-expiry':
+    'M7 2h2v2h6V2h2v2h3v18H4V4h3V2zm1 6v2h8V8H8zm0 4v2h8v-2H8zm0 4v2h5v-2H8z',
   purchases:
     'M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6.2 6l.8 2h11.5l-1.4 6H8.1L6.2 6zM3 4h2.4l.6 1.5L5.2 6H3V4z',
   racks: 'M3 4h18v3H3V4zm0 5h18v3H3V9zm0 5h18v3H3v-3zm0 5h18v2H3v-2z',
