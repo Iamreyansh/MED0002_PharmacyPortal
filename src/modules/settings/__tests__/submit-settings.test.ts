@@ -5,6 +5,7 @@ import { submitBank } from '@/modules/settings/lib/submit-bank';
 import { submitCompleteness } from '@/modules/settings/lib/submit-completeness';
 import { submitContact } from '@/modules/settings/lib/submit-contact';
 import { submitLogo } from '@/modules/settings/lib/submit-logo';
+import { submitNotifications } from '@/modules/settings/lib/submit-notifications';
 import { submitProfile } from '@/modules/settings/lib/submit-profile';
 import { submitRoles } from '@/modules/settings/lib/submit-roles';
 import { submitStorefront } from '@/modules/settings/lib/submit-storefront';
@@ -66,6 +67,9 @@ describe('settings submitters', () => {
     ).toMatchObject({ ok: false });
     expect(
       await submitRoles({ screen: 'profile', action: 'load' }),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitNotifications({ screen: 'profile', action: 'load' }),
     ).toMatchObject({ ok: false });
   });
 
@@ -478,6 +482,145 @@ describe('settings submitters', () => {
         action: 'savePermissions',
         values: { id: 'role-1', permissions: ['orders:read'] },
       }),
+    ).toMatchObject({ ok: false });
+  });
+
+  it('loads and patches notification preferences without inventing channels', async () => {
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({
+        pharmacy_id: 'pharm-1',
+        channels: {
+          push: { enabled: true, can_disable: true },
+          sms: { enabled: false, can_disable: true },
+        },
+        categories: {
+          order_alerts: { enabled: true, can_disable: false },
+        },
+        updated_at: '2026-08-31T00:00:00Z',
+      }),
+    );
+    const loaded = await submitNotifications({
+      screen: 'notifications',
+      action: 'load',
+    });
+    expect(loaded).toMatchObject({
+      ok: true,
+      preferences: {
+        channels: {
+          push: { enabled: true, can_disable: true },
+          sms: { enabled: false, can_disable: true },
+        },
+        categories: {
+          order_alerts: { enabled: true, can_disable: false },
+        },
+      },
+    });
+    if (loaded.ok) {
+      expect(loaded.preferences?.channels.whatsapp).toBeUndefined();
+    }
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(undefined as never));
+    expect(
+      await submitNotifications({ screen: 'notifications', action: 'load' }),
+    ).toMatchObject({
+      ok: true,
+      preferences: { channels: {}, categories: {} },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({
+        pharmacy_id: 1,
+        channels: {
+          push: { enabled: 'yes' },
+          sms: null,
+          email: [],
+          extra: { enabled: true, can_disable: true, status: 1 },
+        },
+        categories: [],
+        updated_at: 12,
+      }),
+    );
+    expect(
+      await submitNotifications({ screen: 'notifications', action: 'load' }),
+    ).toMatchObject({
+      ok: true,
+      preferences: { channels: {}, categories: {} },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('UNAUTHORIZED', 'UNAUTHORIZED', 401),
+    );
+    expect(
+      await submitNotifications({ screen: 'notifications', action: 'load' }),
+    ).toMatchObject({ ok: false, code: 'UNAUTHORIZED' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({ updated: true, updated_at: '2026-08-31T00:01:00Z' }),
+    );
+    expect(
+      await submitNotifications({
+        screen: 'notifications',
+        action: 'save',
+        values: { channels: { sms: false } },
+      }),
+    ).toMatchObject({
+      ok: true,
+      savedPreferences: { updated: true },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(undefined as never));
+    expect(
+      await submitNotifications({
+        screen: 'notifications',
+        action: 'save',
+        values: { channels: { sms: true } },
+      }),
+    ).toMatchObject({
+      ok: true,
+      savedPreferences: { updated: true },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({
+        channels: {
+          push: {
+            enabled: true,
+            can_disable: true,
+            status: 'CHANNEL_UNAVAILABLE',
+          },
+        },
+        categories: {},
+      }),
+    );
+    expect(
+      await submitNotifications({ screen: 'notifications', action: 'load' }),
+    ).toMatchObject({
+      ok: true,
+      preferences: {
+        channels: {
+          push: { status: 'CHANNEL_UNAVAILABLE' },
+        },
+      },
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('VALIDATION_ERROR', 'Invalid', 422),
+    );
+    expect(
+      await submitNotifications({
+        screen: 'notifications',
+        action: 'save',
+        values: { categories: { order_alerts: false } },
+      }),
+    ).toMatchObject({ ok: false, code: 'VALIDATION_ERROR' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      fail('FORBIDDEN', 'Only pharmacy_owner may update preferences', 403),
+    );
+    expect(
+      await submitNotifications({
+        screen: 'notifications',
+        action: 'save',
+        values: { channels: { sms: false } },
+      }),
+    ).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+    expect(
+      await submitNotifications({
+        screen: 'notifications',
+        action: 'loadCompleteness',
+      } as never),
     ).toMatchObject({ ok: false });
   });
 });

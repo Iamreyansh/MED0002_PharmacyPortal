@@ -38,6 +38,9 @@ describe('settings errors', () => {
     expect(settingsErrorCopy('MODULE_NOT_IN_PLAN', undefined)).toBe(
       'Roles are not included in this plan.',
     );
+    expect(
+      settingsErrorCopy('CANNOT_DISABLE_MANDATORY_CATEGORY', undefined),
+    ).toBe('This alert cannot be turned off.');
     expect(settingsErrorCopy('ROLE_NOT_FOUND', undefined)).toBe(
       'This role is no longer available.',
     );

@@ -4,7 +4,7 @@ import { resetRuntimeConfig } from '@/config/runtime-config';
 import { resetApiClientState } from '@/modules/api';
 import { resetTelemetry } from '@/modules/api';
 import { resetTokenStore } from '@/modules/api';
-import { resetSessionSnapshot } from '@/modules/session';
+import { resetDeviceTokenStore, resetSessionSnapshot } from '@/modules/session';
 import { resetHostEvents } from '@/modules/mfe/lib/host-events';
 import { resetStorefrontStatus } from '@/modules/settings/store/storefront-status';
 
@@ -26,6 +26,7 @@ afterEach(() => {
   resetApiClientState();
   resetTokenStore();
   resetSessionSnapshot();
+  resetDeviceTokenStore();
   resetStorefrontStatus();
   resetHostEvents();
   resetTelemetry();

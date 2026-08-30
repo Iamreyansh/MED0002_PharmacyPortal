@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P018` |
 | Phase | 3 |
 | Priority | P1 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-settings` |
 | Story count | 2 |
@@ -34,8 +34,8 @@ Preferences + device token. No pharmacy in-app inbox.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P018-001](./STORY-P018-001-notification-preferences.md) | Notification preferences | MED0003 | mfe-settings | FREE+ | P0 | M | pending |
-| [STORY-P018-002](./STORY-P018-002-device-token.md) | Browser/device token register and unregister | MED0002 | host | FREE+ | P0 | M | pending |
+| [STORY-P018-001](./STORY-P018-001-notification-preferences.md) | Notification preferences | MED0003 | mfe-settings | FREE+ | P0 | M | staging-deployed |
+| [STORY-P018-002](./STORY-P018-002-device-token.md) | Browser/device token register and unregister | MED0002 | host | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

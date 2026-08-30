@@ -131,6 +131,54 @@ async function seedOwner(page: Page) {
       body: JSON.stringify({ success: true, data: profile }),
     });
   });
+  await page.route(
+    '**/api/v1/pharmacy/notification-preferences',
+    async (route) => {
+      if (route.request().method() === 'PATCH') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: true,
+            data: { updated: true, updated_at: '2026-08-31T00:01:00Z' },
+          }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: {
+            pharmacy_id: PHARMACY_ID,
+            channels: {
+              push: { enabled: true, can_disable: true },
+              sms: { enabled: true, can_disable: true },
+              whatsapp: {
+                enabled: false,
+                can_disable: false,
+                status: 'CHANNEL_UNAVAILABLE',
+              },
+              email: {
+                enabled: false,
+                can_disable: false,
+                status: 'CHANNEL_UNAVAILABLE',
+              },
+            },
+            categories: {
+              order_alerts: { enabled: true, can_disable: false },
+              settlement_updates: { enabled: true, can_disable: true },
+              kyc_updates: { enabled: true, can_disable: false },
+              low_stock_alerts: { enabled: true, can_disable: true },
+              compliance_reminders: { enabled: true, can_disable: false },
+            },
+            updated_at: '2026-08-31T00:00:00Z',
+          },
+        }),
+      });
+    },
+  );
   await page.route('**/api/v1/pharmacy/storefront', async (route) => {
     await route.fulfill({
       status: 200,
@@ -298,6 +346,21 @@ test.describe('settings federation contract', () => {
     await page.getByRole('button', { name: 'Create' }).click();
     await expect(page.getByTestId('toast')).toHaveText('Role created');
     await expect(page.getByText('Night Shift')).toBeVisible();
+  });
+
+  test('owner can patch notification preferences', async ({ page }) => {
+    await seedOwner(page);
+    await page.goto('/settings/notifications');
+    await expect(
+      page.getByRole('heading', { name: 'Notifications' }),
+    ).toBeVisible();
+    await expect(page.getByLabel('SMS')).toBeVisible();
+    await expect(page.getByLabel('WhatsApp')).toBeDisabled();
+    await page.getByLabel('SMS').uncheck();
+    await page.getByRole('button', { name: 'Save preferences' }).click();
+    await expect(page.getByTestId('toast')).toHaveText(
+      'Notification preferences saved',
+    );
   });
 
   test('owner role permissions stay read-only', async ({ page }) => {

@@ -31,6 +31,7 @@ export function AppRoutes() {
       mount.route !== '/settings/profile' &&
       mount.route !== '/settings/storefront' &&
       mount.route !== '/settings/roles' &&
+      mount.route !== '/settings/notifications' &&
       mount.route !== '/subscription' &&
       mount.route !== '/billing' &&
       mount.route !== '/catalogue' &&
@@ -101,6 +102,12 @@ export function AppRoutes() {
       <Route
         path="/settings/roles"
         element={<SettingsRemotePage key="roles" screen="roles" />}
+      />
+      <Route
+        path="/settings/notifications"
+        element={
+          <SettingsRemotePage key="notifications" screen="notifications" />
+        }
       />
       <Route
         path="/settings/*"

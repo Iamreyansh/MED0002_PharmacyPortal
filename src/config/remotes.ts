@@ -107,6 +107,7 @@ export const PRODUCT_REMOTE_REGISTRY = {
       '/settings/profile',
       '/settings/storefront',
       '/settings/roles',
+      '/settings/notifications',
     ],
     navLabel: 'Settings',
   },

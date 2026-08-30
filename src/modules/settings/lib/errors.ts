@@ -63,6 +63,9 @@ export function settingsErrorCopy(
   if (code === 'MODULE_NOT_IN_PLAN') {
     return 'Roles are not included in this plan.';
   }
+  if (code === 'CANNOT_DISABLE_MANDATORY_CATEGORY') {
+    return 'This alert cannot be turned off.';
+  }
   if (code === 'ROLE_NOT_FOUND') {
     return 'This role is no longer available.';
   }

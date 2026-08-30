@@ -12,6 +12,7 @@ import { submitCompleteness } from '@/modules/settings/lib/submit-completeness';
 import { submitContact } from '@/modules/settings/lib/submit-contact';
 import { submitLogo } from '@/modules/settings/lib/submit-logo';
 import { submitProfile } from '@/modules/settings/lib/submit-profile';
+import { submitNotifications } from '@/modules/settings/lib/submit-notifications';
 import { submitRoles } from '@/modules/settings/lib/submit-roles';
 import { submitStorefront } from '@/modules/settings/lib/submit-storefront';
 import { submitTax } from '@/modules/settings/lib/submit-tax';
@@ -45,6 +46,13 @@ export function useSettingsFeature(
           if (toast) {
             showToast(toast);
           }
+        }
+        return result;
+      }
+      if (command.screen === 'notifications') {
+        result = await submitNotifications(command);
+        if (result.ok && command.action === 'save') {
+          showToast('Notification preferences saved');
         }
         return result;
       }

@@ -30,6 +30,7 @@ function wrap(
             <Route path="/settings/profile" element={ui} />
             <Route path="/settings/storefront" element={ui} />
             <Route path="/settings/roles" element={ui} />
+            <Route path="/settings/notifications" element={ui} />
           </Routes>
         </ToastProvider>
       </SessionProvider>
@@ -199,6 +200,31 @@ function rolesStub(): RemoteImporter {
   });
 }
 
+function notificationsStub(): RemoteImporter {
+  return async () => ({
+    default: function NotificationsStub(props: Record<string, unknown>) {
+      const data = props.data as { feature: SettingsFeatureData };
+      return (
+        <div>
+          <p data-testid="can-write">{String(data.feature.canWrite)}</p>
+          <button
+            type="button"
+            onClick={() => {
+              void data.feature.onSubmit({
+                screen: 'notifications',
+                action: 'save',
+                values: { channels: { sms: false } },
+              });
+            }}
+          >
+            Save
+          </button>
+        </div>
+      );
+    },
+  });
+}
+
 function storefrontStub(): RemoteImporter {
   return async () => ({
     default: function StorefrontStub(props: Record<string, unknown>) {
@@ -354,6 +380,32 @@ describe('SettingsRemotePage', () => {
     );
     expect(await screen.findByTestId('can-write')).toHaveTextContent('false');
     expect(screen.getByTestId('can-edit')).toHaveTextContent('true');
+  });
+
+  it('toasts notification preference saves', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(hostApi, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: { updated: true, updated_at: '2026-08-31T00:00:00Z' },
+    });
+    wrap(
+      <SettingsRemotePage
+        screen="notifications"
+        loadRemote={notificationsStub()}
+      />,
+      '/settings/notifications',
+    );
+    expect(
+      await screen.findByTestId('settings-notifications-page'),
+    ).toBeTruthy();
+    expect(await screen.findByTestId('can-write')).toHaveTextContent('true');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('toast')).toHaveTextContent(
+        'Notification preferences saved',
+      );
+    });
   });
 
   it('denies cashier writes on the roles contract', async () => {

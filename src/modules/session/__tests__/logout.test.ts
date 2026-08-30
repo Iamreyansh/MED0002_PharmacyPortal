@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { performLogout } from '@/modules/session';
 import { hostApi, setTokens, getTokens } from '@/modules/api';
+import * as deviceToken from '@/modules/session/lib/device-token';
 
 describe('performLogout', () => {
   it('posts logout-all, logout, and pos destination', async () => {
@@ -17,9 +18,11 @@ describe('performLogout', () => {
       accessTokenExpiresAt: null,
     });
     await expect(performLogout({ all: true })).resolves.toBe('/login');
-    expect(
-      String((fetch.mock.calls as unknown as [unknown][])[0]?.[0]),
-    ).toContain('logout-all');
+    const urls = (fetch.mock.calls as unknown as [unknown][]).map((call) =>
+      String(call[0]),
+    );
+    expect(urls.some((url) => url.includes('device-token'))).toBe(true);
+    expect(urls.some((url) => url.includes('logout-all'))).toBe(true);
     setTokens({
       accessToken: 'a',
       refreshToken: 'r',
@@ -29,8 +32,10 @@ describe('performLogout', () => {
     });
     await expect(performLogout()).resolves.toBe('/login');
     expect(
-      String((fetch.mock.calls as unknown as [unknown][])[1]?.[0]),
-    ).toContain('/auth/logout');
+      (fetch.mock.calls as unknown as [unknown][])
+        .map((call) => String(call[0]))
+        .some((url) => url.includes('/auth/logout')),
+    ).toBe(true);
     setTokens({
       accessToken: 'p',
       refreshToken: null,
@@ -54,7 +59,26 @@ describe('performLogout', () => {
       accessTokenExpiresAt: null,
     });
     await expect(performLogout()).resolves.toBe('/login');
-    vi.spyOn(hostApi, 'request').mockRejectedValueOnce(new Error('offline'));
+    vi.spyOn(hostApi, 'request').mockRejectedValue(new Error('offline'));
+    setTokens({
+      accessToken: 'a',
+      refreshToken: 'r',
+      tokenType: 'Bearer',
+      tokenScope: 'full',
+      accessTokenExpiresAt: null,
+    });
+    await expect(performLogout()).resolves.toBe('/login');
+    setTokens({
+      accessToken: 'a',
+      refreshToken: null,
+      tokenType: 'Bearer',
+      tokenScope: 'full',
+      accessTokenExpiresAt: null,
+    });
+    await expect(performLogout()).resolves.toBe('/login');
+    vi.spyOn(deviceToken, 'unregisterDeviceToken').mockRejectedValueOnce(
+      new Error('offline'),
+    );
     setTokens({
       accessToken: 'a',
       refreshToken: 'r',

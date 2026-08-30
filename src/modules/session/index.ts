@@ -44,3 +44,10 @@ export {
 } from '@/modules/session/api/hydrate';
 export { performLogout } from '@/modules/session/api/logout';
 export { formatIst } from '@/modules/session/lib/ist';
+export { DeviceTokenLifecycle } from '@/modules/session/ui/DeviceTokenLifecycle';
+export {
+  registerDeviceToken,
+  reportPushOpened,
+  resetDeviceTokenStore,
+  unregisterDeviceToken,
+} from '@/modules/session/lib/device-token';

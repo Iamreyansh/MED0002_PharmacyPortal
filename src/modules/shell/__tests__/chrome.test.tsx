@@ -119,12 +119,16 @@ describe('session menu', () => {
       accessTokenExpiresAt: null,
     });
     let finish: ((value: Response) => void) | undefined;
-    const fetch = vi.fn(
-      () =>
-        new Promise<Response>((resolve) => {
+    const fetch = vi.fn(() => {
+      if (fetch.mock.calls.length === 1) {
+        return new Promise<Response>((resolve) => {
           finish = resolve;
-        }),
-    );
+        });
+      }
+      return Promise.resolve(
+        new Response(JSON.stringify({ success: true }), { status: 200 }),
+      );
+    });
     vi.stubGlobal('fetch', fetch);
     renderApp('/', SESSION_FIXTURES['owner-free']);
     await user.click(screen.getByTestId('session-menu'));

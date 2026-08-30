@@ -279,6 +279,47 @@ test('expired session lands on login', async ({ page }) => {
   await expect(page.locator('section[data-testid="login-page"]')).toBeVisible();
 });
 
+test('sign out deletes the device token', async ({ page }) => {
+  const deleted: string[] = [];
+  await mockCore(page);
+  await seedSession(page);
+  await page.route('**/api/v1/pharmacy/me/device-token', async (route) => {
+    if (route.request().method() === 'DELETE') {
+      deleted.push(route.request().url());
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: { unregistered: true },
+        }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: { registered: true, device_id: 'dev-1', platform: 'ANDROID' },
+      }),
+    });
+  });
+  await page.route('**/api/v1/auth/logout', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, data: {} }),
+    });
+  });
+  await page.goto('/');
+  await expect(page.getByTestId('portal-home')).toBeVisible();
+  await page.getByTestId('session-menu').click();
+  await page.getByRole('menuitem', { name: 'Sign out', exact: true }).click();
+  await expect(page.locator('section[data-testid="login-page"]')).toBeVisible();
+  expect(deleted.length).toBeGreaterThan(0);
+});
+
 test('missing remote does not hide nav', async ({ page }) => {
   await mockCore(page);
   await seedSession(page);
