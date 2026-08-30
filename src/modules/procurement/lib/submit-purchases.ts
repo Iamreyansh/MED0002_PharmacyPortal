@@ -45,13 +45,14 @@ export async function submitPurchases(
     };
   }
   if (command.action === 'create') {
+    const distributorId = command.values.distributor_id?.trim();
     const result = await hostApi.request<unknown>({
       path: LIST_PATH,
       method: 'POST',
       body: {
-        distributor_id: command.values.distributor_id,
         invoice_number: command.values.invoice_number,
         invoice_date: command.values.invoice_date,
+        ...(distributorId ? { distributor_id: distributorId } : {}),
       },
       idempotencyKey: createIdempotencyKey(),
     });
@@ -69,8 +70,11 @@ export async function submitPurchases(
       };
     }
     const form = new FormData();
+    const distributorId = command.values.distributor_id?.trim();
     form.append('csv_file', command.values.file, command.values.file.name);
-    form.append('distributor_id', command.values.distributor_id);
+    if (distributorId) {
+      form.append('distributor_id', distributorId);
+    }
     form.append('invoice_number', command.values.invoice_number);
     form.append('invoice_date', command.values.invoice_date);
     const result = await hostApi.request<unknown>({

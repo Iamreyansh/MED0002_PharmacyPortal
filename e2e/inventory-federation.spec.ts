@@ -160,7 +160,10 @@ test.describe('inventory federation', () => {
         await route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ success: true, data: { unlocated: [] } }),
+          body: JSON.stringify({
+            success: true,
+            data: { products: [], unlocated_count: 0 },
+          }),
         });
         return;
       }
@@ -171,7 +174,11 @@ test.describe('inventory federation', () => {
           success: true,
           data: {
             racks: [
-              { rack_code: 'A1', name: 'Counter left', product_count: 3 },
+              {
+                rack_code: 'A1',
+                description: 'Counter left',
+                medicine_count: 3,
+              },
             ],
           },
         }),

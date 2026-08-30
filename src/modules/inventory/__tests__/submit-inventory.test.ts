@@ -431,11 +431,24 @@ describe('inventory submitters', () => {
 
   it('assigns unlocated stock and prints rack labels', async () => {
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
-      ok({ racks: [{ rack_code: 'A1', name: 'Counter' }] }),
+      ok({
+        racks: [{ rack_code: 'A1', description: 'Counter', medicine_count: 3 }],
+      }),
     );
     expect(
       await submitRacks({ screen: 'racks', action: 'load' }),
-    ).toMatchObject({ ok: true, racks: [{ rack_code: 'A1' }] });
+    ).toMatchObject({
+      ok: true,
+      racks: [
+        {
+          rack_code: 'A1',
+          name: 'Counter',
+          description: 'Counter',
+          product_count: 3,
+          medicine_count: 3,
+        },
+      ],
+    });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
       ok([{ rack_code: 'B1' }]),
     );
@@ -445,7 +458,7 @@ describe('inventory submitters', () => {
     const created = vi
       .spyOn(hostApi, 'request')
       .mockResolvedValueOnce(
-        ok({ rack_code: 'C1', name: 'Back', zone_name: 'Back' }),
+        ok({ rack_code: 'C1', description: 'Back', zone_name: 'Back' }),
       );
     expect(
       await submitRacks({
@@ -453,7 +466,10 @@ describe('inventory submitters', () => {
         action: 'create',
         values: { rack_code: 'C1', zone_name: 'Back', name: 'Back' },
       }),
-    ).toMatchObject({ ok: true, rack: { rack_code: 'C1' } });
+    ).toMatchObject({
+      ok: true,
+      rack: { rack_code: 'C1', name: 'Back', description: 'Back' },
+    });
     expect(created).toHaveBeenCalledWith(
       expect.objectContaining({
         path: '/api/v1/pharmacy/rack-locations',
@@ -461,18 +477,39 @@ describe('inventory submitters', () => {
         body: {
           rack_code: 'C1',
           zone_name: 'Back',
-          name: 'Back',
+          description: 'Back',
+        },
+      }),
+    );
+    const described = vi
+      .spyOn(hostApi, 'request')
+      .mockResolvedValueOnce(
+        ok({ rack_code: 'D1', description: 'Side', zone_name: 'Side' }),
+      );
+    expect(
+      await submitRacks({
+        screen: 'racks',
+        action: 'create',
+        values: { rack_code: 'D1', zone_name: 'Side', description: 'Side' },
+      }),
+    ).toMatchObject({ ok: true, rack: { rack_code: 'D1' } });
+    expect(described).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: {
+          rack_code: 'D1',
+          zone_name: 'Side',
+          description: 'Side',
         },
       }),
     );
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
-      ok({ unlocated: [{ product_id: 'prod-2' }] }),
+      ok({ products: [{ product_id: 'prod-2' }] }),
     );
     expect(
       await submitRacks({ screen: 'racks', action: 'loadUnlocated' }),
     ).toMatchObject({ ok: true, unlocated: [{ product_id: 'prod-2' }] });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
-      ok([{ product_id: 'prod-3' }]),
+      ok({ unlocated: [{ product_id: 'prod-3' }] }),
     );
     expect(
       await submitRacks({ screen: 'racks', action: 'loadUnlocated' }),
@@ -489,6 +526,7 @@ describe('inventory submitters', () => {
       expect.objectContaining({
         path: '/api/v1/pharmacy/rack-locations/assign',
         method: 'POST',
+        body: { product_ids: ['prod-2'], rack_code: 'A1' },
       }),
     );
     vi.stubGlobal('URL', {
@@ -498,20 +536,42 @@ describe('inventory submitters', () => {
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
       () => undefined,
     );
-    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
-      ok(new Blob(['pdf'], { type: 'application/pdf' })),
-    );
+    const printed = vi
+      .spyOn(hostApi, 'request')
+      .mockResolvedValueOnce(
+        ok({ pdf_url: 'data:application/pdf;base64,JVBERi0=' }),
+      );
     expect(
       await submitRacks({
         screen: 'racks',
         action: 'printLabels',
         values: { rack_codes: ['A1'] },
       }),
-    ).toMatchObject({ ok: true, printed: true });
-    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok('json' as never));
+    ).toMatchObject({ ok: true, printed: true, downloaded: true });
+    expect(printed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/api/v1/pharmacy/rack-locations/print-labels',
+        method: 'POST',
+        body: { rack_codes: ['A1'] },
+      }),
+    );
+    expect(printed.mock.calls[0]?.[0]).not.toHaveProperty('binary');
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok(new Blob(['pdf'], { type: 'application/pdf' })),
+    );
     expect(
       await submitRacks({ screen: 'racks', action: 'printLabels' }),
     ).toMatchObject({ ok: true, printed: true });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok('data:application/pdf;base64,JVBERi0='),
+    );
+    expect(
+      await submitRacks({ screen: 'racks', action: 'printLabels' }),
+    ).toMatchObject({ ok: true, printed: true });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok({}));
+    expect(
+      await submitRacks({ screen: 'racks', action: 'printLabels' }),
+    ).toMatchObject({ ok: false, formError: 'Could not download labels.' });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok({ rack_code: 'A1' }));
     expect(
       await submitRacks({
@@ -520,6 +580,35 @@ describe('inventory submitters', () => {
         values: { rack_code: 'A1' },
       }),
     ).toMatchObject({ ok: true, rack: { rack_code: 'A1' } });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok(null as never));
+    expect(
+      await submitRacks({
+        screen: 'racks',
+        action: 'create',
+        values: { rack_code: 'E1', zone_name: 'Empty' },
+      }),
+    ).toMatchObject({ ok: true, rack: null });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok([] as never));
+    expect(
+      await submitRacks({
+        screen: 'racks',
+        action: 'loadOne',
+        values: { rack_code: 'E1' },
+      }),
+    ).toMatchObject({ ok: true, rack: null });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok({ pdf_url: 'https://example.test/labels.pdf' }),
+    );
+    expect(
+      await submitRacks({ screen: 'racks', action: 'printLabels' }),
+    ).toMatchObject({ ok: false, formError: 'Could not download labels.' });
+    vi.stubGlobal('URL', {});
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
+      ok(new Blob(['pdf'], { type: 'application/pdf' })),
+    );
+    expect(
+      await submitRacks({ screen: 'racks', action: 'printLabels' }),
+    ).toMatchObject({ ok: false, formError: 'Could not download labels.' });
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(ok({}));
     expect(
       await submitRacks({

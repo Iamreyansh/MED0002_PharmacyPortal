@@ -140,6 +140,34 @@ describe('procurement submitters', () => {
         path: '/api/v1/pharmacy/purchases',
         method: 'POST',
         idempotencyKey: expect.any(String),
+        body: {
+          distributor_id: 'd1',
+          invoice_number: 'INV-1',
+          invoice_date: '2026-07-22',
+        },
+      }),
+    );
+
+    const walkIn = vi
+      .spyOn(hostApi, 'request')
+      .mockResolvedValueOnce(ok({ grn_id: 'grn-walkin', status: 'DRAFT' }));
+    expect(
+      await submitPurchases({
+        screen: 'purchases',
+        action: 'create',
+        values: {
+          distributor_id: '   ',
+          invoice_number: 'INV-WALK',
+          invoice_date: '2026-07-22',
+        },
+      }),
+    ).toMatchObject({ ok: true, grn: { grn_id: 'grn-walkin' } });
+    expect(walkIn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: {
+          invoice_number: 'INV-WALK',
+          invoice_date: '2026-07-22',
+        },
       }),
     );
 
@@ -166,6 +194,23 @@ describe('procurement submitters', () => {
     expect(form.get('invoice_number')).toBe('INV-CSV');
     expect(form.get('invoice_date')).toBe('2026-07-22');
     expect((form.get('csv_file') as File).name).toBe('ok.csv');
+
+    const walkInCsv = vi
+      .spyOn(hostApi, 'request')
+      .mockResolvedValueOnce(ok({ grn_id: 'grn-csv-walk' }));
+    expect(
+      await submitPurchases({
+        screen: 'purchases',
+        action: 'importCsv',
+        values: {
+          file: csvFile,
+          invoice_number: 'INV-WALK',
+          invoice_date: '2026-07-22',
+        },
+      }),
+    ).toMatchObject({ ok: true, importPreview: { grn_id: 'grn-csv-walk' } });
+    const walkForm = walkInCsv.mock.calls[0]?.[0]?.body as FormData;
+    expect(walkForm.get('distributor_id')).toBeNull();
 
     vi.spyOn(hostApi, 'request').mockResolvedValueOnce(
       ok({ items_created: 4, grn_id: 'grn-csv' }),
