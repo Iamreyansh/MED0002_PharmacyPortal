@@ -50,6 +50,7 @@
     "@medmate/rx-contract": "file:../MED0003_MFE/packages/rx-contract",
     "@medmate/orders-contract": "file:../MED0003_MFE/packages/orders-contract",
     "@medmate/finance-contract": "file:../MED0003_MFE/packages/finance-contract",
+    "@medmate/analytics-contract": "file:../MED0003_MFE/packages/analytics-contract",
     "@medmate/contracts": "file:../MED0003_MFE/packages/contracts",
     "@medmate/federation-config": "file:../MED0003_MFE/packages/federation-config",
     "@medmate/host-kit": "file:../MED0003_MFE/packages/host-kit",

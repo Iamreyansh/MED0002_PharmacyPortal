@@ -16,6 +16,9 @@ importers:
 
   .:
     dependencies:
+      '@medmate/analytics-contract':
+        specifier: file:../MED0003_MFE/packages/analytics-contract
+        version: file:../MED0003_MFE/packages/analytics-contract
       '@medmate/auth-contract':
         specifier: file:../MED0003_MFE/packages/auth-contract
         version: file:../MED0003_MFE/packages/auth-contract
@@ -605,6 +608,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@medmate/analytics-contract@file:../MED0003_MFE/packages/analytics-contract':
+    resolution: {directory: ../MED0003_MFE/packages/analytics-contract, type: directory}
 
   '@medmate/auth-contract@file:../MED0003_MFE/packages/auth-contract':
     resolution: {directory: ../MED0003_MFE/packages/auth-contract, type: directory}
@@ -3554,6 +3560,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@medmate/analytics-contract@file:../MED0003_MFE/packages/analytics-contract': {}
 
   '@medmate/auth-contract@file:../MED0003_MFE/packages/auth-contract': {}
 

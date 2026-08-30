@@ -10,9 +10,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
 | Phase 2 | 21    | 17               | 0                |
-| Phase 3 | 18    | 10               | 0                |
+| Phase 3 | 18    | 13               | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 54               | 0                |
+| Total   | 70    | 57               | 0                |
 
 ## Phase 1
 
@@ -86,9 +86,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P015 | [STORY-P015-004](./EPIC-P015-orders-rx-quotes/STORY-P015-004-order-assign-rider.md)    | Assign rider by order id                            | MED0003 | staging-deployed | 2026-08-30 | Rider UUID field only; no rider directory |
 | EPIC-P016 | [STORY-P016-001](./EPIC-P016-settlements/STORY-P016-001-settlement-list.md)            | Settlement history list                             | MED0003 | staging-deployed | 2026-08-30 | Finance remote list; host onSubmit; Free+ |
 | EPIC-P016 | [STORY-P016-002](./EPIC-P016-settlements/STORY-P016-002-settlement-detail.md)          | Settlement detail                                   | MED0003 | staging-deployed | 2026-08-30 | Detail fields; 404; support CTA; no invented commission |
-| EPIC-P017 | [STORY-P017-001](./EPIC-P017-analytics/STORY-P017-001-analytics-overview.md)           | Analytics overview (Growth+)                        | MED0003 | pending |           |       |
-| EPIC-P017 | [STORY-P017-002](./EPIC-P017-analytics/STORY-P017-002-analytics-sales-products.md)     | Sales register and products analytics               | MED0003 | pending |           |       |
-| EPIC-P017 | [STORY-P017-003](./EPIC-P017-analytics/STORY-P017-003-analytics-gst-reports.md)        | GST accounts and report catalogue favorites (owner) | MED0003 | pending |           |       |
+| EPIC-P017 | [STORY-P017-001](./EPIC-P017-analytics/STORY-P017-001-analytics-overview.md)           | Analytics overview (Growth+)                        | MED0003 | staging-deployed | 2026-08-30 | Analytics remote tabs; host onSubmit; Growth+; owner GST |
+| EPIC-P017 | [STORY-P017-002](./EPIC-P017-analytics/STORY-P017-002-analytics-sales-products.md)     | Sales register and products analytics               | MED0003 | staging-deployed | 2026-08-30 | Analytics remote tabs; host onSubmit; Growth+; owner GST |
+| EPIC-P017 | [STORY-P017-003](./EPIC-P017-analytics/STORY-P017-003-analytics-gst-reports.md)        | GST accounts and report catalogue favorites (owner) | MED0003 | staging-deployed | 2026-08-30 | Analytics remote tabs; host onSubmit; Growth+; owner GST |
 | EPIC-P018 | [STORY-P018-001](./EPIC-P018-notifications/STORY-P018-001-notification-preferences.md) | Notification preferences                            | MED0003 | pending |           |       |
 | EPIC-P018 | [STORY-P018-002](./EPIC-P018-notifications/STORY-P018-002-device-token.md)             | Browser/device token register and unregister        | MED0002 | pending |           |       |
 | EPIC-P019 | [STORY-P019-001](./EPIC-P019-support/STORY-P019-001-ticket-create-detail.md)           | Create support ticket and view by id                | MED0003 | pending |           |       |

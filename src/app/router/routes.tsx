@@ -14,6 +14,7 @@ import { BillingRemotePage } from '@/modules/billing';
 import { RxRemotePage } from '@/modules/rx';
 import { OrdersRemotePage } from '@/modules/orders';
 import { FinanceRemotePage } from '@/modules/finance';
+import { AnalyticsRemotePage } from '@/modules/analytics';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -50,7 +51,8 @@ export function AppRoutes() {
       mount.route !== '/compliance/drug-register' &&
       mount.route !== '/rx-quotes' &&
       mount.route !== '/orders' &&
-      mount.route !== '/finance/settlements',
+      mount.route !== '/finance/settlements' &&
+      mount.route !== '/analytics',
   );
 
   return (
@@ -227,6 +229,7 @@ export function AppRoutes() {
           />
         }
       />
+      <Route path="/analytics" element={<AnalyticsRemotePage />} />
       {mounts.map((mount) => (
         <Route
           key={`${mount.remoteName}:${mount.route}`}

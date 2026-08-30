@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P017` |
 | Phase | 3 |
 | Priority | P1 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-analytics` |
 | Story count | 3 |
@@ -33,9 +33,9 @@ Growth+ analytics. Owner-only GST/accounts and favorites.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P017-001](./STORY-P017-001-analytics-overview.md) | Analytics overview (Growth+) | MED0003 | mfe-analytics | RETAIL_PRO+ | P0 | M | pending |
-| [STORY-P017-002](./STORY-P017-002-analytics-sales-products.md) | Sales register and products analytics | MED0003 | mfe-analytics | RETAIL_PRO+ | P0 | M | pending |
-| [STORY-P017-003](./STORY-P017-003-analytics-gst-reports.md) | GST accounts and report catalogue favorites (owner) | MED0003 | mfe-analytics | RETAIL_PRO+ | P0 | M | pending |
+| [STORY-P017-001](./STORY-P017-001-analytics-overview.md) | Analytics overview (Growth+) | MED0003 | mfe-analytics | RETAIL_PRO+ | P0 | M | staging-deployed |
+| [STORY-P017-002](./STORY-P017-002-analytics-sales-products.md) | Sales register and products analytics | MED0003 | mfe-analytics | RETAIL_PRO+ | P0 | M | staging-deployed |
+| [STORY-P017-003](./STORY-P017-003-analytics-gst-reports.md) | GST accounts and report catalogue favorites (owner) | MED0003 | mfe-analytics | RETAIL_PRO+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

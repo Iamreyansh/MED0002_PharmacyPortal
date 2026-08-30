@@ -15,6 +15,8 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
   resetTelemetry();
+  Reflect.deleteProperty(URL, 'createObjectURL');
+  Reflect.deleteProperty(URL, 'revokeObjectURL');
 });
 
 function wrap(
@@ -336,9 +338,13 @@ function offersStub(): RemoteImporter {
 describe('BillingRemotePage', () => {
   it('loads invoices, downloads a PDF, and shares', async () => {
     const user = userEvent.setup();
-    vi.stubGlobal('URL', {
-      createObjectURL: () => 'blob:pdf',
-      revokeObjectURL: vi.fn(),
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: () => 'blob:pdf',
+    });
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      configurable: true,
+      value: vi.fn(),
     });
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
       () => undefined,
@@ -370,7 +376,7 @@ describe('BillingRemotePage', () => {
       '/invoices',
     );
     expect(await screen.findByTestId('billing-invoices-page')).toBeTruthy();
-    expect(screen.getByTestId('can-patch')).toHaveTextContent('true');
+    expect(await screen.findByTestId('can-patch')).toHaveTextContent('true');
     await user.click(screen.getByRole('button', { name: 'Load invoices' }));
     expect(await screen.findByTestId('log')).toHaveTextContent('1');
     await user.click(screen.getByRole('button', { name: 'Export Excel' }));

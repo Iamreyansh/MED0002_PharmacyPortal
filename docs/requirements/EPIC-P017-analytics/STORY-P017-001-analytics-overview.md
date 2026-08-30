@@ -7,7 +7,7 @@
 | Phase | 3 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-analytics` |
 | Minimum plan | `RETAIL_PRO+` |
