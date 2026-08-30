@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P016` |
 | Phase | 3 |
 | Priority | P1 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-finance` |
 | Story count | 2 |
@@ -33,8 +33,8 @@ Owner-only settlement history and detail.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P016-001](./STORY-P016-001-settlement-list.md) | Settlement history list | MED0003 | mfe-finance | FREE+ | P0 | M | pending |
-| [STORY-P016-002](./STORY-P016-002-settlement-detail.md) | Settlement detail | MED0003 | mfe-finance | FREE+ | P0 | M | pending |
+| [STORY-P016-001](./STORY-P016-001-settlement-list.md) | Settlement history list | MED0003 | mfe-finance | FREE+ | P0 | M | staging-deployed |
+| [STORY-P016-002](./STORY-P016-002-settlement-detail.md) | Settlement detail | MED0003 | mfe-finance | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

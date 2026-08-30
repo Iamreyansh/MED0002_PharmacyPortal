@@ -87,8 +87,8 @@ export const PRODUCT_REMOTE_REGISTRY = {
   finance: {
     name: 'finance',
     module: './Mfe',
-    route: '/finance',
-    routes: ['/finance'],
+    route: '/finance/settlements',
+    routes: ['/finance/settlements'],
     navLabel: 'Finance',
   },
   analytics: {

@@ -17,6 +17,7 @@ export default defineConfig({
     '**/billing-federation.spec.ts',
     '**/rx-federation.spec.ts',
     '**/orders-federation.spec.ts',
+    '**/finance-federation.spec.ts',
   ],
   use: {
     baseURL: 'http://127.0.0.1:5173',

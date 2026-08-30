@@ -31,6 +31,9 @@ importers:
       '@medmate/federation-config':
         specifier: file:../MED0003_MFE/packages/federation-config
         version: file:../MED0003_MFE/packages/federation-config
+      '@medmate/finance-contract':
+        specifier: file:../MED0003_MFE/packages/finance-contract
+        version: file:../MED0003_MFE/packages/finance-contract
       '@medmate/host-kit':
         specifier: file:../MED0003_MFE/packages/host-kit
         version: file:../MED0003_MFE/packages/host-kit(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -617,6 +620,9 @@ packages:
 
   '@medmate/federation-config@file:../MED0003_MFE/packages/federation-config':
     resolution: {directory: ../MED0003_MFE/packages/federation-config, type: directory}
+
+  '@medmate/finance-contract@file:../MED0003_MFE/packages/finance-contract':
+    resolution: {directory: ../MED0003_MFE/packages/finance-contract, type: directory}
 
   '@medmate/host-kit@file:../MED0003_MFE/packages/host-kit':
     resolution: {directory: ../MED0003_MFE/packages/host-kit, type: directory}
@@ -3558,6 +3564,8 @@ snapshots:
   '@medmate/contracts@file:../MED0003_MFE/packages/contracts': {}
 
   '@medmate/federation-config@file:../MED0003_MFE/packages/federation-config': {}
+
+  '@medmate/finance-contract@file:../MED0003_MFE/packages/finance-contract': {}
 
   '@medmate/host-kit@file:../MED0003_MFE/packages/host-kit(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:

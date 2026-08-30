@@ -10,9 +10,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
 | Phase 2 | 21    | 17               | 0                |
-| Phase 3 | 18    | 8                | 0                |
+| Phase 3 | 18    | 10               | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 52               | 0                |
+| Total   | 70    | 54               | 0                |
 
 ## Phase 1
 
@@ -84,8 +84,8 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P015 | [STORY-P015-002](./EPIC-P015-orders-rx-quotes/STORY-P015-002-order-accept-reject.md)   | Order accept and reject by id (no inbox)            | MED0003 | staging-deployed | 2026-08-30 | Id-in-hand accept/reject; no list GET |
 | EPIC-P015 | [STORY-P015-003](./EPIC-P015-orders-rx-quotes/STORY-P015-003-order-status-advance.md)  | Advance order packing status by id                  | MED0003 | staging-deployed | 2026-08-30 | Explicit status buttons; 409 recovery; no DELIVERED |
 | EPIC-P015 | [STORY-P015-004](./EPIC-P015-orders-rx-quotes/STORY-P015-004-order-assign-rider.md)    | Assign rider by order id                            | MED0003 | staging-deployed | 2026-08-30 | Rider UUID field only; no rider directory |
-| EPIC-P016 | [STORY-P016-001](./EPIC-P016-settlements/STORY-P016-001-settlement-list.md)            | Settlement history list                             | MED0003 | pending |           |       |
-| EPIC-P016 | [STORY-P016-002](./EPIC-P016-settlements/STORY-P016-002-settlement-detail.md)          | Settlement detail                                   | MED0003 | pending |           |       |
+| EPIC-P016 | [STORY-P016-001](./EPIC-P016-settlements/STORY-P016-001-settlement-list.md)            | Settlement history list                             | MED0003 | staging-deployed | 2026-08-30 | Finance remote list; host onSubmit; Free+ |
+| EPIC-P016 | [STORY-P016-002](./EPIC-P016-settlements/STORY-P016-002-settlement-detail.md)          | Settlement detail                                   | MED0003 | staging-deployed | 2026-08-30 | Detail fields; 404; support CTA; no invented commission |
 | EPIC-P017 | [STORY-P017-001](./EPIC-P017-analytics/STORY-P017-001-analytics-overview.md)           | Analytics overview (Growth+)                        | MED0003 | pending |           |       |
 | EPIC-P017 | [STORY-P017-002](./EPIC-P017-analytics/STORY-P017-002-analytics-sales-products.md)     | Sales register and products analytics               | MED0003 | pending |           |       |
 | EPIC-P017 | [STORY-P017-003](./EPIC-P017-analytics/STORY-P017-003-analytics-gst-reports.md)        | GST accounts and report catalogue favorites (owner) | MED0003 | pending |           |       |

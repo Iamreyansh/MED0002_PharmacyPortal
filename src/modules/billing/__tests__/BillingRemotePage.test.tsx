@@ -410,7 +410,7 @@ describe('BillingRemotePage', () => {
     ).toBeTruthy();
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { name: 'Load invoices' }));
+      .click(await screen.findByRole('button', { name: 'Load invoices' }));
     await waitFor(() => {
       expect(events).toContain('plan_lock_shown');
     });
