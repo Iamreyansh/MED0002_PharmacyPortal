@@ -5,11 +5,13 @@ import {
   type HostContext,
   type MfeDataEnvelope,
 } from '@medmate/contracts';
+import { isPharmacyPosApiPath } from '@medmate/pos-contract';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STOREFRONT_EVENT } from '@medmate/settings-contract';
+import { isPosPath } from '@/app/router/route-policy';
 import { hostApi } from '@/modules/api';
-import { createIdempotencyKey } from '@/modules/api';
+import { createIdempotencyKey, getTokens } from '@/modules/api';
 import { track } from '@/modules/api';
 import { emitHostEvent, onHostEvent } from '@/modules/mfe/lib/host-events';
 import { applyStorefrontStatus } from '@/modules/settings/store/storefront-status';
@@ -73,6 +75,13 @@ export function useHostCapabilities(): HostCapabilities {
   return useMemo(
     () => ({
       navigate: (path: string) => {
+        if (
+          getTokens().tokenScope === 'pos' &&
+          !isPosPath(path) &&
+          path !== '/pos-login'
+        ) {
+          return;
+        }
         navigate(path);
       },
       telemetry: {
@@ -88,8 +97,21 @@ export function useHostCapabilities(): HostCapabilities {
         on: (event, handler) => onHostEvent(event, handler),
       },
       api: {
-        request: async (input) =>
-          sanitizeRemoteApiResponse(await hostApi.request(input)),
+        request: async (input) => {
+          if (
+            getTokens().tokenScope === 'pos' &&
+            !isPharmacyPosApiPath(input.path)
+          ) {
+            return {
+              ok: false,
+              status: 403,
+              data: null as never,
+              code: 'POS_TOKEN_RESTRICTED',
+              message: 'POS token cannot access this endpoint',
+            };
+          }
+          return sanitizeRemoteApiResponse(await hostApi.request(input));
+        },
         createIdempotencyKey,
       },
     }),

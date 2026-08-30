@@ -52,7 +52,7 @@ describe('route guards', () => {
 
   it('keeps POS scope off inventory', () => {
     renderApp('/inventory', SESSION_FIXTURES['pos-scope']);
-    expect(screen.getByTestId('remote-page-pos')).toBeTruthy();
+    expect(screen.getByTestId('pos-page')).toBeTruthy();
   });
 
   it('allows anonymous register', () => {

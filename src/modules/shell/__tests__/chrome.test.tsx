@@ -99,6 +99,7 @@ describe('POS sidebar logout', () => {
       ),
     );
     renderApp('/pos', SESSION_FIXTURES['pos-scope']);
+    expect(screen.queryByRole('link', { name: 'Settings' })).toBeNull();
     await user.click(screen.getAllByRole('button', { name: 'Sign out' })[0]!);
     await waitFor(() => {
       expect(getTokens().accessToken).toBeNull();

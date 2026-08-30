@@ -9,6 +9,7 @@ import { SettingsRemotePage } from '@/modules/settings';
 import { CatalogueRemotePage } from '@/modules/catalogue';
 import { InventoryRemotePage } from '@/modules/inventory';
 import { ProcurementRemotePage } from '@/modules/procurement';
+import { PosRemotePage } from '@/modules/pos';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -34,7 +35,8 @@ export function AppRoutes() {
       mount.route !== '/racks' &&
       mount.route !== '/purchases' &&
       mount.route !== '/distributors' &&
-      mount.route !== '/reorder',
+      mount.route !== '/reorder' &&
+      mount.route !== '/pos',
   );
 
   return (
@@ -138,6 +140,8 @@ export function AppRoutes() {
         path="/reorder"
         element={<ProcurementRemotePage key="reorder" screen="reorder" />}
       />
+      <Route path="/pos" element={<PosRemotePage />} />
+      <Route path="/pos/*" element={<PosRemotePage />} />
       {mounts.map((mount) => (
         <Route
           key={`${mount.remoteName}:${mount.route}`}

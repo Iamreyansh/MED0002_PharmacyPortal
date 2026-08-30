@@ -1,5 +1,5 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_HOST_CONTEXT,
@@ -9,11 +9,12 @@ import {
   useHostCapabilities,
   useMfeEnvelope,
 } from '@/modules/mfe';
-import { setTokens } from '@/modules/api';
+import { resetTokenStore, setTokens } from '@/modules/api';
 
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  resetTokenStore();
 });
 
 function CapProbe() {
@@ -264,6 +265,160 @@ describe('host envelope helpers', () => {
       expect(screen.getByTestId('stripped').textContent).not.toContain(
         'leaked',
       );
+    });
+  });
+
+  it('ignores POS-token navigation off the counter', async () => {
+    setTokens({
+      accessToken: 'pos-access',
+      refreshToken: null,
+      tokenType: 'Bearer',
+      tokenScope: 'pos',
+      accessTokenExpiresAt: null,
+    });
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    function PosNavProbe() {
+      const caps = useHostCapabilities();
+      const location = useLocation();
+      return (
+        <div>
+          <span data-testid="pos-path">{location.pathname}</span>
+          <button
+            type="button"
+            data-testid="pos-nav-away"
+            onClick={() => caps.navigate?.('/analytics')}
+          >
+            away
+          </button>
+          <button
+            type="button"
+            data-testid="pos-nav-login"
+            onClick={() => caps.navigate?.('/pos-login')}
+          >
+            pin
+          </button>
+        </div>
+      );
+    }
+    render(
+      <MemoryRouter initialEntries={['/pos']}>
+        <Routes>
+          <Route path="/pos" element={<PosNavProbe />} />
+          <Route
+            path="/pos-login"
+            element={<p data-testid="pos-login">pin</p>}
+          />
+          <Route path="/analytics" element={<p>analytics</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByTestId('pos-nav-away'));
+    expect(screen.getByTestId('pos-path').textContent).toBe('/pos');
+    await user.click(screen.getByTestId('pos-nav-login'));
+    expect(screen.getByTestId('pos-login')).toBeTruthy();
+  });
+
+  it('rejects non-POS APIs for a POS token without fetching', async () => {
+    setTokens({
+      accessToken: 'pos-access',
+      refreshToken: null,
+      tokenType: 'Bearer',
+      tokenScope: 'pos',
+      accessTokenExpiresAt: null,
+    });
+    const fetchMock = vi.fn(async () => new Response('{}', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    function PosApiProbe() {
+      const caps = useHostCapabilities();
+      return (
+        <button
+          type="button"
+          data-testid="pos-api"
+          onClick={() => {
+            void caps.api
+              ?.request({ path: '/api/v1/pharmacy/settings' })
+              .then((res) => {
+                const el = document.querySelector(
+                  '[data-testid="pos-api-code"]',
+                );
+                if (el) el.textContent = String(res.code);
+              });
+          }}
+        >
+          go
+        </button>
+      );
+    }
+    render(
+      <MemoryRouter>
+        <PosApiProbe />
+        <span data-testid="pos-api-code" />
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByTestId('pos-api'));
+    await waitFor(() => {
+      expect(screen.getByTestId('pos-api-code').textContent).toBe(
+        'POS_TOKEN_RESTRICTED',
+      );
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('allows POS-token requests on the POS prefix', async () => {
+    setTokens({
+      accessToken: 'pos-access',
+      refreshToken: null,
+      tokenType: 'Bearer',
+      tokenScope: 'pos',
+      accessTokenExpiresAt: null,
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({ success: true, data: { cart_id: '1' } }),
+            {
+              status: 200,
+            },
+          ),
+      ),
+    );
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    function PosOkProbe() {
+      const caps = useHostCapabilities();
+      return (
+        <button
+          type="button"
+          data-testid="pos-ok"
+          onClick={() => {
+            void caps.api
+              ?.request({ path: '/api/v1/pharmacy/pos/cart' })
+              .then((res) => {
+                const el = document.querySelector(
+                  '[data-testid="pos-ok-status"]',
+                );
+                if (el) el.textContent = String(res.status);
+              });
+          }}
+        >
+          go
+        </button>
+      );
+    }
+    render(
+      <MemoryRouter>
+        <PosOkProbe />
+        <span data-testid="pos-ok-status" />
+      </MemoryRouter>,
+    );
+    await user.click(screen.getByTestId('pos-ok'));
+    await waitFor(() => {
+      expect(screen.getByTestId('pos-ok-status').textContent).toBe('200');
     });
   });
 });

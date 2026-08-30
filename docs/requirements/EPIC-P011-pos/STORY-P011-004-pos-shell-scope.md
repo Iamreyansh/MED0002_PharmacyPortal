@@ -7,7 +7,7 @@
 | Phase | 2 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0002` |
 | Screen owner | `mfe-pos` |
 | Minimum plan | `FREE+` |

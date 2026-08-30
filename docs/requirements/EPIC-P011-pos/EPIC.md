@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P011` |
 | Phase | 2 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-pos` |
 | Story count | 4 |
@@ -34,10 +34,10 @@ Counter cart, search, customer attach, discount, FEFO checkout. Works with full 
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P011-001](./STORY-P011-001-pos-cart.md) | POS cart create, get, items, clear | MED0003 | mfe-pos | FREE+ | P0 | M | pending |
-| [STORY-P011-002](./STORY-P011-002-pos-search-customer-discount.md) | POS search, attach customer, apply discount | MED0003 | mfe-pos | FREE+ | P0 | M | pending |
-| [STORY-P011-003](./STORY-P011-003-pos-checkout.md) | POS checkout with FEFO and payments | MED0003 | mfe-pos | FREE+ | P0 | M | pending |
-| [STORY-P011-004](./STORY-P011-004-pos-shell-scope.md) | POS MFE under pos-scoped token | MED0002 | mfe-pos | FREE+ | P0 | M | pending |
+| [STORY-P011-001](./STORY-P011-001-pos-cart.md) | POS cart create, get, items, clear | MED0003 | mfe-pos | FREE+ | P0 | M | staging-deployed |
+| [STORY-P011-002](./STORY-P011-002-pos-search-customer-discount.md) | POS search, attach customer, apply discount | MED0003 | mfe-pos | FREE+ | P0 | M | staging-deployed |
+| [STORY-P011-003](./STORY-P011-003-pos-checkout.md) | POS checkout with FEFO and payments | MED0003 | mfe-pos | FREE+ | P0 | M | staging-deployed |
+| [STORY-P011-004](./STORY-P011-004-pos-shell-scope.md) | POS MFE under pos-scoped token | MED0002 | mfe-pos | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 
