@@ -12,6 +12,7 @@ export default defineConfig({
     '**/subscription-federation.spec.ts',
     '**/catalogue-federation.spec.ts',
     '**/inventory-federation.spec.ts',
+    '**/procurement-federation.spec.ts',
   ],
   use: {
     baseURL: 'http://127.0.0.1:5173',

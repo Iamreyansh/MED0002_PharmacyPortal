@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P010` |
 | Phase | 2 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-procurement` |
 | Story count | 4 |
@@ -36,10 +36,10 @@ GRN lifecycle and CSV import (Free+). Distributors and reorder/PO (Growth+).
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P010-001](./STORY-P010-001-grn-lifecycle.md) | Purchase GRN create, items, save-and-stock | MED0003 | mfe-procurement | FREE+ | P0 | M | pending |
-| [STORY-P010-002](./STORY-P010-002-grn-csv-import.md) | GRN CSV import and confirm | MED0003 | mfe-procurement | FREE+ | P0 | M | pending |
-| [STORY-P010-003](./STORY-P010-003-distributors.md) | Distributor directory and price compare (Growth+) | MED0003 | mfe-procurement | RETAIL_PRO+ | P0 | M | pending |
-| [STORY-P010-004](./STORY-P010-004-reorder-purchase-orders.md) | Reorder suggestions and purchase orders (Growth+) | MED0003 | mfe-procurement | RETAIL_PRO+ | P0 | M | pending |
+| [STORY-P010-001](./STORY-P010-001-grn-lifecycle.md) | Purchase GRN create, items, save-and-stock | MED0003 | mfe-procurement | FREE+ | P0 | M | staging-deployed |
+| [STORY-P010-002](./STORY-P010-002-grn-csv-import.md) | GRN CSV import and confirm | MED0003 | mfe-procurement | FREE+ | P0 | M | staging-deployed |
+| [STORY-P010-003](./STORY-P010-003-distributors.md) | Distributor directory and price compare (Growth+) | MED0003 | mfe-procurement | RETAIL_PRO+ | P0 | M | staging-deployed |
+| [STORY-P010-004](./STORY-P010-004-reorder-purchase-orders.md) | Reorder suggestions and purchase orders (Growth+) | MED0003 | mfe-procurement | RETAIL_PRO+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

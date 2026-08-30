@@ -9,10 +9,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
-| Phase 2 | 21    | 6                | 0                |
+| Phase 2 | 21    | 10               | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 33               | 0                |
+| Total   | 70    | 37               | 0                |
 
 ## Phase 1
 
@@ -56,10 +56,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P009 | [STORY-P009-002](./EPIC-P009-inventory/STORY-P009-002-batches-expiry-writeoff.md)        | Batches, FEFO, expiry alerts, write-off            | MED0003 | staging-deployed | 2026-08-29 | Batches + expiry; owner write-off |
 | EPIC-P009 | [STORY-P009-003](./EPIC-P009-inventory/STORY-P009-003-rack-locations.md)                 | Rack locations, assign, print labels               | MED0003 | staging-deployed | 2026-08-29 | Racks assign/print; host CRUD |
 | EPIC-P009 | [STORY-P009-004](./EPIC-P009-inventory/STORY-P009-004-online-visibility.md)              | Online visibility toggle (Growth+)                 | MED0003 | staging-deployed | 2026-08-29 | Growth lock; owner PATCH |
-| EPIC-P010 | [STORY-P010-001](./EPIC-P010-procurement/STORY-P010-001-grn-lifecycle.md)                | Purchase GRN create, items, save-and-stock         | MED0003 | pending |           |       |
-| EPIC-P010 | [STORY-P010-002](./EPIC-P010-procurement/STORY-P010-002-grn-csv-import.md)               | GRN CSV import and confirm                         | MED0003 | pending |           |       |
-| EPIC-P010 | [STORY-P010-003](./EPIC-P010-procurement/STORY-P010-003-distributors.md)                 | Distributor directory and price compare (Growth+)  | MED0003 | pending |           |       |
-| EPIC-P010 | [STORY-P010-004](./EPIC-P010-procurement/STORY-P010-004-reorder-purchase-orders.md)      | Reorder suggestions and purchase orders (Growth+)  | MED0003 | pending |           |       |
+| EPIC-P010 | [STORY-P010-001](./EPIC-P010-procurement/STORY-P010-001-grn-lifecycle.md)                | Purchase GRN create, items, save-and-stock         | MED0003 | staging-deployed | 2026-08-30 | Procurement remote GRN editor; host onSubmit |
+| EPIC-P010 | [STORY-P010-002](./EPIC-P010-procurement/STORY-P010-002-grn-csv-import.md)               | GRN CSV import and confirm                         | MED0003 | staging-deployed | 2026-08-30 | CSV FormData preview/confirm; 10MB check |
+| EPIC-P010 | [STORY-P010-003](./EPIC-P010-procurement/STORY-P010-003-distributors.md)                 | Distributor directory and price compare (Growth+)  | MED0003 | staging-deployed | 2026-08-30 | Growth lock; owner CRUD + compare |
+| EPIC-P010 | [STORY-P010-004](./EPIC-P010-procurement/STORY-P010-004-reorder-purchase-orders.md)      | Reorder suggestions and purchase orders (Growth+)  | MED0003 | staging-deployed | 2026-08-30 | Suggestions + PO send/record-grn |
 | EPIC-P011 | [STORY-P011-001](./EPIC-P011-pos/STORY-P011-001-pos-cart.md)                             | POS cart create, get, items, clear                 | MED0003 | pending |           |       |
 | EPIC-P011 | [STORY-P011-002](./EPIC-P011-pos/STORY-P011-002-pos-search-customer-discount.md)         | POS search, attach customer, apply discount        | MED0003 | pending |           |       |
 | EPIC-P011 | [STORY-P011-003](./EPIC-P011-pos/STORY-P011-003-pos-checkout.md)                         | POS checkout with FEFO and payments                | MED0003 | pending |           |       |
