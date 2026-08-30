@@ -40,6 +40,9 @@ importers:
       '@medmate/onboarding-contract':
         specifier: file:../MED0003_MFE/packages/onboarding-contract
         version: file:../MED0003_MFE/packages/onboarding-contract
+      '@medmate/orders-contract':
+        specifier: file:../MED0003_MFE/packages/orders-contract
+        version: file:../MED0003_MFE/packages/orders-contract
       '@medmate/pos-contract':
         specifier: file:../MED0003_MFE/packages/pos-contract
         version: file:../MED0003_MFE/packages/pos-contract
@@ -626,6 +629,9 @@ packages:
 
   '@medmate/onboarding-contract@file:../MED0003_MFE/packages/onboarding-contract':
     resolution: {directory: ../MED0003_MFE/packages/onboarding-contract, type: directory}
+
+  '@medmate/orders-contract@file:../MED0003_MFE/packages/orders-contract':
+    resolution: {directory: ../MED0003_MFE/packages/orders-contract, type: directory}
 
   '@medmate/pos-contract@file:../MED0003_MFE/packages/pos-contract':
     resolution: {directory: ../MED0003_MFE/packages/pos-contract, type: directory}
@@ -3561,6 +3567,8 @@ snapshots:
   '@medmate/inventory-contract@file:../MED0003_MFE/packages/inventory-contract': {}
 
   '@medmate/onboarding-contract@file:../MED0003_MFE/packages/onboarding-contract': {}
+
+  '@medmate/orders-contract@file:../MED0003_MFE/packages/orders-contract': {}
 
   '@medmate/pos-contract@file:../MED0003_MFE/packages/pos-contract': {}
 

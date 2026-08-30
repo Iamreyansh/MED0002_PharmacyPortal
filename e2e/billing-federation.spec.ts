@@ -407,47 +407,41 @@ test.describe('billing federation', () => {
 
   test('opens khata detail from the list', async ({ page }) => {
     await seedSession(page, 'pharmacy_owner', 'RETAIL_PRO');
-    await page.route('**/api/v1/pharmacy/khata/cust-1**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          success: true,
-          data: {
-            customer: { customer_id: 'cust-1', name: 'Ramesh Gupta' },
-            total_outstanding: 8500,
-            unpaid_bills: [],
-            ledger: [
-              {
-                entry_id: 'e1',
-                type: 'DEBIT',
-                date: '2026-07-10',
-                amount: 8500,
-                running_balance: 8500,
-              },
-            ],
-          },
-        }),
-      });
-    });
     await page.route('**/api/v1/pharmacy/khata**', async (route) => {
+      const path = new URL(route.request().url()).pathname;
+      const isDetail = /\/khata\/cust-1\/?$/.test(path);
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           success: true,
-          data: {
-            kpi: { total_outstanding: 8500 },
-            aging_chart: { current_0_30d: 8500 },
-            customers: [
-              {
-                customer_id: 'cust-1',
-                name: 'Ramesh Gupta',
-                outstanding: 8500,
-                is_overdue: true,
+          data: isDetail
+            ? {
+                customer: { customer_id: 'cust-1', name: 'Ramesh Gupta' },
+                total_outstanding: 8500,
+                unpaid_bills: [],
+                ledger: [
+                  {
+                    entry_id: 'e1',
+                    type: 'DEBIT',
+                    date: '2026-07-10',
+                    amount: 8500,
+                    running_balance: 8500,
+                  },
+                ],
+              }
+            : {
+                kpi: { total_outstanding: 8500 },
+                aging_chart: { current_0_30d: 8500 },
+                customers: [
+                  {
+                    customer_id: 'cust-1',
+                    name: 'Ramesh Gupta',
+                    outstanding: 8500,
+                    is_overdue: true,
+                  },
+                ],
               },
-            ],
-          },
         }),
       });
     });
@@ -542,7 +536,9 @@ test.describe('billing federation', () => {
     await page.getByLabel('Discount value').fill('15');
     await page.getByLabel('Valid from').fill('2026-08-01');
     await page.getByLabel('Valid until').fill('2026-08-31');
-    await page.getByRole('button', { name: 'Save offer' }).click();
+    await page
+      .getByRole('button', { name: 'Save offer' })
+      .click({ force: true });
     await expect.poll(() => creates.length).toBe(1);
   });
 

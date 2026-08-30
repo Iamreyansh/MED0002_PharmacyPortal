@@ -7,7 +7,7 @@
 | Phase | 3 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-orders` |
 | Minimum plan | `FREE+` |
@@ -120,4 +120,4 @@ Requests and responses follow `API-INTEGRATION-CONTRACT.md`. Endpoint DTO field 
 
 ## Notes
 
-- No additional implementation notes.
+- Orders remote quote queue; host onSubmit for GET/POST quote and decline; Free+ with no plan lock.

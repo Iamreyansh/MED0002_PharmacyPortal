@@ -14,6 +14,9 @@ export default defineConfig({
     '**/inventory-federation.spec.ts',
     '**/procurement-federation.spec.ts',
     '**/pos-federation.spec.ts',
+    '**/billing-federation.spec.ts',
+    '**/rx-federation.spec.ts',
+    '**/orders-federation.spec.ts',
   ],
   use: {
     baseURL: 'http://127.0.0.1:5173',

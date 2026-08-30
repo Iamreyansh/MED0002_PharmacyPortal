@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P015` |
 | Phase | 3 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-orders` |
 | Story count | 4 |
@@ -37,10 +37,10 @@ Rx quotes are listable. Online orders are id-in-hand mutations only — no GET l
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P015-001](./STORY-P015-001-rx-quotes-queue.md) | Rx quote list, quote, decline | MED0003 | mfe-orders | FREE+ | P0 | M | pending |
-| [STORY-P015-002](./STORY-P015-002-order-accept-reject.md) | Order accept and reject by id (no inbox) | MED0003 | mfe-orders | FREE+ | P0 | M | pending |
-| [STORY-P015-003](./STORY-P015-003-order-status-advance.md) | Advance order packing status by id | MED0003 | mfe-orders | FREE+ | P0 | M | pending |
-| [STORY-P015-004](./STORY-P015-004-order-assign-rider.md) | Assign rider by order id | MED0003 | mfe-orders | FREE+ | P0 | M | pending |
+| [STORY-P015-001](./STORY-P015-001-rx-quotes-queue.md) | Rx quote list, quote, decline | MED0003 | mfe-orders | FREE+ | P0 | M | staging-deployed |
+| [STORY-P015-002](./STORY-P015-002-order-accept-reject.md) | Order accept and reject by id (no inbox) | MED0003 | mfe-orders | FREE+ | P0 | M | staging-deployed |
+| [STORY-P015-003](./STORY-P015-003-order-status-advance.md) | Advance order packing status by id | MED0003 | mfe-orders | FREE+ | P0 | M | staging-deployed |
+| [STORY-P015-004](./STORY-P015-004-order-assign-rider.md) | Assign rider by order id | MED0003 | mfe-orders | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

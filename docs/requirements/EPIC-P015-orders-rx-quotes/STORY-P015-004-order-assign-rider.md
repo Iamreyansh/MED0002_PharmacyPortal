@@ -7,7 +7,7 @@
 | Phase | 3 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-orders` |
 | Minimum plan | `FREE+` |
@@ -116,4 +116,4 @@ Requests and responses follow `API-INTEGRATION-CONTRACT.md`. Endpoint DTO field 
 
 ## Notes
 
-- No additional implementation notes.
+- Rider UUID field only; invalid UUID skips POST; no rider directory GET.
