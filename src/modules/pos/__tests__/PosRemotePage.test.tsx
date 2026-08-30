@@ -16,9 +16,13 @@ afterEach(() => {
   resetTelemetry();
 });
 
-function wrap(ui: ReactElement, session = SESSION_FIXTURES['owner-free']) {
+function wrap(
+  ui: ReactElement,
+  session = SESSION_FIXTURES['owner-free'],
+  path = '/pos',
+) {
   return render(
-    <MemoryRouter initialEntries={['/pos']}>
+    <MemoryRouter initialEntries={[path]}>
       <SessionProvider session={session}>
         <ToastProvider>
           <Routes>
@@ -39,6 +43,7 @@ function counterStub(): RemoteImporter {
         <div>
           <p data-testid="token-scope">{data.feature.tokenScope}</p>
           <p data-testid="can-sell">{String(data.feature.canSell)}</p>
+          <p data-testid="cart-id">{data.feature.cartId ?? ''}</p>
           <button
             type="button"
             onClick={() => {
@@ -201,6 +206,22 @@ describe('PosRemotePage', () => {
     await user.click(screen.getByRole('button', { name: 'Pay' }));
     await waitFor(() => {
       expect(screen.getByTestId('log')).toHaveTextContent('fail');
+    });
+  });
+
+  it('loads a cart from the query string', async () => {
+    vi.spyOn(hostApi, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: { cart_id: 'cart-handoff', items: [] },
+    });
+    wrap(
+      <PosRemotePage loadRemote={counterStub()} />,
+      SESSION_FIXTURES['owner-free'],
+      '/pos?cart_id=cart-handoff',
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId('cart-id')).toHaveTextContent('cart-handoff');
     });
   });
 

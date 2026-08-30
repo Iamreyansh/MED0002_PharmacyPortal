@@ -7,7 +7,7 @@
 | Phase | 3 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-rx` |
 | Minimum plan | `FREE+` |
@@ -113,4 +113,4 @@ Requests and responses follow `API-INTEGRATION-CONTRACT.md`. Endpoint DTO field 
 
 ## Notes
 
-- No additional implementation notes.
+- Drug register is read-only on Free+ with no plan lock; owner retention guidance loads from Core.

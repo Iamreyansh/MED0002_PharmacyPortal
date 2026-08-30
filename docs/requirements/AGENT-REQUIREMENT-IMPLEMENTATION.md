@@ -10,9 +10,9 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
 | Phase 2 | 21    | 17               | 0                |
-| Phase 3 | 18    | 0                | 0                |
+| Phase 3 | 18    | 4                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 44               | 0                |
+| Total   | 70    | 48               | 0                |
 
 ## Phase 1
 
@@ -76,10 +76,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Epic      | Story                                                                                  | Title                                               | Repo    | Status  | Completed | Notes |
 | --------- | -------------------------------------------------------------------------------------- | --------------------------------------------------- | ------- | ------- | --------- | ----- |
-| EPIC-P014 | [STORY-P014-001](./EPIC-P014-prescriptions/STORY-P014-001-rx-queue-list-detail.md)     | Rx queue list and detail (Starter+)                 | MED0003 | pending |           |       |
-| EPIC-P014 | [STORY-P014-002](./EPIC-P014-prescriptions/STORY-P014-002-rx-approve-reject.md)        | Approve and reject prescriptions                    | MED0003 | pending |           |       |
-| EPIC-P014 | [STORY-P014-003](./EPIC-P014-prescriptions/STORY-P014-003-rx-dispense.md)              | Dispense and dispense-to-billing                    | MED0003 | pending |           |       |
-| EPIC-P014 | [STORY-P014-004](./EPIC-P014-prescriptions/STORY-P014-004-drug-register.md)            | Schedule H1/X drug register                         | MED0003 | pending |           |       |
+| EPIC-P014 | [STORY-P014-001](./EPIC-P014-prescriptions/STORY-P014-001-rx-queue-list-detail.md)     | Rx queue list and detail (Starter+)                 | MED0003 | staging-deployed | 2026-08-30 | Rx remote queue/detail; host onSubmit; Starter lock |
+| EPIC-P014 | [STORY-P014-002](./EPIC-P014-prescriptions/STORY-P014-002-rx-approve-reject.md)        | Approve and reject prescriptions                    | MED0003 | staging-deployed | 2026-08-30 | Approve/reject; reject reason; cashier hidden |
+| EPIC-P014 | [STORY-P014-003](./EPIC-P014-prescriptions/STORY-P014-003-rx-dispense.md)              | Dispense and dispense-to-billing                    | MED0003 | staging-deployed | 2026-08-30 | Direct dispense; handoff CTA blocked GAP-017 |
+| EPIC-P014 | [STORY-P014-004](./EPIC-P014-prescriptions/STORY-P014-004-drug-register.md)            | Schedule H1/X drug register                         | MED0003 | staging-deployed | 2026-08-30 | Drug register; owner retention; Free+ no lock |
 | EPIC-P015 | [STORY-P015-001](./EPIC-P015-orders-rx-quotes/STORY-P015-001-rx-quotes-queue.md)       | Rx quote list, quote, decline                       | MED0003 | pending |           |       |
 | EPIC-P015 | [STORY-P015-002](./EPIC-P015-orders-rx-quotes/STORY-P015-002-order-accept-reject.md)   | Order accept and reject by id (no inbox)            | MED0003 | pending |           |       |
 | EPIC-P015 | [STORY-P015-003](./EPIC-P015-orders-rx-quotes/STORY-P015-003-order-status-advance.md)  | Advance order packing status by id                  | MED0003 | pending |           |       |

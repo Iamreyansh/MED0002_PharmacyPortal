@@ -7,7 +7,7 @@
 | Phase | 3 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-rx` |
 | Minimum plan | `STARTER+` |
@@ -117,4 +117,4 @@ Requests and responses follow `API-INTEGRATION-CONTRACT.md`. Endpoint DTO field 
 
 ## Notes
 
-- No additional implementation notes.
+- Approve/reject with a labelled reject reason; cashier and staff without `prescriptions:verify` hide mutate actions.

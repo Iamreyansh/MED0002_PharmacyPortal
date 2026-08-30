@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import type { RemoteImporter } from '@medmate/host-kit';
 import { resolveRemoteUrl } from '@/config';
 import { buildHostContext, MfeOutlet, useMfeEnvelope } from '@/modules/mfe';
@@ -10,7 +11,8 @@ export type PosRemotePageProps = {
 
 export function PosRemotePage({ loadRemote }: PosRemotePageProps) {
   const session = useSession();
-  const feature = usePosFeature();
+  const [params] = useSearchParams();
+  const feature = usePosFeature({ cartIdFromQuery: params.get('cart_id') });
   const data = useMfeEnvelope(
     feature,
     buildHostContext({

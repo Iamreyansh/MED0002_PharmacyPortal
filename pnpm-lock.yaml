@@ -46,6 +46,9 @@ importers:
       '@medmate/procurement-contract':
         specifier: file:../MED0003_MFE/packages/procurement-contract
         version: file:../MED0003_MFE/packages/procurement-contract
+      '@medmate/rx-contract':
+        specifier: file:../MED0003_MFE/packages/rx-contract
+        version: file:../MED0003_MFE/packages/rx-contract
       '@medmate/settings-contract':
         specifier: file:../MED0003_MFE/packages/settings-contract
         version: file:../MED0003_MFE/packages/settings-contract
@@ -629,6 +632,9 @@ packages:
 
   '@medmate/procurement-contract@file:../MED0003_MFE/packages/procurement-contract':
     resolution: {directory: ../MED0003_MFE/packages/procurement-contract, type: directory}
+
+  '@medmate/rx-contract@file:../MED0003_MFE/packages/rx-contract':
+    resolution: {directory: ../MED0003_MFE/packages/rx-contract, type: directory}
 
   '@medmate/settings-contract@file:../MED0003_MFE/packages/settings-contract':
     resolution: {directory: ../MED0003_MFE/packages/settings-contract, type: directory}
@@ -3559,6 +3565,8 @@ snapshots:
   '@medmate/pos-contract@file:../MED0003_MFE/packages/pos-contract': {}
 
   '@medmate/procurement-contract@file:../MED0003_MFE/packages/procurement-contract': {}
+
+  '@medmate/rx-contract@file:../MED0003_MFE/packages/rx-contract': {}
 
   '@medmate/settings-contract@file:../MED0003_MFE/packages/settings-contract': {}
 

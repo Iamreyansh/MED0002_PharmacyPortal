@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P014` |
 | Phase | 3 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-rx` |
 | Story count | 4 |
@@ -35,10 +35,10 @@ Starter+ Rx queue and H1/X drug register.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P014-001](./STORY-P014-001-rx-queue-list-detail.md) | Rx queue list and detail (Starter+) | MED0003 | mfe-rx | STARTER+ | P0 | M | pending |
-| [STORY-P014-002](./STORY-P014-002-rx-approve-reject.md) | Approve and reject prescriptions | MED0003 | mfe-rx | STARTER+ | P0 | M | pending |
-| [STORY-P014-003](./STORY-P014-003-rx-dispense.md) | Dispense and dispense-to-billing | MED0003 | mfe-rx | STARTER+ | P0 | M | pending |
-| [STORY-P014-004](./STORY-P014-004-drug-register.md) | Schedule H1/X drug register | MED0003 | mfe-rx | FREE+ | P0 | M | pending |
+| [STORY-P014-001](./STORY-P014-001-rx-queue-list-detail.md) | Rx queue list and detail (Starter+) | MED0003 | mfe-rx | STARTER+ | P0 | M | staging-deployed |
+| [STORY-P014-002](./STORY-P014-002-rx-approve-reject.md) | Approve and reject prescriptions | MED0003 | mfe-rx | STARTER+ | P0 | M | staging-deployed |
+| [STORY-P014-003](./STORY-P014-003-rx-dispense.md) | Dispense and dispense-to-billing | MED0003 | mfe-rx | STARTER+ | P0 | M | staging-deployed |
+| [STORY-P014-004](./STORY-P014-004-drug-register.md) | Schedule H1/X drug register | MED0003 | mfe-rx | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

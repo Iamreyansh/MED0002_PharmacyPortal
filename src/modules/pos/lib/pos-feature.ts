@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   PosCommand,
   PosFeatureData,
@@ -17,10 +17,13 @@ function rememberCartId(
   }
 }
 
-export function usePosFeature(): PosFeatureData {
+export function usePosFeature(
+  options: { cartIdFromQuery?: string | null } = {},
+): PosFeatureData {
   const session = useSession();
   const [cartId, setCartId] = useState<string | null>(null);
   const checkoutKey = useRef<string | null>(null);
+  const loadedQuery = useRef<string | null>(null);
   const canSell =
     session.role === 'pharmacy_owner' || session.role === 'pharmacy_staff';
 
@@ -48,6 +51,24 @@ export function usePosFeature(): PosFeatureData {
     },
     [cartId],
   );
+
+  useEffect(() => {
+    const queryCartId = options.cartIdFromQuery;
+    if (!queryCartId || loadedQuery.current === queryCartId) {
+      return;
+    }
+    loadedQuery.current = queryCartId;
+    void submitPos(
+      {
+        screen: 'counter',
+        action: 'loadCart',
+        values: { cart_id: queryCartId },
+      },
+      { cartId: queryCartId, checkoutKey: createIdempotencyKey() },
+    ).then((result) => {
+      rememberCartId(result, setCartId);
+    });
+  }, [options.cartIdFromQuery]);
 
   return useMemo(
     () => ({

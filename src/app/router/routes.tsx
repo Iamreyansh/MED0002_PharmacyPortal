@@ -11,6 +11,7 @@ import { InventoryRemotePage } from '@/modules/inventory';
 import { ProcurementRemotePage } from '@/modules/procurement';
 import { PosRemotePage } from '@/modules/pos';
 import { BillingRemotePage } from '@/modules/billing';
+import { RxRemotePage } from '@/modules/rx';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -42,7 +43,9 @@ export function AppRoutes() {
       mount.route !== '/sales' &&
       mount.route !== '/invoice-settings' &&
       mount.route !== '/khata' &&
-      mount.route !== '/offers',
+      mount.route !== '/offers' &&
+      mount.route !== '/prescriptions' &&
+      mount.route !== '/compliance/drug-register',
   );
 
   return (
@@ -179,6 +182,18 @@ export function AppRoutes() {
       <Route
         path="/offers"
         element={<BillingRemotePage key="offers" screen="offers" />}
+      />
+      <Route
+        path="/prescriptions"
+        element={<RxRemotePage key="queue" screen="queue" />}
+      />
+      <Route
+        path="/prescriptions/:rxId"
+        element={<RxRemotePage key="detail" screen="detail" />}
+      />
+      <Route
+        path="/compliance/drug-register"
+        element={<RxRemotePage key="drug-register" screen="drug-register" />}
       />
       {mounts.map((mount) => (
         <Route

@@ -7,7 +7,7 @@
 | Phase | 3 |
 | Priority | P0 |
 | Complexity | M |
-| Status | pending |
+| Status | staging-deployed |
 | Target repository | `MED0003` |
 | Screen owner | `mfe-rx` |
 | Minimum plan | `STARTER+` |
@@ -117,4 +117,5 @@ Requests and responses follow `API-INTEGRATION-CONTRACT.md`. Endpoint DTO field 
 
 ## Notes
 
-- Core's current PosDispensePort bridge returns generated identifiers and does not create a real POS cart. Treat dispense-to-billing as integration-blocked until GAP-017 is closed; direct dispense remains implementable.
+- Direct dispense is implemented. The dispense-to-billing submitter exists for forward-compat, but `canDispenseToBilling` stays false so the remote does not render a handoff CTA until GAP-017.
+- Core's current PosDispensePort bridge returns generated identifiers and does not create a real POS cart. Treat dispense-to-billing as integration-blocked until GAP-017 is closed.
