@@ -277,21 +277,38 @@ describe('OrdersRemotePage', () => {
     expect(await screen.findByTestId('orders-rx-quotes-page')).toBeTruthy();
   });
 
-  it('clears orderId off the home contract and uses a configured remote URL', async () => {
+  it('uses a configured remote URL and blocks anonymous mutate', async () => {
     vi.stubEnv(
       'VITE_REMOTE_ORDERS_URL',
       'https://example.test/mf-manifest.json',
     );
     wrap(
       <OrdersRemotePage screen="order-actions" loadRemote={actionsStub()} />,
-      '/orders',
+      `/orders/${ORDER_ID}`,
       SESSION_FIXTURES.unauthenticated,
     );
-    expect(await screen.findByTestId('order-id')).toHaveTextContent('');
+    expect(await screen.findByTestId('order-id')).toHaveTextContent(ORDER_ID);
     expect(screen.getByTestId('can-mutate')).toHaveTextContent('false');
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: 'Accept' }));
     expect(await screen.findByTestId('log')).toHaveTextContent('FORBIDDEN');
+  });
+
+  it('shows not-found for an invalid order id without calling Core', () => {
+    const request = vi.spyOn(hostApi, 'request');
+    wrap(
+      <OrdersRemotePage screen="order-actions" loadRemote={actionsStub()} />,
+      '/orders/not-a-uuid',
+    );
+    expect(screen.getByTestId('not-found')).toBeTruthy();
+    expect(request).not.toHaveBeenCalled();
+    cleanup();
+    wrap(
+      <OrdersRemotePage screen="order-actions" loadRemote={actionsStub()} />,
+      '/orders',
+    );
+    expect(screen.getByTestId('not-found')).toBeTruthy();
+    expect(request).not.toHaveBeenCalled();
   });
 
   it('lets staff accept and blocks POS tokens', async () => {

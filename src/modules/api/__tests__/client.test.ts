@@ -3,6 +3,7 @@ import { PORTAL_ERROR } from '@/config/api-client';
 import {
   ACCESS_REFRESH_SKEW_MS,
   createApiClient,
+  getRecovery,
   hostApi,
   setSessionDeathHandler,
 } from '@/modules/api';
@@ -620,6 +621,60 @@ describe('retries and idempotency', () => {
     await expect(
       client.request({ path: '/api/v1/stock' }),
     ).resolves.toMatchObject({ ok: true });
+    expect(getRecovery()).toBeNull();
+  });
+
+  it('publishes unavailable recovery after GET 503 still fails', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(errData('UNAVAILABLE', 503))
+      .mockResolvedValueOnce(errData('UNAVAILABLE', 503));
+    const client = createApiClient({
+      fetch,
+      sleep: async () => undefined,
+      baseUrl: 'http://core.test',
+    });
+    await expect(
+      client.request({ path: '/api/v1/stock' }),
+    ).resolves.toMatchObject({ ok: false, status: 503 });
+    expect(getRecovery()).toEqual({
+      kind: 'unavailable',
+      retryAfterSeconds: 0,
+    });
+  });
+
+  it('keeps rate-limit recovery when GET 429 persists', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        errData('RATE_LIMITED', 429, { retry_after_seconds: 2 }),
+      )
+      .mockResolvedValueOnce(
+        errData('RATE_LIMITED', 429, { retry_after_seconds: 2 }),
+      );
+    const client = createApiClient({
+      fetch,
+      sleep: async () => undefined,
+      baseUrl: 'http://core.test',
+    });
+    await expect(
+      client.request({ path: '/api/v1/stock' }),
+    ).resolves.toMatchObject({ ok: false, status: 429 });
+    expect(getRecovery()).toEqual({
+      kind: 'rate_limited',
+      retryAfterSeconds: 2,
+    });
+  });
+
+  it('does not publish recovery for POST 500', async () => {
+    const fetch = vi.fn(async () => errData('INTERNAL', 500));
+    const client = createApiClient({ fetch, baseUrl: 'http://core.test' });
+    await client.request({
+      path: '/api/v1/pharmacy/pos/checkout',
+      method: 'POST',
+      body: { cart_id: '1' },
+    });
+    expect(getRecovery()).toBeNull();
   });
 
   it('advances the default sleep for retry_after_seconds', async () => {
@@ -632,8 +687,14 @@ describe('retries and idempotency', () => {
       .mockResolvedValueOnce(okData({ ok: true }));
     const client = createApiClient({ fetch, baseUrl: 'http://core.test' });
     const pending = client.request({ path: '/api/v1/stock' });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(getRecovery()).toEqual({
+      kind: 'rate_limited',
+      retryAfterSeconds: 1,
+    });
     await vi.advanceTimersByTimeAsync(1000);
     await expect(pending).resolves.toMatchObject({ ok: true });
+    expect(getRecovery()).toBeNull();
   });
 });
 

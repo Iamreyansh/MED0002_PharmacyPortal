@@ -77,5 +77,13 @@ export default tseslint.config(
     files: ['**/*.{test,spec}.{ts,tsx}', '**/__tests__/**'],
     languageOptions: { globals: { ...globals.vitest } },
   },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+  },
   eslintConfigPrettier,
 );

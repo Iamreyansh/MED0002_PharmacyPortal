@@ -39,3 +39,12 @@ export type {
   TokenSnapshot,
   TokenStore,
 } from '@/modules/api/store/token-store';
+export {
+  clearRecovery,
+  getRecovery,
+  resetRecovery,
+  setRecovery,
+  subscribeRecovery,
+  useRecovery,
+} from '@/modules/api/store/recovery';
+export type { RecoveryKind, RecoveryState } from '@/modules/api/store/recovery';

@@ -11,6 +11,7 @@ import type {
   PosSubmitResult,
 } from '@medmate/pos-contract';
 import { isCartStale } from '@medmate/pos-contract';
+import { PORTAL_ERROR } from '@/config/api-client';
 import { hostApi } from '@/modules/api';
 import { failureResult } from '@/modules/pos/lib/errors';
 import { POS_CART_PATH, cartItemPath, cartPath } from '@/modules/pos/lib/paths';
@@ -237,6 +238,14 @@ export async function submitPos(
 
   if (command.action !== 'checkout') {
     return { ok: false, formError: 'This screen cannot run the counter.' };
+  }
+
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    return failureResult(
+      PORTAL_ERROR.NETWORK_ERROR,
+      'Checkout is blocked while offline.',
+      undefined,
+    );
   }
 
   const result = await hostApi.request<unknown>({

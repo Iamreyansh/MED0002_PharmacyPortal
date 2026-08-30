@@ -6,6 +6,7 @@ import {
 } from '@/app/router/route-policy';
 import { AppHeader } from '@/modules/shell/ui/AppHeader';
 import { BottomNav, SidebarNav } from '@/modules/shell/ui/NavItems';
+import { RecoveryBanner } from '@/modules/shell/ui/RecoveryBanner';
 import { ToastProvider } from '@/modules/shell/ui/Toast';
 import { useViewportMode } from '@/modules/shell/lib/use-viewport';
 import { resolveNavItems } from '@/modules/navigation';
@@ -89,6 +90,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               This pharmacy is suspended. Marketplace actions are blocked.
             </p>
           ) : null}
+          {authChrome ? null : <RecoveryBanner />}
           {children}
         </main>
         {authChrome ? null : <BottomNav items={items} />}

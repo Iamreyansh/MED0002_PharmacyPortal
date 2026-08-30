@@ -333,6 +333,25 @@ describe('submitPos', () => {
       ),
     ).toMatchObject({ ok: false, code: 'CREDIT_REQUIRES_NAMED_CUSTOMER' });
 
+    vi.stubGlobal('navigator', { onLine: false });
+    const beforeOffline = request.mock.calls.length;
+    expect(
+      await submitPos(
+        {
+          screen: 'counter',
+          action: 'checkout',
+          values: { payment_method: 'CASH' },
+        },
+        ctx,
+      ),
+    ).toMatchObject({
+      ok: false,
+      code: 'NETWORK_ERROR',
+      formError: 'Checkout is blocked while offline.',
+    });
+    expect(request.mock.calls.length).toBe(beforeOffline);
+    vi.unstubAllGlobals();
+
     request.mockResolvedValueOnce(fail('FORBIDDEN', 'no', 403));
     expect(
       await submitPos(

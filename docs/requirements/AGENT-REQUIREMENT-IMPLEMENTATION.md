@@ -11,8 +11,8 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | Phase 1 | 27    | 27               | 0                |
 | Phase 2 | 21    | 17               | 0                |
 | Phase 3 | 18    | 18               | 0                |
-| Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 62               | 0                |
+| Phase 4 | 4     | 4                | 0                |
+| Total   | 70    | 66               | 0                |
 
 ## Phase 1
 
@@ -99,7 +99,7 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 
 | Epic      | Story                                                                              | Title                                               | Repo    | Status  | Completed | Notes |
 | --------- | ---------------------------------------------------------------------------------- | --------------------------------------------------- | ------- | ------- | --------- | ----- |
-| EPIC-P021 | [STORY-P021-001](./EPIC-P021-quality-release/STORY-P021-001-e2e-journeys.md)       | End-to-end pharmacy journeys                        | MED0002 | pending |           |       |
-| EPIC-P021 | [STORY-P021-002](./EPIC-P021-quality-release/STORY-P021-002-a11y-security-perf.md) | Accessibility, security, and performance acceptance | MED0002 | pending |           |       |
-| EPIC-P021 | [STORY-P021-003](./EPIC-P021-quality-release/STORY-P021-003-failure-recovery.md)   | Failure recovery drills                             | MED0002 | pending |           |       |
-| EPIC-P021 | [STORY-P021-004](./EPIC-P021-quality-release/STORY-P021-004-release-acceptance.md) | Release acceptance checklist                        | MED0002 | pending |           |       |
+| EPIC-P021 | [STORY-P021-001](./EPIC-P021-quality-release/STORY-P021-001-e2e-journeys.md)       | End-to-end pharmacy journeys                        | MED0002 | staging-deployed | 2026-08-31 | quality-journeys + POS checkout; no orders list GET |
+| EPIC-P021 | [STORY-P021-002](./EPIC-P021-quality-release/STORY-P021-002-a11y-security-perf.md) | Accessibility, security, and performance acceptance | MED0002 | staging-deployed | 2026-08-31 | axe home/POS/KYC; bundle budget; 100% coverage |
+| EPIC-P021 | [STORY-P021-003](./EPIC-P021-quality-release/STORY-P021-003-failure-recovery.md)   | Failure recovery drills                             | MED0002 | staging-deployed | 2026-08-31 | 503/429 banner; offline checkout; invalid order UUID |
+| EPIC-P021 | [STORY-P021-004](./EPIC-P021-quality-release/STORY-P021-004-release-acceptance.md) | Release acceptance checklist                        | MED0002 | staging-deployed | 2026-08-31 | registry/exclusions/Growth/smoke; not production-ready |

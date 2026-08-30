@@ -199,6 +199,45 @@ test.describe('orders federation', () => {
     expect(riderGets).toEqual([]);
   });
 
+  test('accept 404 keeps the id-in-hand screen without a list GET', async ({
+    page,
+  }) => {
+    const listGets: string[] = [];
+    page.on('request', (request) => {
+      if (
+        request.method() === 'GET' &&
+        /\/api\/v1\/pharmacy\/orders\/?$/.test(new URL(request.url()).pathname)
+      ) {
+        listGets.push(request.url());
+      }
+    });
+    await seedSession(page, 'pharmacy_owner');
+    await page.route(
+      `**/api/v1/pharmacy/orders/${ORDER_ID}/accept`,
+      async (route) => {
+        await route.fulfill({
+          status: 404,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            success: false,
+            error: {
+              code: 'ORDER_NOT_FOUND',
+              message: 'This order was not found.',
+            },
+          }),
+        });
+      },
+    );
+    await page.goto(`/orders/${ORDER_ID}`);
+    await page.getByRole('button', { name: 'Accept', exact: true }).click();
+    await expect(
+      page
+        .getByTestId('not-found')
+        .or(page.getByTestId('orders-actions-error')),
+    ).toBeVisible();
+    expect(listGets).toEqual([]);
+  });
+
   test('shows guidance on /orders without a list', async ({ page }) => {
     await seedSession(page, 'pharmacy_owner');
     const listGets: string[] = [];

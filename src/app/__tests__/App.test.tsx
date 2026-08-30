@@ -189,6 +189,11 @@ describe('degraded remotes and Todo retirement', () => {
     renderApp('/does-not-exist', SESSION_FIXTURES['owner-free']);
     expect(screen.getByTestId('not-found')).toBeTruthy();
   });
+
+  it('shows not-found for an invalid order deep link', () => {
+    renderApp('/orders/not-a-uuid', SESSION_FIXTURES['owner-free']);
+    expect(screen.getByTestId('not-found')).toBeTruthy();
+  });
 });
 
 describe('App default session', () => {

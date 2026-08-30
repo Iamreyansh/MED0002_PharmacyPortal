@@ -22,6 +22,11 @@ import {
   getTokens,
   type TokenSnapshot,
 } from '@/modules/api/store/token-store';
+import {
+  clearRecovery,
+  resetRecovery,
+  setRecovery,
+} from '@/modules/api/store/recovery';
 import { clearSessionSnapshot } from '@/modules/session/store/snapshot';
 
 export {
@@ -136,6 +141,30 @@ function emitApiError(emit: typeof track, result: HostApiResponse): void {
     return;
   }
   emit('api_error', { code: result.code as string });
+}
+
+function isRateLimited(result: HostApiResponse): boolean {
+  return result.status === 429 || result.code === 'RATE_LIMITED';
+}
+
+function isUnavailable(result: HostApiResponse): boolean {
+  return result.status === 503 || result.code === 'UNAVAILABLE';
+}
+
+function publishRecovery(result: HostApiResponse): void {
+  if (isRateLimited(result)) {
+    setRecovery({
+      kind: 'rate_limited',
+      retryAfterSeconds: result.retryAfterSeconds ?? 0,
+    });
+    return;
+  }
+  if (isUnavailable(result)) {
+    setRecovery({
+      kind: 'unavailable',
+      retryAfterSeconds: result.retryAfterSeconds ?? 0,
+    });
+  }
 }
 
 function resolveUrl(path: string, baseUrl: string): string {
@@ -293,6 +322,9 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
     }
 
     if (isTransient(method, result)) {
+      if (isRateLimited(result)) {
+        publishRecovery(result);
+      }
       await sleep(retryWaitMs(result));
       result = await executeOnce<T>(input, { skipAuth });
       if (
@@ -309,6 +341,11 @@ export function createApiClient(deps: ApiClientDeps = {}): ApiClient {
       }
     }
 
+    if (result.ok) {
+      clearRecovery();
+    } else {
+      publishRecovery(result);
+    }
     emitApiError(emit, result);
     return result;
   }
@@ -327,4 +364,5 @@ export const hostApi = createApiClient();
 export function resetApiClientState(): void {
   hostApi.reset();
   setSessionDeathHandler(null);
+  resetRecovery();
 }

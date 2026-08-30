@@ -6,6 +6,7 @@ export {
   SidebarNav,
 } from '@/modules/shell/ui/NavItems';
 export { ToastProvider, useToast } from '@/modules/shell/ui/Toast';
+export { RecoveryBanner } from '@/modules/shell/ui/RecoveryBanner';
 export { SessionMenu } from '@/modules/shell/ui/SessionMenu';
 export { PharmacySwitcher } from '@/modules/shell/ui/PharmacySwitcher';
 export {

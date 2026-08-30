@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P021` |
 | Phase | 4 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0002` |
 | Primary owner | `host` |
 | Story count | 4 |
@@ -35,10 +35,10 @@ E2E, a11y/security/perf, failure recovery, release checklist.
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P021-001](./STORY-P021-001-e2e-journeys.md) | End-to-end pharmacy journeys | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P021-002](./STORY-P021-002-a11y-security-perf.md) | Accessibility, security, and performance acceptance | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P021-003](./STORY-P021-003-failure-recovery.md) | Failure recovery drills | MED0002 | host | FREE+ | P0 | M | pending |
-| [STORY-P021-004](./STORY-P021-004-release-acceptance.md) | Release acceptance checklist | MED0002 | host | FREE+ | P0 | M | pending |
+| [STORY-P021-001](./STORY-P021-001-e2e-journeys.md) | End-to-end pharmacy journeys | MED0002 | host | FREE+ | P0 | M | staging-deployed |
+| [STORY-P021-002](./STORY-P021-002-a11y-security-perf.md) | Accessibility, security, and performance acceptance | MED0002 | host | FREE+ | P0 | M | staging-deployed |
+| [STORY-P021-003](./STORY-P021-003-failure-recovery.md) | Failure recovery drills | MED0002 | host | FREE+ | P0 | M | staging-deployed |
+| [STORY-P021-004](./STORY-P021-004-release-acceptance.md) | Release acceptance checklist | MED0002 | host | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

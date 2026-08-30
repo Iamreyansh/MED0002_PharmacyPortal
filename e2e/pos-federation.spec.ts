@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 const DIST_ROOT =
@@ -275,6 +276,85 @@ test.describe('POS federation', () => {
     await page.getByRole('button', { name: 'Checkout' }).click();
     await expect(page.getByTestId('pos-error')).toContainText('exceeds batch');
     await expect(page.getByTestId('pos-receipt')).toHaveCount(0);
+  });
+
+  test('tabs from search to cart to pay', async ({ page }) => {
+    await seedSession(page);
+    await mockPosApi(page);
+    await page.goto('/pos');
+    await page
+      .getByRole('combobox', { name: 'Search products' })
+      .fill('crocin');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('button', { name: 'Add to cart' }).click();
+    await expect(page.getByTestId('pos-cart-table')).toBeVisible();
+    await expect(page.getByTestId('pos-checkout')).toBeVisible();
+    const search = page.getByRole('combobox', { name: 'Search products' });
+    const searchBeforeCart = await search.evaluate((el) => {
+      const cart = document.querySelector('[data-testid="pos-cart-table"]');
+      return (
+        !!cart &&
+        (el.compareDocumentPosition(cart) &
+          Node.DOCUMENT_POSITION_FOLLOWING) !==
+          0
+      );
+    });
+    const cartBeforePay = await page
+      .getByTestId('pos-cart-table')
+      .evaluate((el) => {
+        const pay = document.querySelector('[data-testid="pos-checkout"]');
+        return (
+          !!pay &&
+          (el.compareDocumentPosition(pay) &
+            Node.DOCUMENT_POSITION_FOLLOWING) !==
+            0
+        );
+      });
+    expect(searchBeforeCart).toBe(true);
+    expect(cartBeforePay).toBe(true);
+  });
+
+  test('blocks checkout while offline', async ({ page, context }) => {
+    await seedSession(page);
+    await mockPosApi(page);
+    await page.goto('/pos');
+    await page
+      .getByRole('combobox', { name: 'Search products' })
+      .fill('crocin');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('button', { name: 'Add to cart' }).click();
+    await expect(page.getByTestId('pos-checkout')).toBeVisible();
+    await context.setOffline(true);
+    await page.getByRole('button', { name: 'Checkout' }).click();
+    await expect(page.getByTestId('pos-error')).toBeVisible();
+    await expect(page.getByTestId('pos-receipt')).toHaveCount(0);
+  });
+
+  test('axe on POS has no critical', async ({ page }) => {
+    await seedSession(page);
+    await mockPosApi(page);
+    await page.goto('/pos');
+    await expect(page.getByTestId('pos-page')).toBeVisible();
+    const results = await new AxeBuilder({ page }).analyze();
+    const blocking = results.violations.filter(
+      (violation) => violation.impact === 'critical',
+    );
+    expect(blocking).toEqual([]);
+  });
+
+  test('covers pos-checkout on a cash sale', async ({ page }) => {
+    await seedSession(page);
+    await mockPosApi(page);
+    await page.goto('/pos');
+    await expect(page.getByTestId('pos-page')).toBeVisible();
+    await page
+      .getByRole('combobox', { name: 'Search products' })
+      .fill('crocin');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByRole('button', { name: 'Add to cart' }).click();
+    await expect(page.getByTestId('pos-checkout')).toBeVisible();
+    await page.getByRole('button', { name: 'Checkout' }).click();
+    await expect(page.getByTestId('pos-receipt')).toBeVisible();
   });
 
   test('PIN sale never calls settings or inventory', async ({ page }) => {

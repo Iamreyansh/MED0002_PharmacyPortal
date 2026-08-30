@@ -93,6 +93,20 @@ describe('host envelope helpers', () => {
     await waitFor(() => {
       expect(screen.getByTestId('api-status').textContent).toBe('200');
     });
+    expect(screen.getByTestId('api-status').textContent).not.toBe('501');
+  });
+
+  it('does not hard-code 501 on the envelope api.request', () => {
+    function Probe() {
+      const caps = useHostCapabilities();
+      return <pre data-testid="fn">{String(caps.api?.request)}</pre>;
+    }
+    render(
+      <MemoryRouter>
+        <Probe />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('fn').textContent).not.toMatch(/\b501\b/);
   });
 
   it('delivers host events to subscribers and storefront status', async () => {

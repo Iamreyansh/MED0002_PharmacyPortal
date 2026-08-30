@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 const DIST_ROOT =
@@ -128,5 +129,52 @@ test.describe('onboarding federation contract', () => {
     await expect(
       page.getByRole('button', { name: 'Upload KYC documents' }),
     ).toBeVisible();
+  });
+
+  test('axe on KYC has no critical', async ({ page }) => {
+    await mockMeAndStatus(page);
+    await page.addInitScript(
+      ({ tokens, snapshot }) => {
+        sessionStorage.setItem('medmate.portal.tokens', tokens);
+        sessionStorage.setItem('medmate.portal.session', snapshot);
+      },
+      {
+        tokens: JSON.stringify({
+          accessToken: 'access',
+          refreshToken: 'refresh',
+          tokenType: 'Bearer',
+          tokenScope: 'full',
+          accessTokenExpiresAt: Date.now() + 60_000,
+        }),
+        snapshot: JSON.stringify({
+          pharmacies: [],
+          staffId: STAFF_ID,
+          staffName: 'Priya Sharma',
+          pharmacyId: PHARMACY_ID,
+          pharmacyName: 'Sri Rama Medicals',
+          role: 'pharmacy_owner',
+          plan: 'FREE',
+          pharmacyStatus: 'PENDING_KYC',
+          permissions: ['*'],
+          tokenScope: 'full',
+        }),
+      },
+    );
+    await page.route('**/api/v1/pharmacy/kyc/documents', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: { documents: [] } }),
+      });
+    });
+    await page.goto('/onboarding/kyc');
+    await expect(
+      page.locator('section[data-testid="onboarding-kyc-page"]'),
+    ).toBeVisible();
+    const results = await new AxeBuilder({ page }).analyze();
+    const blocking = results.violations.filter(
+      (violation) => violation.impact === 'critical',
+    );
+    expect(blocking).toEqual([]);
   });
 });
