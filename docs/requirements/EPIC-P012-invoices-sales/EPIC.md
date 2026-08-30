@@ -5,7 +5,7 @@
 | Epic ID | `EPIC-P012` |
 | Phase | 2 |
 | Priority | P0 |
-| Status | Draft |
+| Status | staging-deployed |
 | Primary repository | `MED0003` |
 | Primary owner | `mfe-billing` |
 | Story count | 4 |
@@ -35,10 +35,10 @@ Invoices list/detail/pdf/share, invoice settings, sales ledger/summary/mark-paid
 
 | Story | Title | Repo | Owner | Plan | Priority | Size | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| [STORY-P012-001](./STORY-P012-001-invoices-pdf-share.md) | Invoice list, detail, PDF, share | MED0003 | mfe-billing | FREE+ | P0 | M | pending |
-| [STORY-P012-002](./STORY-P012-002-invoice-settings.md) | Invoice settings | MED0003 | mfe-billing | FREE+ | P0 | M | pending |
-| [STORY-P012-003](./STORY-P012-003-sales-ledger.md) | Sales ledger, summary, export | MED0003 | mfe-billing | FREE+ | P0 | M | pending |
-| [STORY-P012-004](./STORY-P012-004-sales-mark-paid.md) | Mark sale paid | MED0003 | mfe-billing | FREE+ | P0 | M | pending |
+| [STORY-P012-001](./STORY-P012-001-invoices-pdf-share.md) | Invoice list, detail, PDF, share | MED0003 | mfe-billing | FREE+ | P0 | M | staging-deployed |
+| [STORY-P012-002](./STORY-P012-002-invoice-settings.md) | Invoice settings | MED0003 | mfe-billing | FREE+ | P0 | M | staging-deployed |
+| [STORY-P012-003](./STORY-P012-003-sales-ledger.md) | Sales ledger, summary, export | MED0003 | mfe-billing | FREE+ | P0 | M | staging-deployed |
+| [STORY-P012-004](./STORY-P012-004-sales-mark-paid.md) | Mark sale paid | MED0003 | mfe-billing | FREE+ | P0 | M | staging-deployed |
 
 ## Dependencies
 

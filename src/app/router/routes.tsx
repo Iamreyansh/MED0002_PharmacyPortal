@@ -10,6 +10,7 @@ import { CatalogueRemotePage } from '@/modules/catalogue';
 import { InventoryRemotePage } from '@/modules/inventory';
 import { ProcurementRemotePage } from '@/modules/procurement';
 import { PosRemotePage } from '@/modules/pos';
+import { BillingRemotePage } from '@/modules/billing';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -36,7 +37,10 @@ export function AppRoutes() {
       mount.route !== '/purchases' &&
       mount.route !== '/distributors' &&
       mount.route !== '/reorder' &&
-      mount.route !== '/pos',
+      mount.route !== '/pos' &&
+      mount.route !== '/invoices' &&
+      mount.route !== '/sales' &&
+      mount.route !== '/invoice-settings',
   );
 
   return (
@@ -142,6 +146,26 @@ export function AppRoutes() {
       />
       <Route path="/pos" element={<PosRemotePage />} />
       <Route path="/pos/*" element={<PosRemotePage />} />
+      <Route
+        path="/invoices"
+        element={<BillingRemotePage key="invoices" screen="invoices" />}
+      />
+      <Route
+        path="/invoices/:invoiceId"
+        element={
+          <BillingRemotePage key="invoice-detail" screen="invoice-detail" />
+        }
+      />
+      <Route
+        path="/invoice-settings"
+        element={
+          <BillingRemotePage key="invoice-settings" screen="invoice-settings" />
+        }
+      />
+      <Route
+        path="/sales"
+        element={<BillingRemotePage key="sales" screen="sales" />}
+      />
       {mounts.map((mount) => (
         <Route
           key={`${mount.remoteName}:${mount.route}`}

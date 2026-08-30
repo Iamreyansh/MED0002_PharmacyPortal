@@ -53,6 +53,8 @@ const NAV_GLYPH_PATHS: Record<string, string> = {
   invoices:
     'M7 2h10l1 3v17l-3-1.5L12 22l-3-1.5L6 22V5l1-3zm1 7h8v2H8V9zm0 4h8v2H8v-2z',
   sales: 'M4 18V8h2v8h4V6h2v10h4V4h2v14H4z',
+  'invoice-settings':
+    'M7 2h10l1 3v8.1A5 5 0 0 0 12 22l-3-1.5L6 22V5l1-3zm1 7h8v2H8V9zm9.1 5.2 1.8.7-.7 1.7-1.8-.7a3 3 0 0 0-1 .8l.3 1.9H13l-.3-1.9a3 3 0 0 0-1-.8l-1.8.7-.7-1.7 1.8-.7a3 3 0 0 0 0-1.6l-1.8-.7.7-1.7 1.8.7a3 3 0 0 0 1-.8L13 10h1.6l.3 1.9a3 3 0 0 0 1 .8l1.8-.7.7 1.7-1.8.7a3 3 0 0 0 0 1.6z',
   khata:
     'M5 3h11a2 2 0 0 1 2 2v14H5V3zm3 4v2h7V7H8zm0 4v2h7v-2H8zm0 4v2h5v-2H8z',
   offers:

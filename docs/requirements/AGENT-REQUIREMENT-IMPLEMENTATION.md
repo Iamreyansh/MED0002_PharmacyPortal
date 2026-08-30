@@ -9,10 +9,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | Phase   | Total | Staging-deployed | Production-ready |
 | ------- | ----- | ---------------- | ---------------- |
 | Phase 1 | 27    | 27               | 0                |
-| Phase 2 | 21    | 10               | 0                |
+| Phase 2 | 21    | 14               | 0                |
 | Phase 3 | 18    | 0                | 0                |
 | Phase 4 | 4     | 0                | 0                |
-| Total   | 70    | 37               | 0                |
+| Total   | 70    | 41               | 0                |
 
 ## Phase 1
 
@@ -64,10 +64,10 @@ Statuses: `pending` | `in_progress` | `staging-deployed` | `production-ready` | 
 | EPIC-P011 | [STORY-P011-002](./EPIC-P011-pos/STORY-P011-002-pos-search-customer-discount.md)         | POS search, attach customer, apply discount        | MED0003 | staging-deployed | 2026-08-30 | Search TEXT/BARCODE; attach find-or-create; discount |
 | EPIC-P011 | [STORY-P011-003](./EPIC-P011-pos/STORY-P011-003-pos-checkout.md)                         | POS checkout with FEFO and payments                | MED0003 | staging-deployed | 2026-08-30 | Idempotent checkout; POS token skips PDF fetch |
 | EPIC-P011 | [STORY-P011-004](./EPIC-P011-pos/STORY-P011-004-pos-shell-scope.md)                      | POS MFE under pos-scoped token                     | MED0002 | staging-deployed | 2026-08-30 | Envelope navigate/API gates; chrome no Settings |
-| EPIC-P012 | [STORY-P012-001](./EPIC-P012-invoices-sales/STORY-P012-001-invoices-pdf-share.md)        | Invoice list, detail, PDF, share                   | MED0003 | pending |           |       |
-| EPIC-P012 | [STORY-P012-002](./EPIC-P012-invoices-sales/STORY-P012-002-invoice-settings.md)          | Invoice settings                                   | MED0003 | pending |           |       |
-| EPIC-P012 | [STORY-P012-003](./EPIC-P012-invoices-sales/STORY-P012-003-sales-ledger.md)              | Sales ledger, summary, export                      | MED0003 | pending |           |       |
-| EPIC-P012 | [STORY-P012-004](./EPIC-P012-invoices-sales/STORY-P012-004-sales-mark-paid.md)           | Mark sale paid                                     | MED0003 | pending |           |       |
+| EPIC-P012 | [STORY-P012-001](./EPIC-P012-invoices-sales/STORY-P012-001-invoices-pdf-share.md)        | Invoice list, detail, PDF, share                   | MED0003 | staging-deployed | 2026-08-30 | Billing remote invoices/PDF/share; host onSubmit |
+| EPIC-P012 | [STORY-P012-002](./EPIC-P012-invoices-sales/STORY-P012-002-invoice-settings.md)          | Invoice settings                                   | MED0003 | staging-deployed | 2026-08-30 | Settings form; owner PATCH; no einvoice IRN |
+| EPIC-P012 | [STORY-P012-003](./EPIC-P012-invoices-sales/STORY-P012-003-sales-ledger.md)              | Sales ledger, summary, export                      | MED0003 | staging-deployed | 2026-08-30 | Ledger + summary cards; Excel export |
+| EPIC-P012 | [STORY-P012-004](./EPIC-P012-invoices-sales/STORY-P012-004-sales-mark-paid.md)           | Mark sale paid                                     | MED0003 | staging-deployed | 2026-08-30 | Owner confirm dialog; staff hidden |
 | EPIC-P013 | [STORY-P013-001](./EPIC-P013-khata-offers/STORY-P013-001-khata-list-detail.md)           | Khata list, detail, payment history (Starter+)     | MED0003 | pending |           |       |
 | EPIC-P013 | [STORY-P013-002](./EPIC-P013-khata-offers/STORY-P013-002-khata-repay-remind.md)          | Khata repayment and reminders                      | MED0003 | pending |           |       |
 | EPIC-P013 | [STORY-P013-003](./EPIC-P013-khata-offers/STORY-P013-003-offers-crud-validate.md)        | Pharmacy offers CRUD and validate (Growth+)        | MED0003 | pending |           |       |

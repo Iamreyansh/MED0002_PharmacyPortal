@@ -143,6 +143,12 @@ export const NAV_CATALOG: readonly NavItem[] = [
     homeShortcut: true,
   },
   {
+    id: 'invoice-settings',
+    path: '/invoice-settings',
+    label: 'Invoice settings',
+    group: 'money',
+  },
+  {
     id: 'khata',
     path: '/khata',
     label: 'Khata',
