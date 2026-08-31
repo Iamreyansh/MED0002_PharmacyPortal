@@ -8,8 +8,10 @@ import type {
 } from '@medmate/auth-contract';
 import { useSessionStore } from '@/modules/session';
 import { readPosLastIds } from '@/modules/auth/lib/pos-last';
+import { submitForgot } from '@/modules/auth/lib/submit-forgot';
 import { submitPharmacy } from '@/modules/auth/lib/submit-pharmacy';
 import { submitPos } from '@/modules/auth/lib/submit-pos';
+import { submitReset } from '@/modules/auth/lib/submit-reset';
 import {
   asSessionRows,
   submitSessions,
@@ -29,6 +31,12 @@ export function useAuthFeature(portalType: AuthPortalType): AuthFeatureData {
           navigate,
           search: location.search,
         });
+      }
+      if (command.portalType === 'pharmacy-forgot') {
+        return submitForgot(command);
+      }
+      if (command.portalType === 'pharmacy-reset') {
+        return submitReset(command, { navigate });
       }
       if (command.portalType === 'pos') {
         return submitPos(command, { applyPosLogin, navigate });
@@ -53,7 +61,11 @@ export function useAuthFeature(portalType: AuthPortalType): AuthFeatureData {
     [applyLogin, applyPosLogin, clearSession, location.search, navigate],
   );
 
-  const initialValues = useMemo(() => {
+  const initialValues = useMemo((): Record<string, string> | undefined => {
+    if (portalType === 'pharmacy-reset') {
+      const token = new URLSearchParams(location.search).get('token') ?? '';
+      return { token, resetToken: token };
+    }
     if (portalType !== 'pos') {
       return undefined;
     }
@@ -62,15 +74,21 @@ export function useAuthFeature(portalType: AuthPortalType): AuthFeatureData {
       pharmacyId: last.pharmacyId,
       staffId: last.staffId,
     };
-  }, [portalType]);
+  }, [location.search, portalType]);
 
-  const links = useMemo(
-    () =>
-      portalType === 'pharmacy'
-        ? { posLogin: '/pos-login', register: '/register' }
-        : undefined,
-    [portalType],
-  );
+  const links = useMemo(() => {
+    if (portalType === 'pharmacy') {
+      return {
+        posLogin: '/pos-login',
+        register: '/register',
+        forgotPassword: '/forgot-password',
+      };
+    }
+    if (portalType === 'pharmacy-forgot' || portalType === 'pharmacy-reset') {
+      return { login: '/login' };
+    }
+    return undefined;
+  }, [portalType]);
 
   return useMemo(
     () => ({

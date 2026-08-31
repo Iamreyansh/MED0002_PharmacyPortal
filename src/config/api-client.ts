@@ -13,6 +13,8 @@ const PUBLIC_AUTH_PATHS = [
   '/api/v1/auth/refresh',
   '/api/v1/auth/pharmacy/login',
   '/api/v1/auth/pharmacy/pos-pin',
+  '/api/v1/auth/pharmacy/forgot-password',
+  '/api/v1/auth/pharmacy/complete-reset',
 ] as const;
 
 export function isValidApiPath(path: string): boolean {

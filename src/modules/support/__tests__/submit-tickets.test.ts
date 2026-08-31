@@ -6,9 +6,11 @@ import {
   articleIdFrom,
   articlesFrom,
   asCollection,
+  asMeta,
   asObject,
   ticketFrom,
   ticketIdFrom,
+  withQuery,
 } from '@/modules/support/lib/query';
 import { submitTickets } from '@/modules/support/lib/submit-tickets';
 
@@ -44,6 +46,11 @@ describe('support query helper', () => {
     ).toEqual([{ id: '3' }]);
     expect(asCollection({ nope: 1 }, ['articles'])).toEqual([]);
     expect(asCollection(null, ['articles'])).toEqual([]);
+    expect(withQuery('/x', { q: '', page: 2 })).toBe('/x?page=2');
+    expect(withQuery('/x', {})).toBe('/x');
+    expect(asMeta(null)).toEqual({});
+    expect(asMeta([])).toEqual({});
+    expect(asMeta({ has_next: true })).toEqual({ has_next: true });
     expect(ticketFrom({ id: TICKET_ID })).toEqual({ id: TICKET_ID });
     expect(ticketIdFrom({ ticket_id: TICKET_ID })).toBe(TICKET_ID);
     expect(ticketIdFrom(null)).toBeNull();
@@ -59,7 +66,7 @@ describe('support query helper', () => {
 });
 
 describe('submitTickets', () => {
-  it('creates then loads by id and never lists', async () => {
+  it('creates then loads by id and lists', async () => {
     const request = vi
       .spyOn(hostApi, 'request')
       .mockResolvedValueOnce(ok({ id: TICKET_ID, subject: 'Printer' }))
@@ -104,6 +111,14 @@ describe('submitTickets', () => {
           call[0].path === '/api/v1/support/tickets',
       ),
     ).toBe(false);
+    request.mockResolvedValueOnce(ok({ tickets: [{ id: TICKET_ID }] }, 200));
+    expect(
+      await submitTickets({
+        screen: 'ticket-list',
+        action: 'load',
+        values: { page: 1, limit: 20 },
+      }),
+    ).toMatchObject({ ok: true, tickets: [{ id: TICKET_ID }] });
   });
 
   it('replies, submits CSAT, and reopens then refreshes', async () => {
@@ -163,6 +178,12 @@ describe('submitTickets', () => {
     expect(
       await submitTickets({
         screen: 'help',
+        action: 'load',
+      }),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitTickets({
+        screen: 'ticket-list',
         action: 'load',
       }),
     ).toMatchObject({ ok: false });

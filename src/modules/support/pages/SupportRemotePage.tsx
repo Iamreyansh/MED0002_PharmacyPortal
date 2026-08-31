@@ -53,5 +53,5 @@ export function SupportRemotePage({
 }
 
 export function SupportIndexRedirect() {
-  return <Navigate to="/support/new" replace />;
+  return <Navigate to="/support" replace />;
 }

@@ -39,7 +39,7 @@ export function useOrdersFeature(
 
   const onSubmit = useCallback(
     async (command: OrdersCommand) => {
-      if (command.screen === 'orders-home') {
+      if (command.screen === 'orders-home' && command.action === 'noop') {
         return { ok: true as const };
       }
       if (

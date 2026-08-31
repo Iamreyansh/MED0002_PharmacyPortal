@@ -11,8 +11,10 @@ import {
   SESSION_FIXTURES,
   resetSessionSnapshot,
 } from '@/modules/session';
-import { getTokens, resetTokenStore } from '@/modules/api';
+import { getTokens, hostApi, resetTokenStore } from '@/modules/api';
 import { resetPharmacySubmit } from '@/modules/auth/lib/submit-pharmacy';
+import { resetForgotSubmit } from '@/modules/auth/lib/submit-forgot';
+import { resetCompleteSubmit } from '@/modules/auth/lib/submit-reset';
 import { resetPosSubmit } from '@/modules/auth/lib/submit-pos';
 
 afterEach(() => {
@@ -22,6 +24,8 @@ afterEach(() => {
   resetTokenStore();
   resetSessionSnapshot();
   resetPharmacySubmit();
+  resetForgotSubmit();
+  resetCompleteSubmit();
   resetPosSubmit();
   sessionStorage.removeItem('medmate.portal.pos-last');
 });
@@ -692,6 +696,98 @@ describe('useAuthFeature', () => {
     );
     expect(await screen.findByTestId('unsupported')).toHaveTextContent(
       'This portal does not support that sign-in method.',
+    );
+  });
+
+  it('submits pharmacy forgot and reset commands', async () => {
+    const request = vi.spyOn(hostApi, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: { requested: true },
+    });
+    function ForgotProbe() {
+      const feature = useAuthFeature('pharmacy-forgot');
+      const [msg, setMsg] = useState('');
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              void feature
+                .onSubmit({
+                  portalType: 'pharmacy-forgot',
+                  action: 'request',
+                  values: { identifier: 'priya@srirama.in' },
+                })
+                .then((result) => {
+                  setMsg(result.ok ? 'forgot-ok' : 'forgot-fail');
+                });
+            }}
+          >
+            Forgot
+          </button>
+          <p data-testid="forgot-log">{msg}</p>
+        </>
+      );
+    }
+    render(
+      <MemoryRouter>
+        <SessionProvider>
+          <ForgotProbe />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    await userEvent
+      .setup()
+      .click(screen.getByRole('button', { name: 'Forgot' }));
+    expect(await screen.findByTestId('forgot-log')).toHaveTextContent(
+      'forgot-ok',
+    );
+    cleanup();
+    request.mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: { staff_id: 's1' },
+    });
+    function ResetProbe() {
+      const feature = useAuthFeature('pharmacy-reset');
+      const [msg, setMsg] = useState('');
+      return (
+        <>
+          <p data-testid="reset-token">{feature.initialValues?.token ?? ''}</p>
+          <button
+            type="button"
+            onClick={() => {
+              void feature
+                .onSubmit({
+                  portalType: 'pharmacy-reset',
+                  action: 'complete',
+                  values: { resetToken: 'tok', password: 'Secret12!' },
+                })
+                .then((result) => {
+                  setMsg(result.ok ? 'reset-ok' : 'reset-fail');
+                });
+            }}
+          >
+            Reset
+          </button>
+          <p data-testid="reset-log">{msg}</p>
+        </>
+      );
+    }
+    render(
+      <MemoryRouter initialEntries={['/reset-password?token=abc']}>
+        <SessionProvider>
+          <ResetProbe />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('reset-token')).toHaveTextContent('abc');
+    await userEvent
+      .setup()
+      .click(screen.getByRole('button', { name: 'Reset' }));
+    expect(await screen.findByTestId('reset-log')).toHaveTextContent(
+      'reset-ok',
     );
   });
 });

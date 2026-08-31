@@ -15,7 +15,10 @@ export function loginErrorCopy(
     return unlock ? `${base} Unlocks ${unlock} IST.` : base;
   }
   if (code === 'INVALID_CREDENTIALS') {
-    return core || 'Sign-in details were not recognised.';
+    if (core && !/password|email|mobile|phone|identifier/i.test(core)) {
+      return core;
+    }
+    return 'Sign-in details were not recognised.';
   }
   if (core) {
     return core;

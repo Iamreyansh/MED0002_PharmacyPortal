@@ -32,7 +32,7 @@ export async function submitDrugRegister(
         limit: command.values?.limit,
         from_date: command.values?.from_date,
         to_date: command.values?.to_date,
-        schedule: command.values?.schedule,
+        schedule: command.values?.schedule?.trim() || 'ALL',
       }),
       method: 'GET',
     });

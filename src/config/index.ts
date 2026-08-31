@@ -13,7 +13,7 @@ export {
   readPublicEnv,
   readRemoteLookupEnv,
 } from '@/config/env';
-export { isDemoRemotesEnabled } from '@/config/features';
+export { isDemoRemotesEnabled, isSaasPaymentsEnabled } from '@/config/features';
 export {
   DEFAULT_MFE_DIST_ROOT,
   MFE_LOCAL_PREFIX,

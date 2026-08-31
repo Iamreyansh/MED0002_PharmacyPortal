@@ -48,6 +48,8 @@ const NAV_GLYPH_PATHS: Record<string, string> = {
     'M8 3h8l1 4H7l1-4zm-2 6h12v12H6V9zm3 3v2h2v2h2v-2h2v-2h-2V10h-2v2H9z',
   'rx-quotes': 'M6 3h12v18H6V3zm3 4h6v2H9V7zm0 4h6v2H9v-2zm0 4h4v2H9v-2z',
   orders: 'M7 3h10l1 3H6l1-3zm-2 5h14v13H5V8zm3 3v2h8v-2H8zm0 4v2h6v-2H8z',
+  customers:
+    'M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.3 0-8 1.7-8 5v1h16v-1c0-3.3-4.7-5-8-5z',
   'drug-register':
     'M5 3h10a2 2 0 0 1 2 2v14l-4-2-4 2V5a2 2 0 0 1 2-2H5zm12 2h2v16l-2-1V5z',
   invoices:
@@ -67,6 +69,8 @@ const NAV_GLYPH_PATHS: Record<string, string> = {
   analytics: 'M4 18h16v2H4v-2zM6 10h3v6H6v-6zm5-6h3v12h-3V4zm5 4h3v8h-3V8z',
   support:
     'M12 3a7 7 0 0 0-7 7v3a3 3 0 0 0 3 3h1v-6H7a5 5 0 0 1 10 0h-2v6h1a3 3 0 0 0 3-3v-3a7 7 0 0 0-7-7zm-3 16h6v2H9v-2z',
+  notices:
+    'M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zM18 16v-5a6 6 0 0 0-5-5.9V4a1 1 0 1 0-2 0v1.1A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z',
   help: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm1.1-6.5-.9.9A2.2 2.2 0 0 0 12 14h-1v-.5c0-.6.2-1.1.7-1.6l1.2-1.2c.3-.3.5-.7.5-1.1A1.5 1.5 0 0 0 12 8.1 1.5 1.5 0 0 0 10.5 9.6H9a3.5 3.5 0 1 1 5.1 1.9z',
   profile:
     'M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.3 0-8 1.7-8 5v1h16v-1c0-3.3-4.7-5-8-5z',

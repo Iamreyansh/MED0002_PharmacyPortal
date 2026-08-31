@@ -47,7 +47,9 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   if (
     pathname === '/login' ||
     pathname === '/register' ||
-    pathname === '/register/verify'
+    pathname === '/register/verify' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password'
   ) {
     return <Navigate to={postAuthPath(session)} replace />;
   }
