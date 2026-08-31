@@ -136,26 +136,35 @@ describe('session menu', () => {
       accessTokenExpiresAt: null,
     });
     let finish: ((value: Response) => void) | undefined;
-    const fetch = vi.fn(() => {
-      if (fetch.mock.calls.length === 1) {
-        return new Promise<Response>((resolve) => {
-          finish = resolve;
-        });
-      }
-      return Promise.resolve(
-        new Response(JSON.stringify({ success: true }), { status: 200 }),
+    const ok = () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ success: true, data: {} }), {
+          status: 200,
+        }),
       );
+    const fetch = vi.fn((input: RequestInfo) => {
+      if (String(input).includes('logout-all')) {
+        if (!finish) {
+          return new Promise<Response>((resolve) => {
+            finish = resolve;
+          });
+        }
+        return ok();
+      }
+      return ok();
     });
     vi.stubGlobal('fetch', fetch);
     renderApp('/', SESSION_FIXTURES['owner-free']);
-    await user.click(screen.getByTestId('session-menu'));
+    await user.click(await screen.findByTestId('session-menu'));
     await user.click(
       screen.getByRole('menuitem', { name: 'Sign out all devices' }),
     );
     await user.click(
       screen.getByRole('menuitem', { name: 'Sign out all devices' }),
     );
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(
+      fetch.mock.calls.filter((call) => String(call[0]).includes('logout-all')),
+    ).toHaveLength(1);
     finish?.(new Response(JSON.stringify({ success: true }), { status: 200 }));
     await waitFor(() => {
       expect(screen.getByTestId('login-page')).toBeTruthy();
@@ -215,7 +224,11 @@ describe('pharmacy switcher', () => {
     });
     await user.click(screen.getByTestId('pharmacy-switcher'));
     await user.click(screen.getByRole('option', { name: 'Your pharmacy' }));
-    expect(fetch).not.toHaveBeenCalled();
+    expect(
+      fetch.mock.calls.some((call) =>
+        String(call[0]).includes('switch-pharmacy'),
+      ),
+    ).toBe(false);
     expect(screen.queryByRole('listbox')).toBeNull();
   });
 });

@@ -6,7 +6,13 @@ import type {
 import { isSupportUuid } from '@medmate/support-contract';
 import { createIdempotencyKey, hostApi } from '@/modules/api';
 import { failureResult } from '@/modules/support/lib/errors';
-import { ticketFrom, ticketIdFrom } from '@/modules/support/lib/query';
+import {
+  ticketFrom,
+  ticketIdFrom,
+  asCollection,
+  asMeta,
+  withQuery,
+} from '@/modules/support/lib/query';
 
 const TICKETS_PATH = '/api/v1/support/tickets';
 
@@ -36,6 +42,23 @@ async function loadTicket(ticketId: string): Promise<SupportSubmitResult> {
 export async function submitTickets(
   command: SupportCommand,
 ): Promise<SupportSubmitResult> {
+  if (command.screen === 'ticket-list' && command.action === 'load') {
+    const result = await hostApi.request<unknown>({
+      path: withQuery(TICKETS_PATH, {
+        page: command.values?.page,
+        limit: command.values?.limit,
+      }),
+      method: 'GET',
+    });
+    if (!result.ok) {
+      return failureResult(result.code, result.message, result.details);
+    }
+    return {
+      ok: true,
+      tickets: asCollection<SupportTicket>(result.data, ['tickets', 'items']),
+      meta: asMeta(result.details),
+    };
+  }
   if (command.screen === 'ticket-new' && command.action === 'create') {
     const result = await hostApi.request<unknown>({
       path: TICKETS_PATH,

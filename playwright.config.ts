@@ -22,12 +22,14 @@ export default defineConfig({
     '**/support-federation.spec.ts',
   ],
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    // Dedicated port so local `pnpm dev` on 5173 is not reused (that server
+    // enables remotes and would fail missing-remote / host-journey specs).
+    baseURL: 'http://127.0.0.1:5175',
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'pnpm exec vite --host 127.0.0.1 --port 5173',
-    url: 'http://127.0.0.1:5173',
+    command: 'pnpm exec vite --host 127.0.0.1 --port 5175',
+    url: 'http://127.0.0.1:5175',
     reuseExistingServer: !process.env.CI,
     env: {
       // Do not register remotes: federation auto-init of a failing

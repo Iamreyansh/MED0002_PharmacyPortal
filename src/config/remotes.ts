@@ -19,7 +19,13 @@ export const PRODUCT_REMOTE_REGISTRY = {
     name: 'auth',
     module: './Mfe',
     route: '/login',
-    routes: ['/login', '/pos-login', '/sessions'],
+    routes: [
+      '/login',
+      '/pos-login',
+      '/sessions',
+      '/forgot-password',
+      '/reset-password',
+    ],
     navLabel: 'Auth',
   },
   onboarding: {

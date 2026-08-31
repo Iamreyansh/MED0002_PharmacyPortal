@@ -7,6 +7,14 @@ import {
   resetPharmacySubmit,
   submitPharmacy,
 } from '@/modules/auth/lib/submit-pharmacy';
+import {
+  resetForgotSubmit,
+  submitForgot,
+} from '@/modules/auth/lib/submit-forgot';
+import {
+  resetCompleteSubmit,
+  submitReset,
+} from '@/modules/auth/lib/submit-reset';
 import { resetPosSubmit, submitPos } from '@/modules/auth/lib/submit-pos';
 import {
   asSessionRows,
@@ -24,6 +32,8 @@ afterEach(() => {
   resetTokenStore();
   resetSessionSnapshot();
   resetPharmacySubmit();
+  resetForgotSubmit();
+  resetCompleteSubmit();
   resetPosSubmit();
   sessionStorage.removeItem('medmate.portal.pos-last');
 });
@@ -522,5 +532,207 @@ describe('submitSessions', () => {
         clearSession: vi.fn(),
       }),
     ).toMatchObject({ ok: false });
+  });
+});
+
+describe('submitForgot and submitReset', () => {
+  it('requests a reset without leaking whether the account exists', async () => {
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy',
+        action: 'login',
+        values: { identifier: 'a@b.c', password: 'x' },
+      }),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: '' },
+      }),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: 'nope' },
+      }),
+    ).toMatchObject({ ok: false });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      data: { requested: true },
+    });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: 'priya@srirama.in' },
+      }),
+    ).toMatchObject({ ok: true });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      data: null,
+      code: 'RATE_LIMITED',
+      retryAfterSeconds: 60,
+    });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: 'priya@srirama.in' },
+      }),
+    ).toMatchObject({ ok: false, code: 'RATE_LIMITED' });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: false,
+      status: 429,
+      data: null,
+      code: 'RATE_LIMITED',
+    });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: 'priya@srirama.in' },
+      }),
+    ).toMatchObject({
+      ok: false,
+      formError: 'Too many attempts. Try again shortly.',
+    });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      data: null,
+      code: 'INTERNAL_ERROR',
+      message: 'Down',
+    });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: 'priya@srirama.in' },
+      }),
+    ).toMatchObject({ ok: false });
+    let finish:
+      ((value: { ok: true; status: number; data: object }) => void) | undefined;
+    vi.spyOn(hostApi, 'request').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const pending = submitForgot({
+      portalType: 'pharmacy-forgot',
+      action: 'request',
+      values: { identifier: 'priya@srirama.in' },
+    });
+    expect(
+      await submitForgot({
+        portalType: 'pharmacy-forgot',
+        action: 'request',
+        values: { identifier: 'priya@srirama.in' },
+      }),
+    ).toMatchObject({ ok: false });
+    finish?.({ ok: true, status: 200, data: { requested: true } });
+    await pending;
+  });
+
+  it('completes a reset then returns to login', async () => {
+    const navigate = vi.fn();
+    expect(
+      await submitReset(
+        {
+          portalType: 'pharmacy-forgot',
+          action: 'request',
+          values: { identifier: 'a@b.c' },
+        },
+        { navigate },
+      ),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitReset(
+        {
+          portalType: 'pharmacy-reset',
+          action: 'complete',
+          values: { password: 'short' } as {
+            resetToken: string;
+            password: string;
+          },
+        },
+        { navigate },
+      ),
+    ).toMatchObject({ ok: false });
+    expect(
+      await submitReset(
+        {
+          portalType: 'pharmacy-reset',
+          action: 'complete',
+          values: { resetToken: '', password: 'short' },
+        },
+        { navigate },
+      ),
+    ).toMatchObject({ ok: false });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      data: { staff_id: 's1' },
+    });
+    expect(
+      await submitReset(
+        {
+          portalType: 'pharmacy-reset',
+          action: 'complete',
+          values: { resetToken: 'tok', password: 'Secret12!' },
+        },
+        { navigate },
+      ),
+    ).toMatchObject({ ok: true });
+    expect(navigate).toHaveBeenCalledWith('/login', { replace: true });
+    vi.spyOn(hostApi, 'request').mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      data: null,
+      code: 'RESET_INVALID',
+      message: 'Reset is invalid or expired',
+    });
+    expect(
+      await submitReset(
+        {
+          portalType: 'pharmacy-reset',
+          action: 'complete',
+          values: { resetToken: 'tok', password: 'Secret12!' },
+        },
+        { navigate },
+      ),
+    ).toMatchObject({ ok: false, code: 'RESET_INVALID' });
+    let finish:
+      ((value: { ok: true; status: number; data: object }) => void) | undefined;
+    vi.spyOn(hostApi, 'request').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const pending = submitReset(
+      {
+        portalType: 'pharmacy-reset',
+        action: 'complete',
+        values: { resetToken: 'tok', password: 'Secret12!' },
+      },
+      { navigate },
+    );
+    expect(
+      await submitReset(
+        {
+          portalType: 'pharmacy-reset',
+          action: 'complete',
+          values: { resetToken: 'tok', password: 'Secret12!' },
+        },
+        { navigate },
+      ),
+    ).toMatchObject({ ok: false });
+    finish?.({ ok: true, status: 200, data: {} });
+    await pending;
   });
 });

@@ -190,6 +190,16 @@ describe('rx submitters', () => {
       path: '/api/v1/pharmacy/compliance/drug-register?page=1&schedule=H1',
       method: 'GET',
     });
+    request.mockResolvedValueOnce(ok({ entries: [] }, { page: 1 }));
+    await submitDrugRegister({
+      screen: 'drug-register',
+      action: 'load',
+      values: { page: 1 },
+    });
+    expect(request).toHaveBeenCalledWith({
+      path: '/api/v1/pharmacy/compliance/drug-register?page=1&schedule=ALL',
+      method: 'GET',
+    });
     request.mockResolvedValueOnce(ok({ guidance: 'Keep two years.' }));
     expect(
       await submitDrugRegister({

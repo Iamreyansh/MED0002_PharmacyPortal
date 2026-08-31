@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SupportFeatureData } from '@medmate/support-contract';
 import type { RemoteImporter } from '@medmate/host-kit';
 import { hostApi } from '@/modules/api';
-import { SupportIndexRedirect, SupportRemotePage } from '@/modules/support';
+import { SupportRemotePage, SupportIndexRedirect } from '@/modules/support';
 import { SessionProvider, SESSION_FIXTURES } from '@/modules/session';
 import { ToastProvider } from '@/modules/shell';
 
@@ -28,7 +28,7 @@ function wrap(
       <SessionProvider session={session}>
         <ToastProvider>
           <Routes>
-            <Route path="/support" element={<SupportIndexRedirect />} />
+            <Route path="/support" element={ui} />
             <Route path="/support/new" element={ui} />
             <Route path="/support/tickets/:id" element={ui} />
             <Route path="/help" element={ui} />
@@ -247,11 +247,23 @@ describe('SupportRemotePage', () => {
     expect(await screen.findByTestId('article-id')).toHaveTextContent('');
   });
 
-  it('redirects /support to /support/new', () => {
+  it('renders the ticket list at /support', () => {
     wrap(
-      <SupportRemotePage screen="ticket-new" loadRemote={ticketStub()} />,
+      <SupportRemotePage screen="ticket-list" loadRemote={ticketStub()} />,
       '/support',
     );
-    expect(screen.getByTestId('support-ticket-new-page')).toBeTruthy();
+    expect(screen.getByTestId('support-ticket-list-page')).toBeTruthy();
+  });
+
+  it('redirects the index helper to /support', () => {
+    render(
+      <MemoryRouter initialEntries={['/support/index']}>
+        <Routes>
+          <Route path="/support" element={<p data-testid="list">list</p>} />
+          <Route path="/support/index" element={<SupportIndexRedirect />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('list')).toBeTruthy();
   });
 });

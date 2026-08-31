@@ -1,7 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { PRODUCT_REMOTE_REGISTRY, listProductRegistry } from '@/config';
+import {
+  PRODUCT_REMOTE_REGISTRY,
+  isSaasPaymentsEnabled,
+  listProductRegistry,
+} from '@/config';
 import { NAV_CATALOG, productNavIncludesTodo } from '@/modules/navigation';
 import { planDisplayLabel } from '@/modules/session';
 
@@ -30,6 +34,13 @@ describe('release checklist', () => {
 
   it('maps RETAIL_PRO copy to Growth', () => {
     expect(planDisplayLabel('RETAIL_PRO')).toBe('Growth');
+  });
+
+  it('keeps SaaS payments fail-closed unless explicitly enabled', () => {
+    expect(isSaasPaymentsEnabled({})).toBe(false);
+    expect(isSaasPaymentsEnabled({ VITE_SAAS_PAYMENTS_ENABLED: 'true' })).toBe(
+      true,
+    );
   });
 
   it('does not ship excluded inbox, invite, IPD, or kiosk routes', () => {

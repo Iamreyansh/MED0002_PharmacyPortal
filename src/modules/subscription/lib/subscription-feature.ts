@@ -4,6 +4,7 @@ import type {
   SubscriptionFeatureData,
   SubscriptionScreen,
 } from '@medmate/subscription-contract';
+import { isSaasPaymentsEnabled } from '@/config/features';
 import { useSession } from '@/modules/session';
 import { useToast } from '@/modules/shell';
 import { submitBilling } from '@/modules/subscription/lib/submit-billing';
@@ -47,6 +48,7 @@ export function useSubscriptionFeature(
       onSubmit,
       role: session.role,
       canWrite: session.role === 'pharmacy_owner',
+      disabled: !isSaasPaymentsEnabled(),
     }),
     [onSubmit, screen, session.role],
   );

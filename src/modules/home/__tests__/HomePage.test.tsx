@@ -6,6 +6,7 @@ import {
   getRemoteUrl,
   listConfiguredRemotes,
 } from '@medmate/federation-config';
+import { hostApi } from '@/modules/api';
 import { HomePage } from '@/modules/home';
 import { SessionProvider } from '@/modules/session';
 import { SESSION_FIXTURES } from '@/modules/session';
@@ -13,6 +14,7 @@ import { SESSION_FIXTURES } from '@/modules/session';
 afterEach(() => {
   cleanup();
   vi.unstubAllEnvs();
+  vi.restoreAllMocks();
 });
 
 describe('federation remotes helpers', () => {
@@ -63,7 +65,20 @@ describe('federation remotes helpers', () => {
 });
 
 describe('HomePage', () => {
-  it('renders grouped IA shortcuts without Todo', () => {
+  it('renders grouped IA shortcuts without Todo', async () => {
+    vi.spyOn(hostApi, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: {
+        orders: {
+          pending_acceptance: 2,
+          accepted: 1,
+          packing: 0,
+          ready_for_pickup: 0,
+          out_for_delivery: 0,
+        },
+      },
+    });
     render(
       <MemoryRouter>
         <SessionProvider session={SESSION_FIXTURES['owner-free']}>
@@ -77,5 +92,37 @@ describe('HomePage', () => {
       '/pos',
     );
     expect(screen.queryByRole('link', { name: /todos/i })).toBeNull();
+    expect(await screen.findByTestId('home-kpis')).toBeTruthy();
+  });
+
+  it('omits KPIs when the dashboard call fails', async () => {
+    vi.spyOn(hostApi, 'request').mockResolvedValue({
+      ok: false,
+      status: 403,
+      data: undefined as never,
+      code: 'FORBIDDEN',
+    });
+    render(
+      <MemoryRouter>
+        <SessionProvider session={SESSION_FIXTURES['owner-free']}>
+          <HomePage />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
+    expect(screen.queryByTestId('home-kpis')).toBeNull();
+  });
+
+  it('skips the dashboard call for POS scope', () => {
+    const request = vi.spyOn(hostApi, 'request');
+    render(
+      <MemoryRouter>
+        <SessionProvider session={SESSION_FIXTURES['pos-scope']}>
+          <HomePage />
+        </SessionProvider>
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('portal-home')).toBeTruthy();
+    expect(request).not.toHaveBeenCalled();
   });
 });

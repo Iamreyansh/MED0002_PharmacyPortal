@@ -5,6 +5,38 @@ import type {
 } from '@medmate/support-contract';
 import { articleIdOf, ticketIdOf } from '@medmate/support-contract';
 
+export function withQuery(
+  path: string,
+  params: Record<string, string | number | boolean | undefined>,
+): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === '') {
+      continue;
+    }
+    search.set(key, String(value));
+  }
+  const qs = search.toString();
+  return qs ? `${path}?${qs}` : path;
+}
+
+export function asMeta(meta: unknown): {
+  page?: number;
+  limit?: number;
+  total?: number;
+  has_next?: boolean;
+} {
+  if (!meta || typeof meta !== 'object' || Array.isArray(meta)) {
+    return {};
+  }
+  return meta as {
+    page?: number;
+    limit?: number;
+    total?: number;
+    has_next?: boolean;
+  };
+}
+
 export function asCollection<T>(data: unknown, keys: readonly string[]): T[] {
   if (Array.isArray(data)) {
     return data as T[];

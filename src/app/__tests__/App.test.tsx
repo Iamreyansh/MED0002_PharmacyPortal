@@ -212,6 +212,12 @@ describe('App default session', () => {
     cleanup();
     renderApp('/pos-login', SESSION_FIXTURES.unauthenticated);
     expect(screen.getByTestId('pos-login-page')).toBeTruthy();
+    cleanup();
+    renderApp('/forgot-password', SESSION_FIXTURES.unauthenticated);
+    expect(screen.getByTestId('forgot-password-page')).toBeTruthy();
+    cleanup();
+    renderApp('/reset-password', SESSION_FIXTURES.unauthenticated);
+    expect(screen.getByTestId('reset-password-page')).toBeTruthy();
   });
 
   it('redirects an authenticated user away from login', () => {

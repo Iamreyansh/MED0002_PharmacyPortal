@@ -46,6 +46,20 @@ async function seedSession(
       }),
     });
   });
+  await page.route('**/api/v1/pharmacy/riders', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, data: { riders: [] } }),
+    });
+  });
+  await page.route('**/api/v1/pharmacy/orders/*/handoff', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, data: {} }),
+    });
+  });
   await page.addInitScript(
     ({ tokens, snapshot }) => {
       sessionStorage.setItem('medmate.portal.tokens', tokens);
@@ -153,7 +167,7 @@ test.describe('orders federation', () => {
     page.on('request', (request) => {
       if (
         request.method() === 'GET' &&
-        request.url().includes('/pharmacy/orders')
+        /\/api\/v1\/pharmacy\/orders\/?$/.test(new URL(request.url()).pathname)
       ) {
         listGets.push(request.url());
       }
@@ -171,14 +185,8 @@ test.describe('orders federation', () => {
     expect(listGets).toEqual([]);
   });
 
-  test('assigns a rider without listing riders', async ({ page }) => {
+  test('assigns a rider from the order id', async ({ page }) => {
     await seedSession(page, 'pharmacy_staff');
-    const riderGets: string[] = [];
-    page.on('request', (request) => {
-      if (request.url().includes('/riders')) {
-        riderGets.push(request.url());
-      }
-    });
     await page.route(
       `**/api/v1/pharmacy/orders/${ORDER_ID}/assign-rider`,
       async (route) => {
@@ -196,7 +204,6 @@ test.describe('orders federation', () => {
     await page.getByLabel('Rider id').fill(RIDER_ID);
     await page.getByRole('button', { name: 'Assign rider' }).click();
     await expect(page.getByText('Rider assigned')).toBeVisible();
-    expect(riderGets).toEqual([]);
   });
 
   test('accept 404 keeps the id-in-hand screen without a list GET', async ({
@@ -238,16 +245,27 @@ test.describe('orders federation', () => {
     expect(listGets).toEqual([]);
   });
 
-  test('shows guidance on /orders without a list', async ({ page }) => {
+  test('lists inbound orders on /orders', async ({ page }) => {
     await seedSession(page, 'pharmacy_owner');
-    const listGets: string[] = [];
-    page.on('request', (request) => {
-      if (request.url().includes('/pharmacy/orders')) {
-        listGets.push(request.url());
+    await page.route(/\/api\/v1\/pharmacy\/orders(\?|$)/, async (route) => {
+      if (route.request().method() !== 'GET') {
+        await route.continue();
+        return;
       }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          data: { orders: [], meta: { page: 1, has_next: false } },
+        }),
+      });
     });
     await page.goto('/orders');
-    await expect(page.getByTestId('orders-home-guidance')).toBeVisible();
-    expect(listGets).toEqual([]);
+    await expect(
+      page.locator('section[data-testid="orders-orders-home-page"]'),
+    ).toBeVisible();
+    await expect(page.getByTestId('orders-home-loading')).toHaveCount(0);
+    await expect(page.getByTestId('orders-home-empty')).toBeVisible();
   });
 });

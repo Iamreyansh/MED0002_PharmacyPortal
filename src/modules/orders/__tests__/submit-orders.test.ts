@@ -81,6 +81,28 @@ describe('orders submitters', () => {
     ).toEqual({ ok: true });
   });
 
+  it('loads the pharmacy order inbox', async () => {
+    const request = vi.spyOn(hostApi, 'request');
+    request.mockResolvedValueOnce(
+      ok([{ order_id: ORDER_ID, status: 'ACCEPTED' }], { page: 1 }),
+    );
+    expect(
+      await submitOrders({
+        screen: 'orders-home',
+        action: 'load',
+        values: { page: 1, status: 'ACCEPTED' },
+      }),
+    ).toMatchObject({
+      ok: true,
+      orders: [{ order_id: ORDER_ID, status: 'ACCEPTED' }],
+      meta: { page: 1 },
+    });
+    request.mockResolvedValueOnce(fail('FORBIDDEN', 'no', 403));
+    expect(
+      await submitOrders({ screen: 'orders-home', action: 'load' }),
+    ).toMatchObject({ ok: false, code: 'FORBIDDEN' });
+  });
+
   it('loads quotes and posts quote or decline', async () => {
     const request = vi.spyOn(hostApi, 'request');
     request.mockResolvedValueOnce(
@@ -190,6 +212,22 @@ describe('orders submitters', () => {
         values: { orderId: ORDER_ID, rider_id: RIDER_ID },
       }),
     ).toMatchObject({ ok: true, assign: { rider_id: RIDER_ID } });
+    request.mockResolvedValueOnce(ok({ riders: [{ rider_id: RIDER_ID }] }));
+    expect(
+      await submitOrders({
+        screen: 'order-actions',
+        action: 'listRiders',
+        values: { orderId: ORDER_ID },
+      }),
+    ).toMatchObject({ ok: true, riders: [{ rider_id: RIDER_ID }] });
+    request.mockResolvedValueOnce(ok({ pickup_otp: '1234' }));
+    expect(
+      await submitOrders({
+        screen: 'order-actions',
+        action: 'loadHandoff',
+        values: { orderId: ORDER_ID },
+      }),
+    ).toMatchObject({ ok: true, handoff: { pickup_otp: '1234' } });
   });
 
   it('blocks invalid UUIDs before calling Core', async () => {
@@ -248,5 +286,21 @@ describe('orders submitters', () => {
         values: { orderId: ORDER_ID, rider_id: RIDER_ID },
       }),
     ).toMatchObject({ ok: false, code: 'POS_TOKEN_RESTRICTED' });
+    request.mockResolvedValueOnce(fail('POS_TOKEN_RESTRICTED'));
+    expect(
+      await submitOrders({
+        screen: 'order-actions',
+        action: 'listRiders',
+        values: { orderId: ORDER_ID },
+      }),
+    ).toMatchObject({ ok: false, code: 'POS_TOKEN_RESTRICTED' });
+    request.mockResolvedValueOnce(fail('INVALID_STATUS_TRANSITION'));
+    expect(
+      await submitOrders({
+        screen: 'order-actions',
+        action: 'loadHandoff',
+        values: { orderId: ORDER_ID },
+      }),
+    ).toMatchObject({ ok: false, code: 'INVALID_STATUS_TRANSITION' });
   });
 });

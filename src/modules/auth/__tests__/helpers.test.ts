@@ -30,6 +30,12 @@ describe('auth helpers', () => {
     expect(loginErrorCopy('INVALID_CREDENTIALS', undefined, null)).toBe(
       'Sign-in details were not recognised.',
     );
+    expect(
+      loginErrorCopy('INVALID_CREDENTIALS', 'Password does not match', null),
+    ).toBe('Sign-in details were not recognised.');
+    expect(
+      loginErrorCopy('INVALID_CREDENTIALS', 'Invalid credentials', null),
+    ).toBe('Invalid credentials');
     expect(loginErrorCopy('VALIDATION_ERROR', undefined, null)).toBe(
       'Check the highlighted fields and try again.',
     );

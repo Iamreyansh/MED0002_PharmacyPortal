@@ -9,7 +9,9 @@ export function isPublicAuthPathname(pathname: string): boolean {
     pathname === '/login' ||
     pathname === '/pos-login' ||
     pathname === '/register' ||
-    pathname === '/register/verify'
+    pathname === '/register/verify' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password'
   );
 }
 

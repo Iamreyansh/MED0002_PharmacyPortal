@@ -3,6 +3,8 @@ import { AuthRemotePage } from '@/modules/auth';
 import { OnboardingRemotePage } from '@/modules/onboarding';
 import { isDemoRemotesEnabled, listProductMounts } from '@/modules/mfe';
 import { HomePage } from '@/modules/home';
+import { CustomersPage } from '@/modules/customers';
+import { NotificationsPage } from '@/modules/notifications';
 import { NotFoundPage } from '@/modules/not-found';
 import { RemoteModulePage } from '@/modules/remote';
 import { SettingsRemotePage } from '@/modules/settings';
@@ -15,7 +17,7 @@ import { RxRemotePage } from '@/modules/rx';
 import { OrdersRemotePage } from '@/modules/orders';
 import { FinanceRemotePage } from '@/modules/finance';
 import { AnalyticsRemotePage } from '@/modules/analytics';
-import { SupportIndexRedirect, SupportRemotePage } from '@/modules/support';
+import { SupportRemotePage } from '@/modules/support';
 import { SubscriptionRemotePage } from '@/modules/subscription';
 import { TodosPage } from '@/modules/todos';
 
@@ -26,6 +28,8 @@ export function AppRoutes() {
       mount.route !== '/login' &&
       mount.route !== '/pos-login' &&
       mount.route !== '/sessions' &&
+      mount.route !== '/forgot-password' &&
+      mount.route !== '/reset-password' &&
       mount.route !== '/onboarding' &&
       mount.route !== '/register' &&
       mount.route !== '/settings' &&
@@ -62,9 +66,23 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/customers" element={<CustomersPage />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
       <Route
         path="/login"
         element={<AuthRemotePage key="pharmacy" portalType="pharmacy" />}
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <AuthRemotePage key="pharmacy-forgot" portalType="pharmacy-forgot" />
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <AuthRemotePage key="pharmacy-reset" portalType="pharmacy-reset" />
+        }
       />
       <Route
         path="/pos-login"
@@ -240,7 +258,10 @@ export function AppRoutes() {
         }
       />
       <Route path="/analytics" element={<AnalyticsRemotePage />} />
-      <Route path="/support" element={<SupportIndexRedirect />} />
+      <Route
+        path="/support"
+        element={<SupportRemotePage key="ticket-list" screen="ticket-list" />}
+      />
       <Route
         path="/support/new"
         element={<SupportRemotePage key="ticket-new" screen="ticket-new" />}

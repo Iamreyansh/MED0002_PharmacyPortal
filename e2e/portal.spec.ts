@@ -62,6 +62,24 @@ async function mockCore(page: Page, options?: { status?: string }) {
       }),
     });
   });
+  await page.route('**/api/v1/pharmacy/dashboard/summary', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          orders: {
+            pending_acceptance: 0,
+            accepted: 0,
+            packing: 0,
+            ready_for_pickup: 0,
+            out_for_delivery: 0,
+          },
+        },
+      }),
+    });
+  });
 }
 
 async function seedSession(page: Page) {
@@ -239,7 +257,9 @@ test('KYC pharmacy cannot open quotes', async ({ page }) => {
     },
   );
   await page.goto('/rx-quotes');
-  await expect(page.getByTestId('onboarding-status-page')).toBeVisible();
+  await expect(
+    page.locator('section[data-testid="onboarding-status-page"]'),
+  ).toBeVisible();
 });
 
 test('expired session lands on login', async ({ page }) => {

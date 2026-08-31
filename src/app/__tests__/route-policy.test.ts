@@ -18,6 +18,8 @@ describe('route policy', () => {
     expect(isPublicAuthPathname('/register')).toBe(true);
     expect(isPublicAuthPathname('/register/verify')).toBe(true);
     expect(isPublicAuthPathname('/pos-login')).toBe(true);
+    expect(isPublicAuthPathname('/forgot-password')).toBe(true);
+    expect(isPublicAuthPathname('/reset-password')).toBe(true);
     expect(isPublicAuthPathname('/inventory')).toBe(false);
     expect(isPublicContentPathname('/help')).toBe(true);
     expect(isPublicContentPathname('/help/articles/hours')).toBe(true);
@@ -27,6 +29,7 @@ describe('route policy', () => {
     expect(isSafeReturnPath('/invoices')).toBe(true);
     expect(isSafeReturnPath('https://evil.test')).toBe(false);
     expect(isSafeReturnPath('/register/verify')).toBe(false);
+    expect(isSafeReturnPath('/forgot-password')).toBe(false);
     expect(isSafeReturnPath('/login?next=/')).toBe(false);
     expect(isSafeReturnPath('//evil.test')).toBe(false);
     expect(isSafeReturnPath('/ok://x')).toBe(false);

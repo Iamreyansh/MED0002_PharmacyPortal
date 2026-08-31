@@ -122,6 +122,13 @@ export const NAV_CATALOG: readonly NavItem[] = [
     requirePharmacyActive: true,
   },
   {
+    id: 'customers',
+    path: '/customers',
+    label: 'Customers',
+    group: 'engagement',
+    homeShortcut: true,
+  },
+  {
     id: 'drug-register',
     path: '/compliance/drug-register',
     label: 'Drug register',
@@ -194,10 +201,16 @@ export const NAV_CATALOG: readonly NavItem[] = [
   },
   {
     id: 'support',
-    path: '/support/new',
+    path: '/support',
     label: 'Support',
     group: 'engagement',
     homeShortcut: true,
+  },
+  {
+    id: 'notices',
+    path: '/notifications',
+    label: 'Notices',
+    group: 'engagement',
   },
   {
     id: 'help',

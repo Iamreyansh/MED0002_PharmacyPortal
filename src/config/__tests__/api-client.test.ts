@@ -40,6 +40,10 @@ describe('API path helpers', () => {
     expect(isPublicAuthPath('/api/v1/auth/refresh')).toBe(true);
     expect(isPublicAuthPath('/api/v1/auth/pharmacy/login')).toBe(true);
     expect(isPublicAuthPath('/api/v1/auth/pharmacy/pos-pin')).toBe(true);
+    expect(isPublicAuthPath('/api/v1/auth/pharmacy/forgot-password')).toBe(
+      true,
+    );
+    expect(isPublicAuthPath('/api/v1/auth/pharmacy/complete-reset')).toBe(true);
     expect(isPublicAuthPath('/api/v1/pharmacy/register/verify-email')).toBe(
       true,
     );

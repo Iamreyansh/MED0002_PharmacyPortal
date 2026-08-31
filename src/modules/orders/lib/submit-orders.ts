@@ -1,12 +1,20 @@
 import type {
   OrderActionResult,
+  OrderHandoff,
+  OrderInboxRow,
   OrdersCommand,
   OrdersSubmitResult,
+  RiderDirectoryRow,
 } from '@medmate/orders-contract';
 import { createIdempotencyKey, hostApi } from '@/modules/api';
 import { isUuid } from '@/modules/auth';
 import { failureResult } from '@/modules/orders/lib/errors';
-import { asObject } from '@/modules/orders/lib/query';
+import {
+  asCollection,
+  asMeta,
+  asObject,
+  withQuery,
+} from '@/modules/orders/lib/query';
 
 const ORDERS_PATH = '/api/v1/pharmacy/orders';
 
@@ -22,6 +30,24 @@ export async function submitOrders(
   command: OrdersCommand,
 ): Promise<OrdersSubmitResult> {
   if (command.screen === 'orders-home') {
+    if (command.action === 'load') {
+      const result = await hostApi.request<unknown>({
+        path: withQuery(ORDERS_PATH, {
+          page: command.values?.page,
+          limit: command.values?.limit,
+          status: command.values?.status,
+        }),
+        method: 'GET',
+      });
+      if (!result.ok) {
+        return failureResult(result.code, result.message, result.details);
+      }
+      return {
+        ok: true,
+        orders: asCollection<OrderInboxRow>(result.data, ['orders', 'items']),
+        meta: asMeta(result.details),
+      };
+    }
     return { ok: true };
   }
   if (command.screen !== 'order-actions') {
@@ -85,6 +111,29 @@ export async function submitOrders(
       return failureResult(result.code, result.message, result.details);
     }
     return { ok: true, assign: asObject<OrderActionResult>(result.data) };
+  }
+  if (command.action === 'listRiders') {
+    const result = await hostApi.request<unknown>({
+      path: '/api/v1/pharmacy/riders',
+      method: 'GET',
+    });
+    if (!result.ok) {
+      return failureResult(result.code, result.message, result.details);
+    }
+    return {
+      ok: true,
+      riders: asCollection<RiderDirectoryRow>(result.data, ['riders']),
+    };
+  }
+  if (command.action === 'loadHandoff') {
+    const result = await hostApi.request<unknown>({
+      path: `${ORDERS_PATH}/${command.values.orderId}/handoff`,
+      method: 'GET',
+    });
+    if (!result.ok) {
+      return failureResult(result.code, result.message, result.details);
+    }
+    return { ok: true, handoff: asObject<OrderHandoff>(result.data) };
   }
   return { ok: false, formError: 'This screen cannot action an order.' };
 }

@@ -31,6 +31,24 @@ async function mockCore(page: Page) {
       }),
     });
   });
+  await page.route('**/api/v1/pharmacy/dashboard/summary', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          orders: {
+            pending_acceptance: 0,
+            accepted: 0,
+            packing: 0,
+            ready_for_pickup: 0,
+            out_for_delivery: 0,
+          },
+        },
+      }),
+    });
+  });
 }
 
 async function seedSession(page: Page) {

@@ -8,7 +8,10 @@ import { buildHostContext, MfeOutlet, useMfeEnvelope } from '@/modules/mfe';
 import { useSession } from '@/modules/session';
 
 export type AuthRemotePageProps = {
-  portalType: Extract<AuthPortalType, 'pharmacy' | 'pos' | 'sessions'>;
+  portalType: Extract<
+    AuthPortalType,
+    'pharmacy' | 'pos' | 'sessions' | 'pharmacy-forgot' | 'pharmacy-reset'
+  >;
   loadRemote?: RemoteImporter;
 };
 
@@ -19,6 +22,12 @@ function rootTestId(portalType: AuthRemotePageProps['portalType']): string {
   if (portalType === 'pos') {
     return 'pos-login-page';
   }
+  if (portalType === 'pharmacy-forgot') {
+    return 'forgot-password-page';
+  }
+  if (portalType === 'pharmacy-reset') {
+    return 'reset-password-page';
+  }
   return 'sessions-page';
 }
 
@@ -26,7 +35,11 @@ function stageClass(portalType: AuthRemotePageProps['portalType']): string {
   if (portalType === 'sessions') {
     return 'page';
   }
-  if (portalType === 'pharmacy') {
+  if (
+    portalType === 'pharmacy' ||
+    portalType === 'pharmacy-forgot' ||
+    portalType === 'pharmacy-reset'
+  ) {
     return 'auth-page auth-page--wide';
   }
   return 'auth-page';
@@ -50,7 +63,11 @@ export function AuthRemotePage({
   const remoteUrl =
     configuredUrl || (loadRemote ? '/__mfe/auth/mf-manifest.json' : undefined);
 
-  if (portalType === 'pharmacy') {
+  if (
+    portalType === 'pharmacy' ||
+    portalType === 'pharmacy-forgot' ||
+    portalType === 'pharmacy-reset'
+  ) {
     if (session.authenticated && session.tokenScope === 'pos') {
       return <Navigate to="/pos" replace />;
     }

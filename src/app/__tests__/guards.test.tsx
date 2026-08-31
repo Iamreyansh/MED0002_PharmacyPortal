@@ -99,16 +99,22 @@ describe('pharmacy switcher', () => {
 
   it('posts switch-pharmacy and keeps context on 403', async () => {
     const user = userEvent.setup();
-    const fetch = vi.fn(
-      async () =>
-        new Response(
+    const fetch = vi.fn(async (input: RequestInfo) => {
+      const url = String(input);
+      if (url.includes('switch-pharmacy')) {
+        return new Response(
           JSON.stringify({
             success: false,
             error: { code: 'FORBIDDEN', message: 'No' },
           }),
           { status: 403 },
-        ),
-    );
+        );
+      }
+      return new Response(
+        JSON.stringify({ success: true, data: { orders: {} } }),
+        { status: 200 },
+      );
+    });
     vi.stubGlobal('fetch', fetch);
     renderApp('/', SESSION_FIXTURES['owner-free'], { pharmacies });
     await user.click(screen.getByTestId('pharmacy-switcher'));
@@ -117,12 +123,12 @@ describe('pharmacy switcher', () => {
       screen.getByRole('option', { name: 'Rama Pharmacy - Koramangala' }),
     );
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalled();
+      expect(
+        fetch.mock.calls.some((call) =>
+          String(call[0]).includes('switch-pharmacy'),
+        ),
+      ).toBe(true);
     });
-    const firstUrl = String(
-      (fetch.mock.calls as unknown as [unknown][])[0]?.[0],
-    );
-    expect(firstUrl).toContain('switch-pharmacy');
     expect(screen.getByTestId('pharmacy-name')).toHaveTextContent(
       'Your pharmacy',
     );
